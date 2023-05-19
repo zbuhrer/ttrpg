@@ -1,0 +1,17 @@
+{
+  "focusNewTab": false,
+  "defaultViewMode": "preview",
+  "livePreview": false,
+  "showFrontmatter": true,
+  "trashOption": "local",
+  "alwaysUpdateLinks": true,
+  "newLinkFormat": "relative",
+  "showUnsupportedFiles": false,
+  "attachmentFolderPath": "./attachments",
+  "pdfExportSettings": {
+    "pageSize": "Letter",
+    "landscape": false,
+    "margin": "0",
+    "downscalePercent": 100
+  }
+}
