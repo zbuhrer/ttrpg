@@ -2,16 +2,19 @@
   "focusNewTab": false,
   "defaultViewMode": "preview",
   "livePreview": false,
-  "showFrontmatter": true,
+  "showFrontmatter": false,
   "trashOption": "local",
   "alwaysUpdateLinks": true,
   "newLinkFormat": "relative",
   "showUnsupportedFiles": false,
   "attachmentFolderPath": "./attachments",
   "pdfExportSettings": {
+    "includeName": false,
     "pageSize": "Letter",
     "landscape": false,
-    "margin": "0",
+    "margin": "1",
     "downscalePercent": 100
-  }
+  },
+  "showLineNumber": false,
+  "spellcheck": true
 }

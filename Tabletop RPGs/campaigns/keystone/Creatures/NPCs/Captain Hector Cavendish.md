@@ -44,7 +44,7 @@ actions:
 ```
 
 ## Appearance
-
+![Captain Cavendish](https://i.imgur.com/xN49Aqo.png)
 ### Clothing
 
 

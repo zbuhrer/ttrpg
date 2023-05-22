@@ -9,6 +9,18 @@ modifier:
 ---
 
 %%
+STR:: 10
+DEX:: 10
+CON:: 10
+INT:: 10
+WIS:: 10
+CHA:: 10
+STRmod:: `= round((this.STR - 10)/2 - 0.1)`
+DEXmod:: `= round((this.DEX - 10)/2 - 0.1)`
+CONmod:: `= round((this.CON - 10)/2 - 0.1)`
+INTmod:: `= round((this.INT - 10)/2 - 0.1)`
+WISmod:: `= round((this.WIS - 10)/2 - 0.1)`
+CHAmod:: `= round((this.CHA - 10)/2 - 0.1)`
 Creator:: 
 Universe:: 
 Campaign:: 
@@ -45,37 +57,36 @@ Senses | \# |
 ---|---|
 **Passive Perception** ||
 
----
-## Abilities
-### Abilities
+## [[../5eSRD/Gameplay/Abilities#ABILITIES|Abilities]]
 STR | DEX | CON | INT | WIS | CHA ||
 :---:|:----:|:----:|:---:|:---:|:---:|---|
-\# |  |  |  |  |  | **Stats** |
-\# |  |  |  |  |  | **Modifier** |
-\# |  |  |  |  |  | **Saving Throw** |
+`= this.STR`|`= this.DEX`|`= this.CON`|`= this.INT`|`= this.WIS`|`= this.CHA`| **Stats** |
+`= this.STRmod`|`= this.DEXmod`|`= this.CONmod`|`= this.INTmod`|`= this.WISmod`|`= this.CHAmod`| **Modifier** |
+|  |  |  |  |  |  | **Saving Throw** |
 
 
-### Skills
-\# | Skill | Ability |
-:--:|-----|:------:|
-.| Acrobatics | DEX |
-.| Animal Handling | WIS |
-.| Arcana | INT |
-.| Athletics | STR |
-.| Deception | CHA |
-.| History | INT |
-.| Insight | WIS |
-.| Intimidation | CHA |
-.| Investigation | INT |
-.| Medicine | WIS |
-.| Nature | WIS |
-.| Perception | WIS |
-.| Performance | CHA |
-.| Persuasion | CHA |
-.| Religion | INT |
-.| Sleight of Hand | DEX |
-.| Stealth | DEX |
-.| Survival | WIS |
+
+### [[../5eSRD/Gameplay/Abilities#Skills|Skills]]
+Prof| Bonus | Skill | Ability |
+:--:|:--:|:--|:--
+p|+`= this.DEXmod`| Acrobatics | DEX |
+p|+`= this.WISmod`| Animal Handling | WIS |
+p|+`= this.INTmod`| Arcana | INT |
+p|+`= this.STRmod`| Athletics | STR |
+p|+`= this.CHAmod`| Deception | CHA |
+p|+`= this.INTmod`| History | INT |
+p|+`= this.WISmod`| Insight | WIS |
+p|+`= this.CHAmod`| Intimidation | CHA |
+p|+`= this.INTmod`| Investigation | INT |
+p|+`= this.WISmod`| Medicine | WIS |
+p|+`= this.WISmod`| Nature | WIS |
+p|+`= this.WISmod`| Perception | WIS |
+p|+`= this.CHAmod`| Performance | CHA |
+p|+`= this.CHAmod`| Persuasion | CHA |
+p|+`= this.INTmod`| Religion | INT |
+p|+`= this.DEXmod`| Sleight of Hand | DEX |
+p|+`= this.DEXmod`| Stealth | DEX |
+p|+`= this.WISmod`| Survival | WIS |
 
 # Traits
 

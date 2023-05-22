@@ -1,7 +1,23 @@
-However the PCs know each other, they are eventually approached by a grizzled character in a tattered tri-corner hat. He wears a cape and cowl that don't hide the trappings of a pirate. He introduces himself as **[[../../Creatures/NPCs/Captain Hector Cavendish#Statblock|Captain Hector Cavendish]]** of the Serpent Star. He noticed the PCs equipment from across the tavern floor and thought he might have found just who he was looking for...
-
+---
+type: Quest
+name: The Rusty Anchor Tavern
+tags: [Plot, Quest]
 ---
 
-Captain Cavendish reveals that twenty years ago, when he was a young adventurer himself... he was hired to find an powerful and dangerous artifact: **The Celestial Keystone**. To this day he has not succeeded in his quest.
+# The Rusty Anchor Tavern
 
-Many have joined his tireless quest over the years and either died or left when it seemed clear that the quest was impossible.
+## Triggers
+The player characters are encouraged to come up with their own reasons for warming their bones at **[[Plot/Quests/The Rusty Anchor Tavern|The Rusty Anchor Tavern]]**, in **[[../Locations/The Island Town of Haven|the Island Town of Haven]]**, about a day's sail from the coast, in the **[[../Locations/Kingdom of Elvandar|Kingdom of Elvandar]]**. 
+## Objectives
+- The PCs should meet each other and find a way to cooperate. 
+## Outcomes
+
+## Involved NPCs
+###### [[../../Creatures/NPCs/Captain Hector Cavendish|Captain Hector Cavendish]]
+[[../../Creatures/NPCs/Captain Hector Cavendish|Captain Cavendish]] reveals that twenty years ago, when he was a young adventurer himself... he was hired to find a powerful and dangerous artifact: **[[The Celestial Keystone]]**. To this day he has not succeeded in his quest.
+  
+  Many have joined his tireless quest over the years and either died or left when it seemed clear that the quest was impossible.
+- 
+## Detailed Description
+
+## Other

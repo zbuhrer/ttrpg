@@ -4,5 +4,6 @@
   "enabledCssSnippets": [
     "Theme - All Alternate Themes"
   ],
-  "theme": "moonstone"
+  "theme": "moonstone",
+  "translucency": false
 }

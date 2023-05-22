@@ -1,0 +1,7 @@
+{
+	"nodes":[
+		{"type":"file","file":"campaigns/keystone/Plot/Locations/The Island Town of Haven.md","id":"b0a75cde186a6c8c","x":-1400,"y":-846,"width":860,"height":980},
+		{"type":"file","file":"campaigns/keystone/Plot/Quests/The Rusty Anchor Tavern.md","id":"d95e03031f51ccba","x":-440,"y":-846,"width":734,"height":880}
+	],
+	"edges":[]
+}
