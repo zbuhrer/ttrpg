@@ -1,18 +1,12 @@
 ---
-type: Town
-name: Haven
+type: City
+name: <% tp.file.title %>
 tags: [Location, City]
 ---
 
-# The Island Town of Haven
-
-## Map
-[[../Locations/maps#The Island of Haven|The Island of Haven]] 
+# <% tp.file.title %>
 
 ## Stats
-
-^2ecf46
-
 - **Residents:** 
 - **Size:** 
 - **Country:** 
@@ -24,11 +18,6 @@ tags: [Location, City]
 - **Leading Faction:** 
 - **Leading Race:** 
 
-## Quests
-- [[../Quests/The Rusty Anchor Tavern|The Rusty Anchor Tavern]]
-- [[Silverfish Bay]]
-- [[The Silent Obelisk]]
-- 
 
 ## Demographics
 - Common Races

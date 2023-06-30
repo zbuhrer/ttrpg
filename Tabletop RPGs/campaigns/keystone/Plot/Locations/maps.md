@@ -1,6 +1,6 @@
 
 
-# Chapter 1
+# The World: 
 ## The Island of Haven
 
 ```leaflet

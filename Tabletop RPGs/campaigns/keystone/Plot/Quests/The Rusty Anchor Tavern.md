@@ -21,3 +21,5 @@ The player characters are encouraged to come up with their own reasons for warmi
 ## Detailed Description
 
 ## Other
+
+## Maps
