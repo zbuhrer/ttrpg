@@ -13,13 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "campaigns/grammysapplepie/Creatures/NPCs/Macintosh.md",
+                "file": "campaigns/grammysapplepie/Plot/Quests/01 Introduction.md",
+                "mode": "preview",
+                "source": true
+              }
+            }
+          },
+          {
+            "id": "d148134b008ab1bc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
                 "mode": "source",
                 "source": true
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       },
       {
         "id": "3f08ca923e94a01d",
@@ -36,19 +49,8 @@
                 "source": true
               }
             }
-          },
-          {
-            "id": "0e6d77c8ddc49fed",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "campaigns/grammysapplepie/DRA21_GrammysCountryApplePie.pdf"
-              }
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -114,7 +116,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "campaigns/grammysapplepie/Creatures/NPCs/Macintosh.md",
+                "file": "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -131,7 +133,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "campaigns/grammysapplepie/Creatures/NPCs/Macintosh.md",
+                "file": "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -154,7 +156,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "campaigns/grammysapplepie/Creatures/NPCs/Macintosh.md"
+                "file": "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md"
               }
             }
           },
@@ -183,12 +185,11 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -206,21 +207,29 @@
       "obsidian-leaflet-plugin:Open Leaflet Map": false
     }
   },
-  "active": "6a667b7fdda9278a",
+  "active": "d148134b008ab1bc",
   "lastOpenFiles": [
-    "campaigns/grammysapplepie/Plot/Quests/To The Bakery.md",
-    "campaigns/grammysapplepie/Creatures/NPCs/Macintosh.md",
+    "campaigns/grammysapplepie/Grammy's Country Apple Pie.md",
+    "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
+    "campaigns/keystone/Plot/Locations/maps.md",
+    "campaigns/keystone/Plot/Locations/The Island Town of Haven.md",
+    "campaigns/keystone/Plot/Quests/The Rusty Anchor Tavern.md",
+    "campaigns/keystone/world.md",
+    "campaigns/grammysapplepie/Maps/bakery.jpg",
+    "campaigns/grammysapplepie/Maps",
+    "campaigns/grammysapplepie/New folder",
+    "campaigns/grammysapplepie/Grammy's Country Apple Pie.dam",
+    "campaigns/grammysapplepie/Plot/Quests/01 Introduction.md",
+    "campaigns/grammysapplepie/Plot/Quests/99 Finale.md",
     "campaigns/grammysapplepie/DRA21_GrammysCountryApplePie.pdf",
+    "campaigns/grammysapplepie/Creatures/NPCs/Macintosh.md",
     "campaigns/grammysapplepie/Creatures/NPCs/Tyndareus the Green.md",
     "campaigns/grammysapplepie/Plot/Quests/Bakery Apple Orchard.md",
     "campaigns/grammysapplepie/Plot/Quests/Bakery Waste Pile.md",
     "campaigns/grammysapplepie/Plot/Quests/Bakery Entrance.md",
-    "campaigns/grammysapplepie/Plot/Quests/Introduction.md",
     "campaigns/keystone/Creatures/NPCs/Captain Hector Cavendish.md",
     "Tyndareus the Green_statblock.md",
-    "campaigns/grammysapplepie/Grammy's Country Apple Pie.md",
     "campaigns/keystone/original copy.md",
-    "campaigns/keystone/world.md",
     "campaigns/grammysapplepie/Obsidian/Templates/PF1StatBlockTemplate.md",
     "campaigns/grammysapplepie/Obsidian/Snippets/TimelineRange.md",
     "campaigns/grammysapplepie/Obsidian/Snippets/TimelineEvent.md",
@@ -228,7 +237,6 @@
     "campaigns/grammysapplepie/Creatures/NPCs/Captain Hector Cavendish 1.md",
     "VaultTemplate/Obsidian/Templates/FactionTemplate.md",
     "campaigns/grammysapplepie/Overviews/Faction Overview.md",
-    "campaigns/keystone/Plot/Locations/maps.md",
     "campaigns/grammysapplepie/Plot/Quests",
     "campaigns/grammysapplepie/Plot",
     "campaigns/grammysapplepie/Overviews/Quest Overview.md",
@@ -236,14 +244,8 @@
     "campaigns/grammysapplepie/Overviews",
     "campaigns/grammysapplepie/Other",
     "campaigns/grammysapplepie/Obsidian/Templates/StatBlockTemplate.md",
-    "campaigns/grammysapplepie/Obsidian/Templates/QuestTemplate.md",
-    "campaigns/grammysapplepie/Obsidian/Templates/NpcTemplate.md",
-    "campaigns/grammysapplepie/Obsidian/Templates/MonsterTemplate.md",
     "campaigns/grammysapplepie/Obsidian/Templates",
     "campaigns/grammysapplepie/Obsidian/Snippets",
-    "campaigns/grammysapplepie/Obsidian/EmbeddedFiles",
-    "campaigns/grammysapplepie/Obsidian",
-    "campaigns/grammysapplepie/Lore",
     "campaigns/keystone/playmat.canvas",
     "campaigns/keystone/img/celestial_keystone.jpeg",
     "campaigns/keystone/img/Haven Island.jpeg"
