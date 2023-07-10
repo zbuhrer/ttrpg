@@ -1,0 +1,11 @@
+{
+	"nodes":[
+		{"id":"52281aa446f852ff","x":-540,"y":-540,"width":980,"height":1560,"type":"file","file":"campaigns/grammysapplepie/Campaign.md"},
+		{"id":"cb909cda2a1562ae","x":655,"y":-540,"width":420,"height":600,"type":"file","file":"campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md","subpath":"#The Road to the Bakery"},
+		{"id":"c2e801276e2bffcc","x":655,"y":240,"width":1030,"height":980,"type":"file","file":"campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md","subpath":"#0 - Outside"}
+	],
+	"edges":[
+		{"id":"b3db81213d41d0b2","fromNode":"52281aa446f852ff","fromSide":"right","toNode":"cb909cda2a1562ae","toSide":"left"},
+		{"id":"b3f6fe6b679fbe77","fromNode":"cb909cda2a1562ae","fromSide":"bottom","toNode":"c2e801276e2bffcc","toSide":"top"}
+	]
+}

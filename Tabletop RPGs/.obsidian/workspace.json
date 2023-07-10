@@ -4,53 +4,38 @@
     "type": "split",
     "children": [
       {
-        "id": "8ec5ca9928a500d1",
+        "id": "b0ffaf9e4b555dd7",
         "type": "tabs",
         "children": [
           {
-            "id": "6a667b7fdda9278a",
+            "id": "e6a5be6bd0e39ff6",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "campaigns/grammysapplepie/Plot/Quests/01 Introduction.md",
-                "mode": "preview",
-                "source": true
+                "file": "campaigns/grammysapplepie/playmat.canvas",
+                "viewState": {
+                  "x": 639.9201483331346,
+                  "y": 424.4281098355834,
+                  "zoom": -1.216269438962141
+                }
               }
             }
           },
           {
-            "id": "d148134b008ab1bc",
+            "id": "cd4c4d31a44e31ca",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
-                "mode": "source",
+                "file": "campaigns/grammysapplepie/Campaign.md",
+                "mode": "preview",
                 "source": true
               }
             }
           }
         ],
         "currentTab": 1
-      },
-      {
-        "id": "3f08ca923e94a01d",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "dd0e8420400e2edb",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "campaigns/grammysapplepie/Grammy's Country Apple Pie.md",
-                "mode": "preview",
-                "source": true
-              }
-            }
-          }
-        ]
       }
     ],
     "direction": "vertical"
@@ -79,7 +64,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "Channel Divinity",
+                "query": "saving",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -116,7 +101,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
+                "file": "campaigns/grammysapplepie/Campaign.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -133,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
+                "file": "campaigns/grammysapplepie/Campaign.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -156,7 +141,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md"
+                "file": "campaigns/grammysapplepie/Campaign.md"
               }
             }
           },
@@ -189,7 +174,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -207,46 +193,47 @@
       "obsidian-leaflet-plugin:Open Leaflet Map": false
     }
   },
-  "active": "d148134b008ab1bc",
+  "active": "cd4c4d31a44e31ca",
   "lastOpenFiles": [
-    "campaigns/grammysapplepie/Grammy's Country Apple Pie.md",
     "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
+    "campaigns/grammysapplepie/5eSRD/Gameplay/Abilities.md",
     "campaigns/keystone/Plot/Locations/maps.md",
-    "campaigns/keystone/Plot/Locations/The Island Town of Haven.md",
-    "campaigns/keystone/Plot/Quests/The Rusty Anchor Tavern.md",
-    "campaigns/keystone/world.md",
-    "campaigns/grammysapplepie/Maps/bakery.jpg",
-    "campaigns/grammysapplepie/Maps",
-    "campaigns/grammysapplepie/New folder",
-    "campaigns/grammysapplepie/Grammy's Country Apple Pie.dam",
-    "campaigns/grammysapplepie/Plot/Quests/01 Introduction.md",
-    "campaigns/grammysapplepie/Plot/Quests/99 Finale.md",
-    "campaigns/grammysapplepie/DRA21_GrammysCountryApplePie.pdf",
-    "campaigns/grammysapplepie/Creatures/NPCs/Macintosh.md",
-    "campaigns/grammysapplepie/Creatures/NPCs/Tyndareus the Green.md",
-    "campaigns/grammysapplepie/Plot/Quests/Bakery Apple Orchard.md",
-    "campaigns/grammysapplepie/Plot/Quests/Bakery Waste Pile.md",
-    "campaigns/grammysapplepie/Plot/Quests/Bakery Entrance.md",
-    "campaigns/keystone/Creatures/NPCs/Captain Hector Cavendish.md",
-    "Tyndareus the Green_statblock.md",
-    "campaigns/keystone/original copy.md",
-    "campaigns/grammysapplepie/Obsidian/Templates/PF1StatBlockTemplate.md",
-    "campaigns/grammysapplepie/Obsidian/Snippets/TimelineRange.md",
-    "campaigns/grammysapplepie/Obsidian/Snippets/TimelineEvent.md",
-    "campaigns/grammysapplepie/Overviews/Creature Overview.md",
-    "campaigns/grammysapplepie/Creatures/NPCs/Captain Hector Cavendish 1.md",
-    "VaultTemplate/Obsidian/Templates/FactionTemplate.md",
-    "campaigns/grammysapplepie/Overviews/Faction Overview.md",
-    "campaigns/grammysapplepie/Plot/Quests",
-    "campaigns/grammysapplepie/Plot",
-    "campaigns/grammysapplepie/Overviews/Quest Overview.md",
-    "campaigns/grammysapplepie/Overviews/Location Overview.md",
-    "campaigns/grammysapplepie/Overviews",
-    "campaigns/grammysapplepie/Other",
-    "campaigns/grammysapplepie/Obsidian/Templates/StatBlockTemplate.md",
-    "campaigns/grammysapplepie/Obsidian/Templates",
-    "campaigns/grammysapplepie/Obsidian/Snippets",
+    "campaigns/grammysapplepie/Campaign.md",
+    "campaigns/grammysapplepie/playmat.canvas",
     "campaigns/keystone/playmat.canvas",
+    "campaigns/grammysapplepie/Plot/Quests/01 Introduction.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Crown of Madness.md",
+    "campaigns/grammysapplepie/Creatures/NPCs/Tyndareus the Green.md",
+    "5eSRD/Spells/Suggestion.md",
+    "Crown of Madness.md",
+    "campaigns/grammysapplepie/5eSRD/Monsters/Smoke Mephit.md",
+    "campaigns/grammysapplepie/5eSRD/Monsters/Rust Monster.md",
+    "campaigns/grammysapplepie/5eSRD/Monsters/Fire Snake.md",
+    "campaigns/grammysapplepie/5eSRD/Monsters/Vine Blight.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Zone of Truth.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Word of Recall.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Wish.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Wind Wall.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Wind Walk.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Weird.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Web.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Water Walk.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Water Breathing.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Warding Bond.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Wall of Thorns.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Wall of Stone.md",
+    "campaigns/grammysapplepie/5eSRD/Spells/Wall of Ice.md",
+    "campaigns/grammysapplepie/5eSRD/Treasure (Alt)",
+    "campaigns/grammysapplepie/5eSRD/Spells",
+    "campaigns/grammysapplepie/5eSRD/Spells (Alt)",
+    "campaigns/grammysapplepie/5eSRD/Treasure",
+    "campaigns/grammysapplepie/5eSRD/Monsters (Alt)",
+    "campaigns/grammysapplepie/5eSRD/Races",
+    "campaigns/grammysapplepie/5eSRD/Gamemastering",
+    "campaigns/grammysapplepie/5eSRD/Equipment",
+    "campaigns/grammysapplepie/5eSRD/Monsters",
+    "campaigns/grammysapplepie/5eSRD/Classes",
+    "campaigns/grammysapplepie/Maps/bakery.jpg",
     "campaigns/keystone/img/celestial_keystone.jpeg",
     "campaigns/keystone/img/Haven Island.jpeg"
   ]

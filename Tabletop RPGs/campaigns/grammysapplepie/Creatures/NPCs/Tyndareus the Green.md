@@ -120,41 +120,13 @@ He wears several overlapping layers of robe-like materials, almost appearing to 
 
 ### Prepared Spells
 
-| level | Slots | Spells                                                  |
-| ----- | ----- | ------------------------------------------------------- |
-| 1st   | 4     | Mage Armor, Charm Person, Sleep, Detect Magic           |
-| 2nd   | 3     | Suggestion, Crown of Madness, Invisibility, Misty Step  |
-| 3rd   | 3     | Tongues, Fireball                                       |
-| 4th   | 3     | Confusion                                               |
-| 5th   | 2     | Dominate Person, Hold Monster, Modify Memory, Cloudkill |
-| 6th   | 1     | Mass Suggestion, Chain Lightning                        |
-| 7th   | 1     | Forcecage, Finger of Death                              |
+| level | Slots | Spells                                                                                                                                                                                                       |
+| ----- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1st   | 4     | [[../../5eSRD/Spells/Mage Armor\|Mage Armor]], [[../../5eSRD/Spells/Charm Person\|Charm Person]], [[../../5eSRD/Spells/Sleep\|Sleep]], [[../../5eSRD/Spells/Detect Magic\|Detect Magic]]                     |
+| 2nd   | 3     | [[../../5eSRD/Spells/Suggestion\|Suggestion]], [[../../5eSRD/Spells/Crown of Madness\|Crown of Madness]], [[../../5eSRD/Spells/Invisibility\|Invisibility]], [[../../5eSRD/Spells/Misty Step\|Misty Step]]   |
+| 3rd   | 3     | [[../../5eSRD/Spells/Tongues\|Tongues]], [[../../5eSRD/Spells/Fireball\|Fireball]]                                                                                                                           |
+| 4th   | 3     | [[../../5eSRD/Spells/Confusion\|Confusion]]                                                                                                                                                                  |
+| 5th   | 2     | [[../../5eSRD/Spells/Dominate Person\|Dominate Person]], [[../../5eSRD/Spells/Hold Monster\|Hold Monster]], [[../../5eSRD/Spells/Modify Memory\|Modify Memory]], [[../../5eSRD/Spells/Cloudkill\|Cloudkill]] |
+| 6th   | 1     | [[../../5eSRD/Spells/Mass Suggestion\|Mass Suggestion]], [[../../5eSRD/Spells/Chain Lightning\|Chain Lightning]]                                                                                             |
+| 7th   | 1     | [[../../5eSRD/Spells/Forcecage\|Forcecage]], [[../../5eSRD/Spells/Finger of Death\|Finger of Death]]                                                                                                         |
 
-#### 1st Level Spells
-[[../../../../5eSRD/Spells/Mage Armor|Mage Armor]]
-[[../../../../5eSRD/Spells/Charm Person|Charm Person]]
-[[../../../../5eSRD/Spells/Sleep|Sleep]]
-[[../../../../5eSRD/Spells/Detect Magic|Detect Magic]]
-
-#### 2nd level Spells
-[[../../../../5eSRD/Spells/Suggestion|Suggestion]]
-[[Crown of Madness]]
-[[../../../../5eSRD/Spells/Invisibility|Invisibility]]
-[[../../../../5eSRD/Spells/Misty Step|Misty Step]]
-
-#### 3rd Level Spells
-[[../../../../5eSRD/Spells/Tongues|Tongues]]
-[[../../../../5eSRD/Spells/Fireball|Fireball]]
-[[../../../../5eSRD/Spells/Confusion|Confusion]]
-[[../../../../5eSRD/Spells/Dominate Person|Dominate Person]]
-[[../../../../5eSRD/Spells/Hold Monster|Hold Monster]]
-[[../../../../5eSRD/Spells/Modify Memory|Modify Memory]]
-[[../../../../5eSRD/Spells/Cloudkill|Cloudkill]]
-
-#### 4th Level Spells
-[[../../../../5eSRD/Spells/Mass Suggestion|Mass Suggestion]]
-[[../../../../5eSRD/Spells/Chain Lightning|Chain Lightning]]
-
-#### 5th Level Spells
-[[../../../../5eSRD/Spells/Forcecage|Forcecage]]
-[[../../../../5eSRD/Spells/Finger of Death|Finger of Death]]

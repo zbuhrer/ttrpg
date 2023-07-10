@@ -1,22 +1,30 @@
 {
   "collapse-filter": false,
-  "search": "",
+  "search": "path: grammysapplepie",
   "showTags": false,
   "showAttachments": false,
   "hideUnresolved": false,
-  "showOrphans": true,
-  "collapse-color-groups": true,
-  "colorGroups": [],
-  "collapse-display": true,
+  "showOrphans": false,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path: grammysapplepie",
+      "color": {
+        "a": 1,
+        "rgb": 6608476
+      }
+    }
+  ],
+  "collapse-display": false,
   "showArrow": false,
-  "textFadeMultiplier": 0,
-  "nodeSizeMultiplier": 1,
-  "lineSizeMultiplier": 1,
-  "collapse-forces": true,
-  "centerStrength": 0.518713248970312,
-  "repelStrength": 10,
-  "linkStrength": 1,
-  "linkDistance": 250,
-  "scale": 0.1634837056722047,
-  "close": false
+  "textFadeMultiplier": 0.1,
+  "nodeSizeMultiplier": 1.14212586291913,
+  "lineSizeMultiplier": 1.73741062623274,
+  "collapse-forces": false,
+  "centerStrength": 0.583888067061144,
+  "repelStrength": 14.4625246548323,
+  "linkStrength": 0.711969921104537,
+  "linkDistance": 30,
+  "scale": 0.3704637093844885,
+  "close": true
 }

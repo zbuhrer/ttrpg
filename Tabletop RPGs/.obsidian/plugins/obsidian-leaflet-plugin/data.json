@@ -228,7 +228,7 @@
     },
     {
       "id": "bakerymap",
-      "lastAccessed": 1688771109004,
+      "lastAccessed": 1688942535556,
       "markers": [
         {
           "id": "ID_4959eafb693b",
@@ -254,6 +254,7 @@
             -4.215672677501087e-27,
             2.342916888506405e-27
           ],
+          "link": "02 To The Bakery#9 - Grammy's Apartment",
           "layer": "%5B%5B..%2F..%2FMaps%2Fbakery.jpg%5D%5D",
           "mutable": true,
           "command": false,
@@ -270,6 +271,7 @@
             -7.194411455615628e-27,
             5.536225832841061e-27
           ],
+          "link": "02 To The Bakery#6 - Guard Room",
           "layer": "%5B%5B..%2F..%2FMaps%2Fbakery.jpg%5D%5D",
           "mutable": true,
           "command": false,
@@ -286,6 +288,7 @@
             -7.535199366671105e-27,
             6.987729898447723e-27
           ],
+          "link": "02 To The Bakery#5 - Office",
           "layer": "%5B%5B..%2F..%2FMaps%2Fbakery.jpg%5D%5D",
           "mutable": true,
           "command": false,
@@ -302,11 +305,12 @@
             -6.020586428646762e-27,
             7.139191192250157e-27
           ],
+          "link": "02 To The Bakery#8 - Bakery Floor",
           "layer": "%5B%5B..%2F..%2FMaps%2Fbakery.jpg%5D%5D",
           "mutable": true,
           "command": false,
           "percent": null,
-          "description": null,
+          "description": "",
           "minZoom": null,
           "maxZoom": null,
           "tooltip": "hover"
@@ -318,6 +322,41 @@
             -7.888609052210118e-27,
             8.906239619945223e-27
           ],
+          "link": "02 To The Bakery#4 - Shop",
+          "layer": "%5B%5B..%2F..%2FMaps%2Fbakery.jpg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": null,
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_bbfad89bebc8",
+          "type": "default",
+          "loc": [
+            -2.3250689105257797e-27,
+            7.250716402725777e-27
+          ],
+          "link": "02 To The Bakery#2 - Apple Orchard",
+          "layer": "%5B%5B..%2F..%2FMaps%2Fbakery.jpg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": null,
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_5bbac9a858eb",
+          "type": "default",
+          "loc": [
+            -5.7121418147053465e-27,
+            9.28380817070663e-27
+          ],
+          "link": "02 To The Bakery#3 - Waste Pile",
           "layer": "%5B%5B..%2F..%2FMaps%2Fbakery.jpg%5D%5D",
           "mutable": true,
           "command": false,
