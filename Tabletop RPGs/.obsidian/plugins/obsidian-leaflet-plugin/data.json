@@ -228,7 +228,7 @@
     },
     {
       "id": "bakerymap",
-      "lastAccessed": 1688942535556,
+      "lastAccessed": 1689202355110,
       "markers": [
         {
           "id": "ID_4959eafb693b",
@@ -370,7 +370,7 @@
       "overlays": [],
       "shapes": [],
       "files": [
-        "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md"
+        "campaign/Plot/Quests/02 To The Bakery.md"
       ]
     }
   ],

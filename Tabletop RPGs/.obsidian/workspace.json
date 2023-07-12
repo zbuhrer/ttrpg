@@ -4,38 +4,25 @@
     "type": "split",
     "children": [
       {
-        "id": "b0ffaf9e4b555dd7",
+        "id": "318d857ddb1984ef",
         "type": "tabs",
         "children": [
           {
-            "id": "e6a5be6bd0e39ff6",
+            "id": "2965d3b84b35e3d9",
             "type": "leaf",
             "state": {
               "type": "canvas",
               "state": {
-                "file": "campaigns/grammysapplepie/playmat.canvas",
+                "file": "campaign/playmat.canvas",
                 "viewState": {
-                  "x": 639.9201483331346,
-                  "y": 424.4281098355834,
-                  "zoom": -1.216269438962141
+                  "x": 142.60774313299316,
+                  "y": 56.39184901559463,
+                  "zoom": -0.9212633293950823
                 }
               }
             }
-          },
-          {
-            "id": "cd4c4d31a44e31ca",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "campaigns/grammysapplepie/Campaign.md",
-                "mode": "preview",
-                "source": true
-              }
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -85,7 +72,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 387.5
+    "width": 387.5,
+    "collapsed": true
   },
   "right": {
     "id": "d610ba14d122eb15",
@@ -101,7 +89,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "campaigns/grammysapplepie/Campaign.md",
+                "file": "campaign/playmat.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +106,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "campaigns/grammysapplepie/Campaign.md",
+                "file": "campaign/playmat.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -141,7 +129,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "campaigns/grammysapplepie/Campaign.md"
+                "file": "campaign/playmat.canvas"
               }
             }
           },
@@ -193,46 +181,52 @@
       "obsidian-leaflet-plugin:Open Leaflet Map": false
     }
   },
-  "active": "cd4c4d31a44e31ca",
+  "active": "2965d3b84b35e3d9",
   "lastOpenFiles": [
-    "campaigns/grammysapplepie/Plot/Quests/02 To The Bakery.md",
-    "campaigns/grammysapplepie/5eSRD/Gameplay/Abilities.md",
-    "campaigns/keystone/Plot/Locations/maps.md",
-    "campaigns/grammysapplepie/Campaign.md",
+    "campaign/Campaign.md",
+    "campaign/playmat.canvas",
+    "campaign/Creatures/NPCs/Tyndareus the Green.md",
+    "campaign/Lore/Grammy's Apple Pie Recipe.md",
+    "campaign/5eSRD/Treasure (Alt)/Magic Items E.md",
+    "campaign/5eSRD/Treasure (Alt)/Magic Items G.md",
+    "campaign/5eSRD/Treasure (Alt)/Magic Items M.md",
+    "campaign/Plot/Quests/02 To The Bakery.md",
+    "campaign/dungeons-dragons-sword-coast-adventurer-s-guide-d--annas-archive.pdf",
+    "campaign/creature-codex-for-5th-edition-wolfgang-baur-dan--annas-archive.pdf",
+    "campaign/Unconfirmed 817379.crdownload",
+    "campaign/hamund-s-harvesting-handbook-a-complete-guide-to-d--annas-archive.pdf",
+    "campaign/candlekeep-mysteries-d-d-adventure-book-dungeons-d--annas-archive.pdf",
+    "campaign/Unconfirmed 193484.crdownload",
+    "campaign/Unconfirmed 254947.crdownload",
+    "campaign/Creatures/NPCs/Qrem.md",
+    "campaign/Plot/Quests/03 Qrem's Qualm.md",
+    "campaign/Plot/Quests/99 Finale.md",
+    "campaign/Plot/Quests/01 Introduction.md",
+    "campaign/Obsidian/Snippets/TimelineRange.md",
+    "campaign/Obsidian/Snippets/TimelineEvent.md",
+    "campaign/Obsidian/Templates/StatBlockTemplate.md",
+    "campaign/Obsidian/Templates/QuestTemplate.md",
+    "campaign/Obsidian/Templates/PF1StatBlockTemplate.md",
+    "campaign/Obsidian/Templates/NpcTemplate.md",
+    "campaign/Obsidian/Templates/MonsterTemplate.md",
+    "campaign/Obsidian/Templates/FactionTemplate.md",
+    "campaign/Obsidian/Templates/CountryTemplate.md",
+    "campaign/Obsidian/Templates/ContinentTemplate.md",
+    "campaign/Obsidian/Templates/CityTemplate.md",
+    "campaign/5eSRD/Gamemastering/Diseases.md",
+    "campaign/5eSRD/Gamemastering/Traps.md",
+    "campaign/5eSRD/Gamemastering/Poisons.md",
+    "campaign/Creatures/StatBlocks/qrem.monster",
+    "campaign/Plot/Quests",
+    "campaign/Maps/bakery.jpg",
+    "campaign/Obsidian/Snippets",
+    "drafts/keystone/img/Haven Island.jpeg",
+    "drafts/keystone/img/celestial_keystone.jpeg",
+    "drafts/keystone/playmat.canvas",
+    "grammysapplepie/Maps/bakery.jpg",
+    "grammysapplepie/playmat.canvas",
     "campaigns/grammysapplepie/playmat.canvas",
     "campaigns/keystone/playmat.canvas",
-    "campaigns/grammysapplepie/Plot/Quests/01 Introduction.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Crown of Madness.md",
-    "campaigns/grammysapplepie/Creatures/NPCs/Tyndareus the Green.md",
-    "5eSRD/Spells/Suggestion.md",
-    "Crown of Madness.md",
-    "campaigns/grammysapplepie/5eSRD/Monsters/Smoke Mephit.md",
-    "campaigns/grammysapplepie/5eSRD/Monsters/Rust Monster.md",
-    "campaigns/grammysapplepie/5eSRD/Monsters/Fire Snake.md",
-    "campaigns/grammysapplepie/5eSRD/Monsters/Vine Blight.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Zone of Truth.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Word of Recall.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Wish.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Wind Wall.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Wind Walk.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Weird.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Web.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Water Walk.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Water Breathing.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Warding Bond.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Wall of Thorns.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Wall of Stone.md",
-    "campaigns/grammysapplepie/5eSRD/Spells/Wall of Ice.md",
-    "campaigns/grammysapplepie/5eSRD/Treasure (Alt)",
-    "campaigns/grammysapplepie/5eSRD/Spells",
-    "campaigns/grammysapplepie/5eSRD/Spells (Alt)",
-    "campaigns/grammysapplepie/5eSRD/Treasure",
-    "campaigns/grammysapplepie/5eSRD/Monsters (Alt)",
-    "campaigns/grammysapplepie/5eSRD/Races",
-    "campaigns/grammysapplepie/5eSRD/Gamemastering",
-    "campaigns/grammysapplepie/5eSRD/Equipment",
-    "campaigns/grammysapplepie/5eSRD/Monsters",
-    "campaigns/grammysapplepie/5eSRD/Classes",
     "campaigns/grammysapplepie/Maps/bakery.jpg",
     "campaigns/keystone/img/celestial_keystone.jpeg",
     "campaigns/keystone/img/Haven Island.jpeg"
