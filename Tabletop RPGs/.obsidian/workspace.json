@@ -4,25 +4,62 @@
     "type": "split",
     "children": [
       {
-        "id": "318d857ddb1984ef",
+        "id": "f0632c8e74cc0efd",
         "type": "tabs",
         "children": [
           {
-            "id": "2965d3b84b35e3d9",
+            "id": "4eaf2f1852e58583",
             "type": "leaf",
             "state": {
               "type": "canvas",
               "state": {
                 "file": "campaign/playmat.canvas",
                 "viewState": {
-                  "x": 142.60774313299316,
-                  "y": 56.39184901559463,
-                  "zoom": -0.9212633293950823
+                  "x": 258.34646630224796,
+                  "y": 135.02294826694853,
+                  "zoom": -1.291626028080986
                 }
               }
             }
+          },
+          {
+            "id": "e71269a97cd3760e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "campaign/Creatures/NPCs/Tyndareus the Green.md",
+                "mode": "preview",
+                "source": true
+              }
+            }
+          },
+          {
+            "id": "cd9f048ec4367707",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "campaign/Creatures/NPCs/Qrem.md",
+                "mode": "preview",
+                "source": true
+              }
+            }
+          },
+          {
+            "id": "53661a5399e3e6b0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "campaign/Lore/Qrem's Devil Bag.md",
+                "mode": "source",
+                "source": true
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -72,8 +109,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 387.5,
-    "collapsed": true
+    "width": 387.5
   },
   "right": {
     "id": "d610ba14d122eb15",
@@ -89,7 +125,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "campaign/playmat.canvas",
+                "file": "campaign/Lore/Qrem's Devil Bag.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -106,7 +142,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "campaign/playmat.canvas",
+                "file": "campaign/Lore/Qrem's Devil Bag.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -129,7 +165,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "campaign/playmat.canvas"
+                "file": "campaign/Lore/Qrem's Devil Bag.md"
               }
             }
           },
@@ -181,12 +217,15 @@
       "obsidian-leaflet-plugin:Open Leaflet Map": false
     }
   },
-  "active": "2965d3b84b35e3d9",
+  "active": "53661a5399e3e6b0",
   "lastOpenFiles": [
-    "campaign/Campaign.md",
-    "campaign/playmat.canvas",
+    "campaign/Creatures/NPCs/Qrem.md",
+    "campaign/Lore/Qrem's Devil Bag.md",
     "campaign/Creatures/NPCs/Tyndareus the Green.md",
     "campaign/Lore/Grammy's Apple Pie Recipe.md",
+    "campaign/playmat.canvas",
+    "drafts/keystone/playmat.canvas",
+    "campaign/Campaign.md",
     "campaign/5eSRD/Treasure (Alt)/Magic Items E.md",
     "campaign/5eSRD/Treasure (Alt)/Magic Items G.md",
     "campaign/5eSRD/Treasure (Alt)/Magic Items M.md",
@@ -198,7 +237,6 @@
     "campaign/candlekeep-mysteries-d-d-adventure-book-dungeons-d--annas-archive.pdf",
     "campaign/Unconfirmed 193484.crdownload",
     "campaign/Unconfirmed 254947.crdownload",
-    "campaign/Creatures/NPCs/Qrem.md",
     "campaign/Plot/Quests/03 Qrem's Qualm.md",
     "campaign/Plot/Quests/99 Finale.md",
     "campaign/Plot/Quests/01 Introduction.md",
@@ -222,7 +260,6 @@
     "campaign/Obsidian/Snippets",
     "drafts/keystone/img/Haven Island.jpeg",
     "drafts/keystone/img/celestial_keystone.jpeg",
-    "drafts/keystone/playmat.canvas",
     "grammysapplepie/Maps/bakery.jpg",
     "grammysapplepie/playmat.canvas",
     "campaigns/grammysapplepie/playmat.canvas",

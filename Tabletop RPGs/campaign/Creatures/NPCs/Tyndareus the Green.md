@@ -9,7 +9,7 @@ tags: [Creature, NPC]
 
 ## Statblock
 
-> ## Tyndareus the Green (Doppleganger)  
+> ## Tyndareus the Green ([[../../5eSRD/Monsters/Doppelganger|Doppelganger]])  
 >*Medium Monstrosity (shapechanger), neutral evil*  
 >___  
 > - **Armor Class** 14  
@@ -94,7 +94,7 @@ Tyndareus does not have very complex values. Their greed for power and wealth se
 #### Groups
 
 #### Partner
-
+- [[Qrem]]
 #### Friends
 
 #### Work

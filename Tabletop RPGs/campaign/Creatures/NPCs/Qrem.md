@@ -65,17 +65,16 @@ An older version of Qrem was very selfish, and he understands that his selfishne
   
 Qrem is more careful now. He knows that corrupting mortals in the short term has its own reward, but the sweetest treats are worth the wait and the long con is his playground. He has a keen and objective, first hand experience walking mortals to their own graves at the expense of their own souls being traded to Mephistopheles. 
 
-He remembers a time when he would relish the opportunity to corrupt a mortal, but now that Qrem is older and wiser, he has learned the value of mortal lives and how temporary and fleeting they may be. Corrupting them isn't a quick trip, and the long con is his playground. Being a [[#^f60929|collector of fiendish artifacts]] which are difficult to come by and often punishable by local constabularies to own, his biggest flaw is his willingness to abandon loyalty for a trinket to bring back to the infernal plane. Everything he's ever collected is in his [[#^00ed98|Magic Bag]].
+He remembers a time when he would relish the opportunity to corrupt a mortal, but now that Qrem is older and wiser, he has learned the value of mortal lives and how temporary and fleeting they may be. Corrupting them isn't a quick trip, and the long con is his playground. Being a [[#^f60929|collector of fiendish artifacts]] which are difficult to come by and often punishable by local constabularies to own, his biggest flaw is his willingness to abandon loyalty for a trinket to bring back to the infernal plane. Everything he's ever collected is in his [[../../Lore/Qrem's Devil Bag|Devil Bag]].
 
 ### Flaws
 
-> [!attention] [[#^f60929|The Collector]]
+> [!attention] [[#^f60929|The Fiendish Collector]]
 > If the Imp has any reason to believe that a player character has a fiendish artifact, he will stop at almost nothing to get it. He will at first make increasingly large offers, including familiar servitude, and eventually may try to steal it if he does not come to trust the player character. It would be very difficult to convince Qrem that he does *not* actually need what he wants.
 
 
 ### Inventory
-- Qrem's Magic Bag ^00ed98
-	- It's just a regular bag of holding, but it has an infernal sigil on the side that when touched makes the bag turn invisible. 
+- [[../../Lore/Qrem's Devil Bag|Qrem's Devil Bag]]
 ## Connections
 
 ### Quests - Plot Involvement

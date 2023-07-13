@@ -5,8 +5,8 @@
 		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#0 - Outside","id":"c2e801276e2bffcc","x":655,"y":240,"width":1030,"height":980},
 		{"type":"text","text":"## Resources\n- npc generator https://dnd-statblock.crapmybrainsays.com/","id":"476323df109cef52","x":-540,"y":-1080,"width":980,"height":410},
 		{"type":"file","file":"campaign/Plot/Quests/03 Qrem's Qualm.md","subpath":"#Detailed Description","id":"fc875ed98b6b04a2","x":3240,"y":-1080,"width":920,"height":1840},
-		{"id":"30c2b3b438d1c2ea","x":-1424,"y":120,"width":680,"height":520,"type":"file","file":"campaign/Creatures/NPCs/Qrem.md","subpath":"#History"},
-		{"id":"89081ba24f766359","x":-1540,"y":-600,"width":796,"height":553,"type":"file","file":"campaign/Creatures/NPCs/Tyndareus the Green.md","subpath":"#History"}
+		{"type":"file","file":"campaign/Creatures/NPCs/Qrem.md","subpath":"#History","id":"30c2b3b438d1c2ea","x":-1424,"y":120,"width":680,"height":520},
+		{"type":"file","file":"campaign/Creatures/NPCs/Tyndareus the Green.md","subpath":"#History","id":"89081ba24f766359","x":-1540,"y":-600,"width":796,"height":553}
 	],
 	"edges":[
 		{"id":"b3db81213d41d0b2","fromNode":"52281aa446f852ff","fromSide":"right","toNode":"cb909cda2a1562ae","toSide":"left"},
