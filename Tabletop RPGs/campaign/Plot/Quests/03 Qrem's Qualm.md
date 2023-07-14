@@ -1,6 +1,7 @@
 ---
 type: Quest
 name: Qrem's Qualm
+chapter: 3
 tags: [Plot, Quest]
 ---
 
@@ -11,10 +12,10 @@ The party has just delivered the recipe for a delicious apple pie to [[../../Cre
 ## Objectives
 - Qrem's Purpose 
 	- Hundreds of years ago, Qrem was summoned to the material plane by a Sorcerer 
-	- The Sorcerer saved himself from death by sequestering his soul in a pocket dimension, separated from the passage of time. 
+	- Qrem tricked the Sorcerer into "saving himself" by sealing his own soul into the crystal, separating it from time itself. 
 		- This made a sort of loophole in the Imp's contract and now he's stuck here until the contract is violated or cancelled by the Summoner or until the terms are completed.
-			- 
-	- Centuries have passed outside of the pocket dimension; eons inside. 
+		- Centuries have passed outside of the pocket dimension; eons inside. 
+		- 
 ## Outcomes
 
 ## Involved NPCs

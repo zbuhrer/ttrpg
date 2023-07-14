@@ -1,6 +1,7 @@
 ---
 type: Quest
 name: Finale
+chapter: 99
 tags: [Plot, Quest]
 ---
 

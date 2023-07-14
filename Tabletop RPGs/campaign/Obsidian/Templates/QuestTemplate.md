@@ -1,5 +1,6 @@
 ---
 type: Quest
+chapter: 
 name: <% tp.file.title %>
 tags: [Plot, Quest]
 ---

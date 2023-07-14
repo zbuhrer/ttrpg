@@ -1,6 +1,7 @@
 ---
 type: Quest
 name: To The Bakery
+chapter: 2
 tags: [Plot, Quest]
 ---
 

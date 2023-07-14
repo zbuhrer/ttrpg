@@ -1,5 +1,6 @@
 ---
 type: Quest
+chapter: 1
 name: introduction
 tags: [Plot, Quest]
 ---
