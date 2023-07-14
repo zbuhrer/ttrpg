@@ -4,62 +4,25 @@
     "type": "split",
     "children": [
       {
-        "id": "f0632c8e74cc0efd",
+        "id": "9364d4b90672bad4",
         "type": "tabs",
         "children": [
           {
-            "id": "4eaf2f1852e58583",
+            "id": "d360c96b52ddf780",
             "type": "leaf",
             "state": {
               "type": "canvas",
               "state": {
                 "file": "campaign/playmat.canvas",
                 "viewState": {
-                  "x": 258.34646630224796,
-                  "y": 135.02294826694853,
-                  "zoom": -1.291626028080986
+                  "x": 1070.9093071820312,
+                  "y": 2162.395160102411,
+                  "zoom": -1.4729917417869425
                 }
               }
             }
-          },
-          {
-            "id": "e71269a97cd3760e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "campaign/Creatures/NPCs/Tyndareus the Green.md",
-                "mode": "preview",
-                "source": true
-              }
-            }
-          },
-          {
-            "id": "cd9f048ec4367707",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "campaign/Creatures/NPCs/Qrem.md",
-                "mode": "preview",
-                "source": true
-              }
-            }
-          },
-          {
-            "id": "53661a5399e3e6b0",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "campaign/Lore/Qrem's Devil Bag.md",
-                "mode": "source",
-                "source": true
-              }
-            }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -125,7 +88,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "campaign/Lore/Qrem's Devil Bag.md",
+                "file": "campaign/playmat.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -142,7 +105,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "campaign/Lore/Qrem's Devil Bag.md",
+                "file": "campaign/playmat.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -165,7 +128,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "campaign/Lore/Qrem's Devil Bag.md"
+                "file": "campaign/playmat.canvas"
               }
             }
           },
@@ -217,19 +180,25 @@
       "obsidian-leaflet-plugin:Open Leaflet Map": false
     }
   },
-  "active": "53661a5399e3e6b0",
+  "active": "d360c96b52ddf780",
   "lastOpenFiles": [
-    "campaign/Creatures/NPCs/Qrem.md",
-    "campaign/Lore/Qrem's Devil Bag.md",
-    "campaign/Creatures/NPCs/Tyndareus the Green.md",
-    "campaign/Lore/Grammy's Apple Pie Recipe.md",
-    "campaign/playmat.canvas",
     "drafts/keystone/playmat.canvas",
+    "campaign/Plot/Quests/02 To The Bakery.md",
+    "campaign/Creatures/NPCs/Macintosh.md",
+    "campaign/Plot/Quests/03 Qrem's Qualm.md",
+    "campaign/playmat.canvas",
+    "campaign/Lore/Qrem's Devil Bag.md",
+    "campaign/Lore/Grammy's Apple Pie Recipe.md",
+    "campaign/Creatures/NPCs/Qrem.md",
+    "campaign/Plot/Quests/99 Finale.md",
+    "campaign/Plot/Quests/01 Introduction.md",
     "campaign/Campaign.md",
+    "campaign/Creatures/NPCs/Tyndareus the Green.md",
+    "campaign/attachments/Pasted image 20230713114557.png",
+    "campaign/attachments",
     "campaign/5eSRD/Treasure (Alt)/Magic Items E.md",
     "campaign/5eSRD/Treasure (Alt)/Magic Items G.md",
     "campaign/5eSRD/Treasure (Alt)/Magic Items M.md",
-    "campaign/Plot/Quests/02 To The Bakery.md",
     "campaign/dungeons-dragons-sword-coast-adventurer-s-guide-d--annas-archive.pdf",
     "campaign/creature-codex-for-5th-edition-wolfgang-baur-dan--annas-archive.pdf",
     "campaign/Unconfirmed 817379.crdownload",
@@ -237,9 +206,6 @@
     "campaign/candlekeep-mysteries-d-d-adventure-book-dungeons-d--annas-archive.pdf",
     "campaign/Unconfirmed 193484.crdownload",
     "campaign/Unconfirmed 254947.crdownload",
-    "campaign/Plot/Quests/03 Qrem's Qualm.md",
-    "campaign/Plot/Quests/99 Finale.md",
-    "campaign/Plot/Quests/01 Introduction.md",
     "campaign/Obsidian/Snippets/TimelineRange.md",
     "campaign/Obsidian/Snippets/TimelineEvent.md",
     "campaign/Obsidian/Templates/StatBlockTemplate.md",
@@ -252,12 +218,9 @@
     "campaign/Obsidian/Templates/ContinentTemplate.md",
     "campaign/Obsidian/Templates/CityTemplate.md",
     "campaign/5eSRD/Gamemastering/Diseases.md",
-    "campaign/5eSRD/Gamemastering/Traps.md",
-    "campaign/5eSRD/Gamemastering/Poisons.md",
     "campaign/Creatures/StatBlocks/qrem.monster",
     "campaign/Plot/Quests",
     "campaign/Maps/bakery.jpg",
-    "campaign/Obsidian/Snippets",
     "drafts/keystone/img/Haven Island.jpeg",
     "drafts/keystone/img/celestial_keystone.jpeg",
     "grammysapplepie/Maps/bakery.jpg",

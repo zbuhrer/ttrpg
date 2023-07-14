@@ -41,6 +41,9 @@ tags: [Creature, NPC]
 >  
 > ***Invisibility.*** The imp magically turns invisible until it attacks, or until its concentration ends (as if concentrating on a spell). Any equipment the imp wears or carries is invisible with it.
 
+^344393
+
+
 ## Appearance
 Qrem is tiny, even by Imp standards, standing less than eight inches tall. Players may compare him to an action figure, but beware picking him up. His long tail is barbed with a poison stinger, and the only thing he hates more than being perceived is being grabbed.
 

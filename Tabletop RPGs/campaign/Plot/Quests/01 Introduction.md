@@ -17,11 +17,7 @@ Accept Tyndareus's Quest: [[02 To The Bakery|To The Bakery]]
 
 ## Involved NPCs
 - [[../../Creatures/NPCs/Tyndareus the Green|Tyndareus the Green]]
-- [[../../Creatures/NPCs/Qrem|Qrem the Imp]]
-	- The Sorcerer wasn't killed, but his soul was drained and trapped in a gem. This means that Qrem is still soul-bound to the Sorcerer, wherever his soul is. This was like... fifty years ago, so his body is definitely a skeleton by now. 
-	- **Quest:** [[03 Qrem's Qualm|Qrem's Qualm]] 
-		- In order to return to the infernal plane Qrem would have to find and release the soul of his Summoner. This will cause his skeleton to be reanimated, and the party will have to fight him to release Qrem from his bondage. 
-	- [[../../Creatures/NPCs/Qrem|Qrem]] had been summoned to a Sorcerer of a different traveling party of adventurers. The party couldn't afford to resurrect him after a tense battle, and the whole party was evil anyway, so they just... left him there. 
+- [[../../Creatures/NPCs/Qrem|Qrem the Imp]] 
 
 ## Detailed Description
 The players have been summoned, whether individually or as an assembled party, to a wizard’s tower with the promise of a paying job. The wizard’s imp servant has led them into the tower and shown them up to the wizard’s study. 
@@ -36,6 +32,6 @@ If the players inquire as to what their reward will be, the wizard informs them 
 
 If the players accept the quest, move on [[02 To The Bakery|to the bakery]] quest. 
 
-If the players reject the quest, then they are shown the door, which immediately reopens as if no time has passed. Intro [[03 Qrem's Qualm|Qrem's Qualm]]. (Qrem may insist that weeks or months have passed.)
+If the players reject the quest, then they are shown the door, which immediately reopens as if no time has passed. Intro [[03 Qrem's Qualm|Qrem's Qualm]]. (Qrem may insist that weeks or months have passed since he last saw them.)
 
 ## Other
