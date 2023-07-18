@@ -2,7 +2,7 @@
 
 _Wondrous item, very rare_
 
-This single sheet of paper, scrawled with infernal characters was torn in half to prevent its magic from being used. It was... poorly separated though. It can be found in [[../Plot/Quests/02 To The Bakery|The Bakery]] after talking to [[../Creatures/NPCs/Tyndareus the Green|Tyndareus the Green]].
+This single sheet of paper, scrawled with infernal characters was torn in half to prevent its magic from being used. It was... poorly separated though. It can be found in [[../Plot/Quests/The Bakery|The Bakery]] after talking to [[../Creatures/NPCs/Tyndareus the Green|Tyndareus the Green]].
 
 Separated, the two halves of the sheet don't appear to do anything, and don't appear to be magical at all. However, when they are held together, they will magically join and the infernal symbols will glow and burn in the holder's hands. They must succeed a DC 10 [[../../5eSRD/Gameplay/Abilities#Skills|Reflex]] save to avoid taking 1d6 fire damage to their hands (and possibly burning them). 
 

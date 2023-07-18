@@ -58,13 +58,13 @@ Qrem is often completely naked.
 - In service of Mephistopheles 
 
 ### Motives - Goals
-- **The Big Secret.** Having tricked his Summoner, Qrem is a player of the long con. He has survived for centuries corrupting mortals all over the material plane, chiefly his own Master, who has spent eons being driven mad in a pocket dimension segregated from time itself. (see: [[../../Plot/Quests/03 Qrem's Qualm|Qrem's Qualm]]). 
+- **The Big Secret.** Having tricked his Summoner, Qrem is a player of the long con. He has survived for centuries corrupting mortals all over the material plane, chiefly his own Master, who has spent eons being driven mad in a pocket dimension segregated from time itself. (see: [[../../Plot/Quests/04 Qrem's Qualm|Qrem's Qualm]]). 
 - Qrem is a collector of Devil, Fiend, and other Imp artifacts. He has been disconnected from his home and his own culture for centuries. Any means of staying connected with it is important to him, even if it involves finding artifacts that are less than savory to material mortals. ^f60929
 
 > "I like treasures that remind me of home..."
 
 ### Values - Ideals
-An older version of Qrem was very selfish, and he understands that his selfishness and brash lack of danger-sense is what got him in his predicament in the first place (see: [[../../Plot/Quests/03 Qrem's Qualm|Qrem's Qualm]]). 
+An older version of Qrem was very selfish, and he understands that his selfishness and brash lack of danger-sense is what got him in his predicament in the first place (see: [[../../Plot/Quests/04 Qrem's Qualm|Qrem's Qualm]]). 
   
 Qrem is more careful now. He knows that corrupting mortals in the short term has its own reward, but the sweetest treats are worth the wait and the long con is his playground. He has a keen and objective, first hand experience walking mortals to their own graves at the expense of their own souls being traded to Mephistopheles. 
 
@@ -81,8 +81,8 @@ He remembers a time when he would relish the opportunity to corrupt a mortal, bu
 ## Connections
 
 ### Quests - Plot Involvement
-- [[../../Plot/Quests/01 Introduction|01 Introduction]]
-- [[../../Plot/Quests/03 Qrem's Qualm|03 Qrem's Qualm]]
+- [[../../Plot/Quests/Introduction|Introduction]]
+- [[../../Plot/Quests/04 Qrem's Qualm|04 Qrem's Qualm]]
 ### Residence
 
 ### Connections to other NPCs

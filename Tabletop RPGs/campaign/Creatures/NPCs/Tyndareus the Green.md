@@ -72,7 +72,7 @@ Tyndareus's arrangement with [[Qrem]] involves finding and obtaining fiendish ar
 > [!warning] The Lie
 > If a PC can read [[../../5eSRD/Characterizations/Languages#^12caa3|Infernal]] (Tyndareus can't) and succeed a DC 12 [[../../5eSRD/Gameplay/Abilities#Skills|Arcana]] check, they may notice that in the contract (should they even be allowed to read it) only stays <u>a</u> demon lord. Not Qrem's patron specifically. 
 > 
-> The imp's plan is to fulfill the contract by granting Tyndareus an audience with a much less... sane or accepting patron. (see [[../../Plot/Quests/03 Qrem's Qualm|Qrem's Qualm]])
+> The imp's plan is to fulfill the contract by granting Tyndareus an audience with a much less... sane or accepting patron. (see [[../../Plot/Quests/04 Qrem's Qualm|Qrem's Qualm]])
 
 ^7add66
 
@@ -87,8 +87,8 @@ Tyndareus does not have very complex values. Their greed for power and wealth se
 ## Connections
 
 ### Quests - Plot Involvement
-- [[../../Plot/Quests/01 Introduction|01 Introduction]]
-- [[../../Plot/Quests/03 Qrem's Qualm|03 Qrem's Qualm]]
+- [[../../Plot/Quests/Introduction|Introduction]]
+- [[../../Plot/Quests/04 Qrem's Qualm|04 Qrem's Qualm]]
 
 ### Residence
 
@@ -114,7 +114,7 @@ The Doppelganger seeks an audience with an ancient evil powerful enough to besto
 > [!warning] The Lies
 > [[#^7add66|This will probably never happen.]]
 
-When Tyndareus sends the party to [[../../Plot/Quests/02 To The Bakery|The Bakery]] for Grammy's Apple Pie recipe, what he doesn't tell them is that the recipe... [[../../Lore/Grammy's Apple Pie Recipe| is an evil imp artifact]]. 
+When Tyndareus sends the party to [[../../Plot/Quests/The Bakery|The Bakery]] for Grammy's Apple Pie recipe, what he doesn't tell them is that the recipe... [[../../Lore/Grammy's Apple Pie Recipe| is an evil imp artifact]]. 
 
 
 ## Other

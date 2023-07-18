@@ -5,5 +5,6 @@
     "Theme - All Alternate Themes"
   ],
   "theme": "moonstone",
-  "translucency": false
+  "translucency": false,
+  "baseFontSize": 18
 }

@@ -228,7 +228,7 @@
     },
     {
       "id": "bakerymap",
-      "lastAccessed": 1689266792384,
+      "lastAccessed": 1689643877758,
       "markers": [
         {
           "id": "ID_4959eafb693b",
@@ -370,7 +370,7 @@
       "overlays": [],
       "shapes": [],
       "files": [
-        "campaign/Plot/Quests/02 To The Bakery.md"
+        "campaign/Plot/Quests/The Bakery.md"
       ]
     }
   ],

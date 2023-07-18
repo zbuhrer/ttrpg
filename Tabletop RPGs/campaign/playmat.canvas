@@ -1,29 +1,9 @@
 {
 	"nodes":[
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#3 - Waste Pile","id":"f3ec32f65f322ff5","x":2160,"y":1280,"width":764,"height":650},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#4 - Shop","id":"31fdd78f0dda4763","x":2964,"y":1280,"width":764,"height":650},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#1 - Entrance","id":"b60866d269538f64","x":552,"y":1280,"width":764,"height":650},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#2 - Apple Orchard","id":"96231f7bb3571f1f","x":1356,"y":1280,"width":764,"height":650},
-		{"type":"file","file":"campaign/Plot/Quests/01 Introduction.md","subpath":"#Detailed Description","id":"33a28d807bae886e","x":552,"y":207,"width":764,"height":920},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#0 - Outside","id":"c2e801276e2bffcc","x":1356,"y":207,"width":1568,"height":920},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#The Road to the Bakery","id":"cb909cda2a1562ae","x":1778,"y":-520,"width":764,"height":553},
+		{"type":"file","file":"campaign/Plot/Quests/Introduction.md","subpath":"#Detailed Description","id":"33a28d807bae886e","x":552,"y":207,"width":764,"height":920},
 		{"type":"text","text":"## Resources\n- npc generator https://dnd-statblock.crapmybrainsays.com/","id":"476323df109cef52","x":-1720,"y":207,"width":980,"height":410},
 		{"type":"file","file":"campaign/Campaign.md","id":"52281aa446f852ff","x":-540,"y":207,"width":980,"height":920},
-		{"type":"file","file":"campaign/Creatures/NPCs/Tyndareus the Green.md","subpath":"#^aad338","id":"ee123e90890fd96d","x":-556,"y":1280,"width":996,"height":1380},
-		{"type":"file","file":"campaign/Creatures/NPCs/Qrem.md","subpath":"#^344393","id":"1e3536a7c388847c","x":-1680,"y":1280,"width":996,"height":1380},
-		{"type":"file","file":"campaign/Creatures/NPCs/Macintosh.md","subpath":"#^de0447","id":"5478c58ac4c92f2e","x":-2800,"y":1280,"width":996,"height":1380},
-		{"id":"82ee7bc5608b38a1","x":-540,"y":-1120,"width":980,"height":1153,"type":"file","file":"campaign/Plot/Quests/03 Qrem's Qualm.md","subpath":"#The Grove of Time"},
-		{"type":"file","file":"campaign/Creatures/NPCs/Qrem.md","subpath":"#Appearance","id":"889fdc36c28a3a08","x":-1680,"y":2720,"width":996,"height":280},
-		{"type":"file","file":"campaign/Creatures/NPCs/Qrem.md","subpath":"#Character","id":"461ab46017a7cd4a","x":-1680,"y":3085,"width":996,"height":1155},
-		{"type":"file","file":"campaign/Creatures/NPCs/Macintosh.md","subpath":"#Appearance","id":"42749ddd8679a6cf","x":-2800,"y":2720,"width":996,"height":280},
-		{"type":"file","file":"campaign/Creatures/NPCs/Macintosh.md","subpath":"#Character","id":"e87abaf348ac2546","x":-2800,"y":3085,"width":996,"height":1155},
-		{"type":"file","file":"campaign/Creatures/NPCs/Tyndareus the Green.md","subpath":"#Appearance","id":"1f1db2b3fb5b1972","x":-556,"y":2720,"width":996,"height":280},
-		{"type":"file","file":"campaign/Creatures/NPCs/Tyndareus the Green.md","subpath":"#Character","id":"08ee0ffec48deba1","x":-556,"y":3085,"width":996,"height":1155},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#6 - Guard Room","id":"79cbde81a419887e","x":1356,"y":2010,"width":764,"height":650},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#7 - Loading Dock","id":"6ee159da328d0c0e","x":2160,"y":2010,"width":764,"height":650},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#8 - Bakery Floor","id":"d3f63079e51b7088","x":2964,"y":2010,"width":764,"height":650},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#5 - Office","id":"3c3a670d11d16b09","x":552,"y":2010,"width":764,"height":650},
-		{"type":"file","file":"campaign/Plot/Quests/02 To The Bakery.md","subpath":"#9 - Grammy's Apartment","id":"12f1946f3a3c1a5f","x":552,"y":2720,"width":764,"height":650}
+		{"type":"file","file":"campaign/Plot/Quests/04 Qrem's Qualm.md","subpath":"#The Grove of Time","id":"82ee7bc5608b38a1","x":-540,"y":-1120,"width":980,"height":1153}
 	],
 	"edges":[
 		{"id":"f00ca9a6c40d04eb","fromNode":"52281aa446f852ff","fromSide":"top","toNode":"82ee7bc5608b38a1","toSide":"bottom"},

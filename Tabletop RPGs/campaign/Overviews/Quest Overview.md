@@ -1,7 +1,7 @@
 # Quest Overview
-### All Quests
+
 ```dataview
-table type as "Type"
-from #Quest and !"Obsidian"
-sort name 
+table chapter as "Chapter", type as "Type"
+from #Quest and !"campaign/Obsidian" and !"drafts"
+sort chapter
 ```

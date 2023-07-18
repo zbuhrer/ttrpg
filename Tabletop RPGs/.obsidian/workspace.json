@@ -4,53 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "1d08c4313014cff5",
+        "id": "563a4872b686062e",
         "type": "tabs",
         "children": [
           {
-            "id": "d9766c41a9180e41",
+            "id": "44a50a734f87691d",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "campaign/Campaign.md",
-                "mode": "preview",
-                "source": true
+                "file": "campaign/Plot/Quests/A Deep & Creeping Darkness.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
         ]
-      },
-      {
-        "id": "aad339e9168d3dfc",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "20f3d0f020124c34",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "campaign/Plot/Quests/01 Introduction.md",
-                "mode": "preview",
-                "source": true
-              }
-            }
-          },
-          {
-            "id": "9c97eabc49aa62aa",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "campaign/Plot/Quests/02 To The Bakery.md",
-                "mode": "preview",
-                "source": true
-              }
-            }
-          }
-        ],
-        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -100,8 +69,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 387.5,
-    "collapsed": true
+    "width": 387.5
   },
   "right": {
     "id": "d610ba14d122eb15",
@@ -117,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "campaign/Plot/Quests/02 To The Bakery.md",
+                "file": "campaign/Plot/Quests/A Deep & Creeping Darkness.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -134,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "campaign/Plot/Quests/02 To The Bakery.md",
+                "file": "campaign/Plot/Quests/A Deep & Creeping Darkness.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -157,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "campaign/Plot/Quests/02 To The Bakery.md"
+                "file": "campaign/Plot/Quests/A Deep & Creeping Darkness.md"
               }
             }
           },
@@ -190,8 +158,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -209,33 +176,41 @@
       "obsidian-leaflet-plugin:Open Leaflet Map": false
     }
   },
-  "active": "9c97eabc49aa62aa",
+  "active": "44a50a734f87691d",
   "lastOpenFiles": [
     "campaign/Campaign.md",
-    "campaign/Plot/Quests/01 Introduction.md",
+    "campaign/Plot/Quests/The Bakery.md",
+    "campaign/Plot/Quests/Introduction.md",
+    "campaign/Plot/Quests/04 Qrem's Qualm.md",
     "campaign/playmat.canvas",
+    "campaign/5eSRD/Monsters/Meenlock.md",
+    "campaign/Plot/Quests/A Deep & Creeping Darkness.md",
+    "campaign/5eSRD/Monsters/Smoke Mephit.md",
+    "campaign/Maps/darkness_platmine.png",
+    "campaign/Plot/Quests/attachments",
+    "campaign/Plot/Quests/attachments/Pasted image 20230716211900.png",
+    "campaign/Maps/darkness_mayorduvezinshouse.png",
+    "campaign/Overviews/Quest Overview.md",
+    "campaign/Overviews/Location Overview.md",
+    "campaign/Obsidian/Templates/FactionTemplate.md",
+    "campaign/Overviews/Faction Overview.md",
+    "campaign/Creatures/NPCs/Arrakoth.md",
+    "campaign/Overviews/Creature Overview.md",
+    "drafts/keystone/world.md",
+    "Untitled.md",
     "drafts/keystone/playmat.canvas",
     "campaign/Obsidian/Snippets/TimelineRange.md",
     "campaign/Creatures/NPCs/Macintosh (Monster).md",
     "campaign/Obsidian/Snippets/TimelineEvent.md",
     "campaign/Creatures/NPCs/Macintosh.md",
-    "campaign/Overviews/Creature Overview.md",
     "campaign/Obsidian/Templates/QuestTemplate.md",
-    "campaign/Plot/Quests/02 To The Bakery.md",
-    "campaign/Plot/Quests/03 Qrem's Qualm.md",
     "campaign/Plot/Quests/99 Finale.md",
     "campaign/attachments/Pasted image 20230713114557.png",
     "VaultTemplate/Overviews/Creature Overview.md",
     "campaign/Obsidian/Templates/PF1StatBlockTemplate.md",
     "VaultTemplate/Overviews/Quest Overview.md",
     "campaign/Lore/Qrem's Devil Bag.md",
-    "campaign/Lore/Grammy's Apple Pie Recipe.md",
-    "campaign/Creatures/NPCs/Qrem.md",
-    "campaign/Creatures/NPCs/Tyndareus the Green.md",
     "campaign/attachments",
-    "campaign/5eSRD/Treasure (Alt)/Magic Items E.md",
-    "campaign/5eSRD/Treasure (Alt)/Magic Items G.md",
-    "campaign/5eSRD/Treasure (Alt)/Magic Items M.md",
     "campaign/dungeons-dragons-sword-coast-adventurer-s-guide-d--annas-archive.pdf",
     "campaign/creature-codex-for-5th-edition-wolfgang-baur-dan--annas-archive.pdf",
     "campaign/Unconfirmed 817379.crdownload",
@@ -243,12 +218,7 @@
     "campaign/candlekeep-mysteries-d-d-adventure-book-dungeons-d--annas-archive.pdf",
     "campaign/Unconfirmed 193484.crdownload",
     "campaign/Unconfirmed 254947.crdownload",
-    "campaign/Obsidian/Templates/StatBlockTemplate.md",
-    "campaign/Obsidian/Templates/NpcTemplate.md",
-    "campaign/Obsidian/Templates/MonsterTemplate.md",
-    "campaign/Obsidian/Templates/FactionTemplate.md",
     "campaign/Creatures/StatBlocks/qrem.monster",
-    "campaign/Plot/Quests",
     "campaign/Maps/bakery.jpg",
     "drafts/keystone/img/Haven Island.jpeg",
     "drafts/keystone/img/celestial_keystone.jpeg",
@@ -257,7 +227,6 @@
     "campaigns/grammysapplepie/playmat.canvas",
     "campaigns/keystone/playmat.canvas",
     "campaigns/grammysapplepie/Maps/bakery.jpg",
-    "campaigns/keystone/img/celestial_keystone.jpeg",
-    "campaigns/keystone/img/Haven Island.jpeg"
+    "campaigns/keystone/img/celestial_keystone.jpeg"
   ]
 }
