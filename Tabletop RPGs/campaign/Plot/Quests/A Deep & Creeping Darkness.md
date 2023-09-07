@@ -2,7 +2,9 @@
 type: Quest
 chapter: 3
 name: A Deep & Creeping Darkness
-tags: [Plot, Quest]
+tags:
+  - Plot
+  - Quest
 ---
 
 # A Deep & Creeping Darkness
