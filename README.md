@@ -4,22 +4,24 @@ This project implements an AI-driven tabletop RPG system using Streamlit and Oll
 
 ## Current Status
 
-The project is currently in the early stages of development, focusing on core infrastructure and initial UI/UX setup.
+I've built a working prototype of an AI-driven tabletop RPG system. Right now, it has a functional main menu with a medieval fantasy theme and working navigation between different sections. Players can create characters by choosing their race, class, and background, and set their core stats like strength and dexterity. The system can check if the AI (Ollama) is connected and ready to go.
 
-**Completed/Partially Completed:**
-*   **Phase 1: Core Infrastructure:**
-    *   Project Structure Setup: Basic module organization is in place, but tasks like setting up the testing framework, implementing the logging system, and creating the documentation structure are still pending.
-    *   State Management System: Design of state classes is complete.
-*   **Phase 4: UI/UX Development:**
-    *   Main Interface: Navigation system, component layout, and theme implementation are complete. Responsive design is still a TODO.
+What's working so far:
+- A stylish dark fantasy interface with gold accents and medieval fonts
+- Character creation with races (Human, Elf, Dwarf, etc.), classes (Warrior, Mage, Rogue, etc.), and backgrounds
+- Stat allocation system for character attributes
+- Navigation between the main menu, character creation, and quest screens
+- Basic quest log display
+- Game settings page with options for difficulty, text speed, and audio (though not hooked up yet)
+- Connection status checking for the AI system
 
-**Incomplete Phases:** Phases 2 (AI Integration), 3 (Game Systems), 5 (Storage & Persistence), 6 (Testing & Optimization), 7 (Production Preparation), and 8 (Polish & Launch) are largely incomplete.
+My next priorities are:
+1. Get the AI story generation working - this is the core feature that will make the game special
+2. Implement saving and loading of characters and game states
+3. Build out the actual gameplay loop with the turn system and action resolution
+4. Add proper error handling and response parsing for the AI integration
 
-**Next Steps:**
-*   Complete the remaining tasks under Project Structure Setup (testing framework, logging, documentation) and State Management System (implement state transitions, add state validation, create state persistence).
-*   Begin work on the Game Engine Core, focusing on the turn management system, action resolution framework, and event dispatch system.
-*   Start the Ollama Setup (Phase 2), including connection management, error handling, response parsing, and context management.
-*   Implement responsive design for the Main Interface (Phase 4).
+The game has a solid foundation now, but the real magic will happen once I get the AI storytelling integrated. That's why I'm focusing on the Ollama integration next - it'll bring the whole experience to life.
 
 For more information, consult the [Roadmap](Roadmap.md).
 
