@@ -1,8 +1,6 @@
 # Project: Echoes of Elysium TTRPG System
-## Overview
-This project implements an AI-driven tabletop RPG system using Streamlit and Ollama.
 
-## Current Status
+## Overview & Current Status
 
 I've built a working prototype of an AI-driven tabletop RPG system. Right now, it has a functional main menu with a medieval fantasy theme and working navigation between different sections. Players can create characters by choosing their race, class, and background, and set their core stats like strength and dexterity. The system can check if the AI (Ollama) is connected and ready to go.
 
