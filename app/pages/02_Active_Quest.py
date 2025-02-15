@@ -51,8 +51,7 @@ st.title("🗺️ Active Quest")
 if 'character' not in st.session_state:
     st.warning("No active character found! Please create a character first.")
     if st.button("Go to Character Creation"):
-        st.session_state['page'] = "Character Creation"
-        st.experimental_rerun()
+        st.switch_page("pages/01_Character_Creation.py")
 else:
     # Quest Interface
     col1, col2 = st.columns([2, 1])
