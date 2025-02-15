@@ -2,12 +2,26 @@
 ## Overview
 This project implements an AI-driven tabletop RPG system using Streamlit and Ollama.
 
-## Current Phase: Core Infrastructure
+## Current Status
 
-### Phase 1: Core Infrastructure
-In our first development phase, we're building the foundation that everything else will stand on. We're starting by organizing all the basic parts of the system and setting up tools to catch problems early. Then we'll create the "memory" of the game - how it keeps track of what's happening and saves that information for later. Finally, we'll build the core engine that makes everything tick, handling turns, actions, and the overall flow of the game. Think of it like building the foundation and frame of a house - not very exciting to look at yet, but absolutely essential to get right.
+The project is currently in the early stages of development, focusing on core infrastructure and initial UI/UX setup.
 
-([Roadmap](Roadmap.md))
+**Completed/Partially Completed:**
+*   **Phase 1: Core Infrastructure:**
+    *   Project Structure Setup: Basic module organization is in place, but tasks like setting up the testing framework, implementing the logging system, and creating the documentation structure are still pending.
+    *   State Management System: Design of state classes is complete.
+*   **Phase 4: UI/UX Development:**
+    *   Main Interface: Navigation system, component layout, and theme implementation are complete. Responsive design is still a TODO.
+
+**Incomplete Phases:** Phases 2 (AI Integration), 3 (Game Systems), 5 (Storage & Persistence), 6 (Testing & Optimization), 7 (Production Preparation), and 8 (Polish & Launch) are largely incomplete.
+
+**Next Steps:**
+*   Complete the remaining tasks under Project Structure Setup (testing framework, logging, documentation) and State Management System (implement state transitions, add state validation, create state persistence).
+*   Begin work on the Game Engine Core, focusing on the turn management system, action resolution framework, and event dispatch system.
+*   Start the Ollama Setup (Phase 2), including connection management, error handling, response parsing, and context management.
+*   Implement responsive design for the Main Interface (Phase 4).
+
+For more information, consult the [Roadmap](Roadmap.md).
 
 ## System Architecture
 - Frontend: Streamlit web interface
