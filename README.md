@@ -1,8 +1,8 @@
-# Project: Echoes of Elysium TTRPG System
+# Aetherquill
 
 ## Overview & Current Status
 
-I've built a working prototype of an AI-driven tabletop RPG system. Right now, it has a functional main menu with a medieval fantasy theme and working navigation between different sections. Players can create characters by choosing their race, class, and background, and set their core stats like strength and dexterity. The system can check if the AI (Ollama) is connected and ready to go.
+I am building a prototype of an AI-driven tabletop RPG system. Right now, it has a functional main menu with a medieval fantasy theme and working navigation between different sections. Players can create characters by choosing their race, class, and background, and set their core stats like strength and dexterity. The system can check if the AI (Ollama) is connected and ready to go.
 
 What's working so far:
 - A stylish dark fantasy interface with gold accents and medieval fonts
