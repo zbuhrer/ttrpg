@@ -1,27 +1,34 @@
 # Aetherquill
 
-## Overview & Current Status
-
-I am building a prototype of an AI-driven tabletop RPG system. Right now, it has a functional main menu with a medieval fantasy theme and working navigation between different sections. Players can create characters by choosing their race, class, and background, and set their core stats like strength and dexterity. The system can check if the AI (Ollama) is connected and ready to go.
-
 ![Screenshot of the Questing menu](Capture-2025-02-15-190219.png)
 
-What's working so far:
-- A stylish dark fantasy interface with gold accents and medieval fonts
-- Character creation with races (Human, Elf, Dwarf, etc.), classes (Warrior, Mage, Rogue, etc.), and backgrounds
-- Stat allocation system for character attributes
-- Navigation between the main menu, character creation, and quest screens
-- Basic quest log display
-- Game settings page with options for difficulty, text speed, and audio (though not hooked up yet)
-- Connection status checking for the AI system
+## Overview & Current Status
 
-My next priorities are:
-1. Get the AI story generation working - this is the core feature that will make the game special
-2. Implement saving and loading of characters and game states
-3. Build out the actual gameplay loop with the turn system and action resolution
-4. Add proper error handling and response parsing for the AI integration
+Aehterquill is an AI-driven tabletop RPG system. It writes the story as you engage with the game world, guiding you through quests and adventures. The AI system has been significantly enhanced with improved context management and response structuring capabilities. The implementation now maintains comprehensive conversation history and game state awareness, leading to more contextually appropriate and coherent responses. Response formatting has been standardized to ensure consistent and relevant output for game interactions.
 
-The game has a solid foundation now, but the real magic will happen once I get the AI storytelling integrated. That's why I'm focusing on the Ollama integration next - it'll bring the whole experience to life.
+A notable improvement is the implementation of robust game state tracking. The system now maintains detailed environmental and character state information, including location, temporal data, atmospheric conditions, and character activity history. This enhancement provides a foundation for more immersive and contextually aware narrative generation.
+
+Planned improvements include:
+
+1. Active Quest interface refinements:
+   - A main story window for the narrative
+   - A character status panel with quick-access stats and inventory
+   - An interactive action menu with common commands and custom inputs
+   - A mini-map or location description widget
+
+2. Style guide implementation:
+   - Typography specifications and usage guidelines
+   - Color palette standardization
+   - Interactive element styling
+   - Text formatting conventions for various content types
+
+3. Interface enhancements:
+   - Dice rolling visualization for checks and combat
+   - Toast notifications for achievements and status updates
+   - A collapsible quest log that doesn't take up too much space
+   - Ambient sound integration
+
+With the core AI functionality and game state management systems now operational, and the interface framework established, development focus can shift to enhancing user experience and gameplay mechanics.
 
 For more information, consult the [Roadmap](Roadmap.md).
 
