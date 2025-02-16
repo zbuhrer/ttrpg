@@ -4,6 +4,8 @@
 
 I am building a prototype of an AI-driven tabletop RPG system. Right now, it has a functional main menu with a medieval fantasy theme and working navigation between different sections. Players can create characters by choosing their race, class, and background, and set their core stats like strength and dexterity. The system can check if the AI (Ollama) is connected and ready to go.
 
+![Screenshot of the Questing menu](Capture-2025-02-15-190219.png)
+
 What's working so far:
 - A stylish dark fantasy interface with gold accents and medieval fonts
 - Character creation with races (Human, Elf, Dwarf, etc.), classes (Warrior, Mage, Rogue, etc.), and backgrounds
