@@ -1,6 +1,6 @@
 # Aetherquill
 
-<img src="questscreen.png" alt="Screenshot of the Questing menu" width="50%">
+<center><img src="questscreen.png" alt="Screenshot of the Questing menu" width="80%"></center>
 
 ## Overview & Current Status
 
