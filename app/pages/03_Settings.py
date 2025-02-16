@@ -1,7 +1,8 @@
 import streamlit as st
+from config import THEME
 
 st.set_page_config(
-    page_title="Settings - Echoes of Elysium",
+    page_title="Settings - Aetherquill",
     page_icon="⚙️",
     layout="wide"
 )
@@ -9,38 +10,7 @@ st.set_page_config(
 
 def setup_ui_theme():
     """Configure custom UI theme and styling"""
-    st.markdown("""
-        <style>
-        /* Custom Theme Elements */
-        .stApp {
-            background-image: linear-gradient(45deg, #1a1a2e, #16213e);
-            color: #e0e0e0;
-        }
-
-        .stButton>button {
-            background-color: #4a0e0e;
-            color: #ffd700;
-            border: 2px solid #8b0000;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .stButton>button:hover {
-            background-color: #8b0000;
-            border-color: #ffd700;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        /* Header Styling */
-        h1, h2, h3 {
-            font-family: 'Cinzel', serif;
-            color: #ffd700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        </style>
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    """, unsafe_allow_html=True)
+    st.markdown(THEME, unsafe_allow_html=True)
 
 
 setup_ui_theme()
