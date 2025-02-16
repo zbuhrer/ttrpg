@@ -1,6 +1,9 @@
 import streamlit as st
-from services.ai_service import AIService
+
+from datetime import datetime
+from pathlib import Path
 from config import OLLAMA_ENDPOINT, THEME
+from services.ai_service import AIService, GameState, Character
 
 
 st.set_page_config(
@@ -8,6 +11,12 @@ st.set_page_config(
     page_icon="🗺️",
     layout="wide"
 )
+
+if 'ai_service' not in st.session_state:
+    st.session_state.ai_service = AIService(
+        endpoint=OLLAMA_ENDPOINT,
+        knowledge_base_path=Path("data/knowledge_base")
+    )
 
 
 def setup_ui_theme():
@@ -44,29 +53,45 @@ else:
         st.subheader("What would you like to do?")
         action = st.text_input("Enter your action")
         if st.button("Take Action"):
-            if not action:
-                st.warning("Please enter an action first!")
-                st.rerun()
-            with st.spinner("Processing your action..."):
-                response = st.session_state.ai_service.process_action(
-                    action=action,
-                    character=st.session_state.character,
-                    current_scene=st.session_state.get('current_scene', ''),
-                    previous_actions=st.session_state.get('action_history', [])
-                )
+            game_state = GameState(
+                location=st.session_state.get('current_location', 'Unknown'),
+                time=datetime.now(),
+                weather=st.session_state.get('weather', 'Clear'),
+                environmental_effects=st.session_state.get('effects', []),
+                active_quests=st.session_state.get('active_quests', []),
+                recent_events=st.session_state.get('recent_events', [])
+            )
 
-                if response.success:
-                    # Update game state
-                    if 'action_history' not in st.session_state:
-                        st.session_state.action_history = []
-                    st.session_state.action_history.append(action)
-                    st.session_state.current_scene = response.content
+            # Convert session character to Character object
+            char_data = st.session_state.character
+            character = Character(
+                name=char_data['name'],
+                status={"health": 100, "mana": 100},  # Default for now
+                current_actions=[action],
+                recent_events=st.session_state.get('action_history', []),
+                stats=char_data['stats'],
+                inventory=[]  # TODO: Add inventory system
+            )
 
-                    # Display the response
-                    st.markdown(response.content)
-                else:
-                    st.error(f"Failed to process action: {response.error}")
-                    st.error("Please try again or take a different action.")
+            # Generate response
+            response = st.session_state.ai_service.generate_response(
+                prompt=action,
+                game_state=game_state,
+                character=character
+            )
+
+            if response.success:
+                # Update game state
+                if 'action_history' not in st.session_state:
+                    st.session_state.action_history = []
+                st.session_state.action_history.append(action)
+                st.session_state.current_scene = response.content
+
+                # Display the response
+                st.markdown(response.content)
+            else:
+                st.error(f"Failed to process action: {response.error}")
+                st.error("Please try again or take a different action.")
             pass
 
     with col2:
