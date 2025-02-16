@@ -1,11 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, Dict, List, Any
 import requests
-from requests.exceptions import RequestException
-import json
 from pathlib import Path
 import faiss
-import numpy as np
 from datetime import datetime
 
 
@@ -162,7 +159,7 @@ class AIService:
 
             # Make API call
             payload = {
-                "model": "qwen2.5:latest",
+                "model": "dolphin-phi",
                 "prompt": full_prompt,
                 "temperature": temperature,
                 "stream": False

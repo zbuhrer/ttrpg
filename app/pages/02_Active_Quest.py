@@ -1,9 +1,9 @@
 import streamlit as st
-
-from datetime import datetime
+import uuid
 from pathlib import Path
 from config import OLLAMA_ENDPOINT, THEME
-from services.ai_service import AIService, GameState, Character
+from services.ai_service import AIService
+from services.game_state import GameStateManager
 
 
 st.set_page_config(
@@ -12,11 +12,18 @@ st.set_page_config(
     layout="wide"
 )
 
+# Ensure knowledge base directory exists
+knowledge_base_path = Path("data/knowledge_base")
+knowledge_base_path.mkdir(parents=True, exist_ok=True)
+
 if 'ai_service' not in st.session_state:
     st.session_state.ai_service = AIService(
         endpoint=OLLAMA_ENDPOINT,
-        knowledge_base_path=Path("data/knowledge_base")
+        knowledge_base_path=knowledge_base_path
     )
+
+if 'game_state_manager' not in st.session_state:
+    st.session_state.game_state_manager = GameStateManager()
 
 
 def setup_ui_theme():
@@ -35,9 +42,6 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-if 'ai_service' not in st.session_state:
-    st.session_state.ai_service = AIService(OLLAMA_ENDPOINT)
-
 # Check if there's an active character
 if 'character' not in st.session_state:
     st.warning(
@@ -46,18 +50,38 @@ if 'character' not in st.session_state:
         st.switch_page("pages/01_Character_Creation.py")
 
 else:
+    # Add character ID check
+    char = st.session_state['character']
+    if 'id' not in char:
+        char['id'] = str(uuid.uuid4())
+        st.session_state['character'] = char
+
     # Quest Interface
     col_story, col_status, col_map = st.columns([3, 2, 1])
     with col_story:
         st.markdown("<div class='story-window'>", unsafe_allow_html=True)
         st.header("📜 Current Scene")
 
-        # Narrative Display with Styling
-        st.markdown("""
-        *The air shimmer with arcane energy as you stand in the torch-lit tavern.
-        Whispered tales of adventure float between weathered wooden beams, while
-        mysterious figures huddle over ancient maps...*
-        """)
+        # AI-Generated Narrative
+        if 'current_scene' not in st.session_state:
+            saved_state = st.session_state.game_state_manager.load_game_state(
+                st.session_state.character['id']
+            )
+
+            if saved_state:
+                st.session_state.current_scene = saved_state['scene']
+            else:
+                st.session_state.current_scene = st.session_state.game_state_manager.generate_scene_description(
+                    st.session_state.character,
+                    "the Mistwood Tavern",
+                    st.session_state.ai_service
+                )
+                st.session_state.game_state_manager.save_game_state(
+                    st.session_state.character['id'],
+                    st.session_state.current_scene
+                )
+
+        st.markdown(f"*{st.session_state.current_scene}*")
 
         # Enhanced Action Interface
         st.subheader("🎭 Your Next Move")
@@ -66,23 +90,70 @@ else:
         quick_actions = st.columns(4)
         with quick_actions[0]:
             if st.button("🗣️ Talk", key="talk"):
-                action = "talk to nearest person"
+                new_scene = st.session_state.game_state_manager.generate_action_response(
+                    st.session_state.character,
+                    "talk to nearest person",
+                    st.session_state.ai_service
+                )
+                st.session_state.current_scene = new_scene
+                st.session_state.game_state_manager.save_game_state(
+                    st.session_state.character['id'],
+                    new_scene
+                )
+
         with quick_actions[1]:
             if st.button("👀 Look", key="look"):
-                action = "examine surroundings"
+                new_scene = st.session_state.game_state_manager.generate_action_response(
+                    st.session_state.character,
+                    "examine surroundings",
+                    st.session_state.ai_service
+                )
+                st.session_state.current_scene = new_scene
+                st.session_state.game_state_manager.save_game_state(
+                    st.session_state.character['id'],
+                    new_scene
+                )
+
         with quick_actions[2]:
             if st.button("🔍 Search", key="search"):
-                action = "search the area"
+                new_scene = st.session_state.game_state_manager.generate_action_response(
+                    st.session_state.character,
+                    "search the area",
+                    st.session_state.ai_service
+                )
+                st.session_state.current_scene = new_scene
+                st.session_state.game_state_manager.save_game_state(
+                    st.session_state.character['id'],
+                    new_scene
+                )
+
         with quick_actions[3]:
             if st.button("📖 Journal", key="journal"):
-                action = "check quest journal"
+                new_scene = st.session_state.game_state_manager.generate_action_response(
+                    st.session_state.character,
+                    "check quest journal",
+                    st.session_state.ai_service
+                )
+                st.session_state.current_scene = new_scene
+                st.session_state.game_state_manager.save_game_state(
+                    st.session_state.character['id'],
+                    new_scene
+                )
 
         # Custom Action Input
         action = st.text_input(
             "🎯 Custom Action", placeholder="What would you like to do?")
         if st.button("✨ Take Action", key="action"):
-            # [Your existing action processing code here]
-            pass
+            new_scene = st.session_state.game_state_manager.generate_action_response(
+                st.session_state.character,
+                action,
+                st.session_state.ai_service
+            )
+            st.session_state.current_scene = new_scene
+            st.session_state.game_state_manager.save_game_state(
+                st.session_state.character['id'],
+                new_scene
+            )
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_status:
@@ -106,11 +177,11 @@ else:
             st.progress(value/100, f"{stat.title()}: {value}")
 
         # Quick Inventory
-        st.markdown("### 🎒 Quick Inventory")
+        st.markdown("### Quick Inventory")
         st.markdown("""
-        - 🗡️ Steel Sword
-        - 🛡️ Wooden Shield
-        - 🧪 Health Potion (2)
+        - Steel Sword
+        - Wooden Shield
+        - Health Potion (2)
         """)
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -118,8 +189,7 @@ else:
         st.markdown("<div class='status-panel'>", unsafe_allow_html=True)
         st.header("🗺️ Location")
         # Mini-map or location description
-        st.image('data/assets/minimap.png',
-                 caption='Current Location', use_column_width=True)
+        st.markdown('minimap placeholder')
 
         # Weather and Time
         st.markdown("""
