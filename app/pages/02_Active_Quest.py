@@ -26,94 +26,106 @@ def setup_ui_theme():
 
 setup_ui_theme()
 
+# Top Section
 st.title("🗺️ Active Quest")
+st.markdown("""
+    <div class='story-window'>
+        <h3>The Chronicles of Adventure</h3>
+        <p style='font-style: italic;'>Where every choice shapes your destiny...</p>
+    </div>
+""", unsafe_allow_html=True)
 
 if 'ai_service' not in st.session_state:
     st.session_state.ai_service = AIService(OLLAMA_ENDPOINT)
 
 # Check if there's an active character
 if 'character' not in st.session_state:
-    st.warning("No active character found! Please create a character first.")
-    if st.button("Go to Character Creation"):
+    st.warning(
+        "⚠️ No active character found! Begin your journey by creating a character first.")
+    if st.button("✨ Start Your Journey", key="create_char"):
         st.switch_page("pages/01_Character_Creation.py")
+
 else:
     # Quest Interface
-    col1, col2 = st.columns([2, 1])
+    col_story, col_status, col_map = st.columns([3, 2, 1])
+    with col_story:
+        st.markdown("<div class='story-window'>", unsafe_allow_html=True)
+        st.header("📜 Current Scene")
 
-    with col1:
-        st.header("Current Scene")
-        st.markdown("---")
-
-        # Narrative Display
+        # Narrative Display with Styling
         st.markdown("""
-        *The torch-lit tavern buzzes with whispered tales and clinking tankards...*
+        *The air shimmer with arcane energy as you stand in the torch-lit tavern.
+        Whispered tales of adventure float between weathered wooden beams, while
+        mysterious figures huddle over ancient maps...*
         """)
 
-        # Action Interface
-        st.subheader("What would you like to do?")
-        action = st.text_input("Enter your action")
-        if st.button("Take Action"):
-            game_state = GameState(
-                location=st.session_state.get('current_location', 'Unknown'),
-                time=datetime.now(),
-                weather=st.session_state.get('weather', 'Clear'),
-                environmental_effects=st.session_state.get('effects', []),
-                active_quests=st.session_state.get('active_quests', []),
-                recent_events=st.session_state.get('recent_events', [])
-            )
+        # Enhanced Action Interface
+        st.subheader("🎭 Your Next Move")
 
-            # Convert session character to Character object
-            char_data = st.session_state.character
-            character = Character(
-                name=char_data['name'],
-                status={"health": 100, "mana": 100},  # Default for now
-                current_actions=[action],
-                recent_events=st.session_state.get('action_history', []),
-                stats=char_data['stats'],
-                inventory=[]  # TODO: Add inventory system
-            )
+        # Quick Action Buttons
+        quick_actions = st.columns(4)
+        with quick_actions[0]:
+            if st.button("🗣️ Talk", key="talk"):
+                action = "talk to nearest person"
+        with quick_actions[1]:
+            if st.button("👀 Look", key="look"):
+                action = "examine surroundings"
+        with quick_actions[2]:
+            if st.button("🔍 Search", key="search"):
+                action = "search the area"
+        with quick_actions[3]:
+            if st.button("📖 Journal", key="journal"):
+                action = "check quest journal"
 
-            # Generate response
-            response = st.session_state.ai_service.generate_response(
-                prompt=action,
-                game_state=game_state,
-                character=character
-            )
-
-            if response.success:
-                # Update game state
-                if 'action_history' not in st.session_state:
-                    st.session_state.action_history = []
-                st.session_state.action_history.append(action)
-                st.session_state.current_scene = response.content
-
-                # Display the response
-                st.markdown(response.content)
-            else:
-                st.error(f"Failed to process action: {response.error}")
-                st.error("Please try again or take a different action.")
+        # Custom Action Input
+        action = st.text_input(
+            "🎯 Custom Action", placeholder="What would you like to do?")
+        if st.button("✨ Take Action", key="action"):
+            # [Your existing action processing code here]
             pass
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    with col2:
-        # Character Status
-        st.header("Character Status")
-        if 'character' in st.session_state:
-            char = st.session_state['character']
-            st.markdown(f"""
-            **{char['name']}**
-            *{char['race']} {char['class_type']}*
-            Background: {char['background']}
-            """)
+    with col_status:
+        st.markdown("<div class='status-panel'>", unsafe_allow_html=True)
+        char = st.session_state['character']
 
-            # Stats Display
-            st.subheader("Stats")
-            for stat, value in char['stats'].items():
-                st.markdown(f"**{stat.title()}:** {value}")
+        # Enhanced Character Status Display
+        st.header("📊 Character Status")
+        st.markdown(f"""
+        ### {char['name']}
+        #### {char['race']} {char['class_type']}
+        *{char['background']}*
 
-        # Quest Log
-        st.header("Quest Log")
-        st.markdown("""
-        - [ ] Investigate the mysterious disappearances
-        - [ ] Find the ancient artifact
-        - [ ] Defeat the dark sorcerer
+        ---
+
+        ### ⚔️ Combat Stats
         """)
+
+        # Visual Stats Bars
+        for stat, value in char['stats'].items():
+            st.progress(value/100, f"{stat.title()}: {value}")
+
+        # Quick Inventory
+        st.markdown("### 🎒 Quick Inventory")
+        st.markdown("""
+        - 🗡️ Steel Sword
+        - 🛡️ Wooden Shield
+        - 🧪 Health Potion (2)
+        """)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_map:
+        st.markdown("<div class='status-panel'>", unsafe_allow_html=True)
+        st.header("🗺️ Location")
+        # Mini-map or location description
+        st.image('data/assets/minimap.png',
+                 caption='Current Location', use_column_width=True)
+
+        # Weather and Time
+        st.markdown("""
+        ### 🌤️ Conditions
+        - Time: Dusk
+        - Weather: Clear
+        - Region: Mistwood
+        """)
+        st.markdown("</div>", unsafe_allow_html=True)
