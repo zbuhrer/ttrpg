@@ -1,7 +1,10 @@
 import streamlit as st
+from services.ai_service import AIService
+from config import OLLAMA_ENDPOINT, THEME
+
 
 st.set_page_config(
-    page_title="Active Quest - Echoes of Elysium",
+    page_title="Active Quest",
     page_icon="🗺️",
     layout="wide"
 )
@@ -9,43 +12,15 @@ st.set_page_config(
 
 def setup_ui_theme():
     """Configure custom UI theme and styling"""
-    st.markdown("""
-        <style>
-        /* Custom Theme Elements */
-        .stApp {
-            background-image: linear-gradient(45deg, #1a1a2e, #16213e);
-            color: #e0e0e0;
-        }
-
-        .stButton>button {
-            background-color: #4a0e0e;
-            color: #ffd700;
-            border: 2px solid #8b0000;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .stButton>button:hover {
-            background-color: #8b0000;
-            border-color: #ffd700;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        /* Header Styling */
-        h1, h2, h3 {
-            font-family: 'Cinzel', serif;
-            color: #ffd700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        </style>
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    """, unsafe_allow_html=True)
+    st.markdown(THEME, unsafe_allow_html=True)
 
 
 setup_ui_theme()
 
 st.title("🗺️ Active Quest")
+
+if 'ai_service' not in st.session_state:
+    st.session_state.ai_service = AIService(OLLAMA_ENDPOINT)
 
 # Check if there's an active character
 if 'character' not in st.session_state:
@@ -69,7 +44,29 @@ else:
         st.subheader("What would you like to do?")
         action = st.text_input("Enter your action")
         if st.button("Take Action"):
-            # TODO: Process action through game engine
+            if not action:
+                st.warning("Please enter an action first!")
+                st.rerun()
+            with st.spinner("Processing your action..."):
+                response = st.session_state.ai_service.process_action(
+                    action=action,
+                    character=st.session_state.character,
+                    current_scene=st.session_state.get('current_scene', ''),
+                    previous_actions=st.session_state.get('action_history', [])
+                )
+
+                if response.success:
+                    # Update game state
+                    if 'action_history' not in st.session_state:
+                        st.session_state.action_history = []
+                    st.session_state.action_history.append(action)
+                    st.session_state.current_scene = response.content
+
+                    # Display the response
+                    st.markdown(response.content)
+                else:
+                    st.error(f"Failed to process action: {response.error}")
+                    st.error("Please try again or take a different action.")
             pass
 
     with col2:

@@ -1,2 +1,3 @@
 homebrewery
 .DS_*
+__pycache__

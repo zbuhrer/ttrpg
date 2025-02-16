@@ -1,13 +1,14 @@
 import streamlit as st
 import os
-from typing import Dict, List, Optional
-from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
-from dotenv import load_dotenv
 
 import requests
+from typing import Dict, List, Optional
+from dataclasses import dataclass
+from pathlib import Path
+from dotenv import load_dotenv
 from requests.exceptions import RequestException
+
+from config import OLLAMA_ENDPOINT, THEME
 
 
 def ollama_connection() -> bool:
@@ -76,38 +77,7 @@ st.set_page_config(
 
 def setup_ui_theme():
     """Configure custom UI theme and styling"""
-    st.markdown("""
-        <style>
-        /* Custom Theme Elements */
-        .stApp {
-            background-image: linear-gradient(45deg, #1a1a2e, #16213e);
-            color: #e0e0e0;
-        }
-
-        .stButton>button {
-            background-color: #4a0e0e;
-            color: #ffd700;
-            border: 2px solid #8b0000;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .stButton>button:hover {
-            background-color: #8b0000;
-            border-color: #ffd700;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        /* Header Styling */
-        h1, h2, h3 {
-            font-family: 'Cinzel', serif;
-            color: #ffd700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        </style>
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    """, unsafe_allow_html=True)
+    st.markdown(THEME, unsafe_allow_html=True)
 
 
 def main():
@@ -115,7 +85,8 @@ def main():
 
     header_col1, header_col2 = st.columns([6, 1])
     with header_col1:
-        st.title("⚔️ Echoes of Elysium")
+        st.title("⚔️ Aetherquill")
+        st.subheader("The self-writing responsive RPG system")
 
     with header_col2:
         ollama_status = ollama_connection()
