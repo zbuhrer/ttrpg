@@ -1,34 +1,29 @@
 # Aetherquill
 
-![Screenshot of the Questing menu](Capture-2025-02-15-190219.png)
+<img src="questscreen.png" alt="Screenshot of the Questing menu" width="50%">
 
 ## Overview & Current Status
 
-Aehterquill is an AI-driven tabletop RPG system. It writes the story as you engage with the game world, guiding you through quests and adventures. The AI system has been significantly enhanced with improved context management and response structuring capabilities. The implementation now maintains comprehensive conversation history and game state awareness, leading to more contextually appropriate and coherent responses. Response formatting has been standardized to ensure consistent and relevant output for game interactions.
+Aetherquill is an AI-driven tabletop RPG system. It writes the story as you engage with the game world, guiding you through quests and adventures. The system has achieved several major milestones:
 
-A notable improvement is the implementation of robust game state tracking. The system now maintains detailed environmental and character state information, including location, temporal data, atmospheric conditions, and character activity history. This enhancement provides a foundation for more immersive and contextually aware narrative generation.
+- Robust AI Integration: Enhanced context management and response structuring
+- Advanced State Management: Comprehensive game state tracking and persistence
+- Improved UI Framework: Streamlined interface with better navigation and feedback
+- Character System: Functional character creation and management
+- Quest System: Basic quest tracking and progression
 
-Planned improvements include:
+Recent improvements include:
+- Enhanced context awareness and history management
+- Standardized response formatting
+- Improved state validation and transitions
+- Expanded character creation interface
+- Better navigation and menu systems
 
-1. Active Quest interface refinements:
-   - A main story window for the narrative
-   - A character status panel with quick-access stats and inventory
-   - An interactive action menu with common commands and custom inputs
-   - A mini-map or location description widget
-
-2. Style guide implementation:
-   - Typography specifications and usage guidelines
-   - Color palette standardization
-   - Interactive element styling
-   - Text formatting conventions for various content types
-
-3. Interface enhancements:
-   - Dice rolling visualization for checks and combat
-   - Toast notifications for achievements and status updates
-   - A collapsible quest log that doesn't take up too much space
-   - Ambient sound integration
-
-With the core AI functionality and game state management systems now operational, and the interface framework established, development focus can shift to enhancing user experience and gameplay mechanics.
+Current focus areas:
+1. Combat system implementation
+2. Inventory management
+3. Enhanced quest generation
+4. Save/load system refinement
 
 For more information, consult the [Roadmap](Roadmap.md).
 
