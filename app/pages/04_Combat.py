@@ -1,7 +1,7 @@
 import streamlit as st
 import random
-from app.services.combat_system import InitiativeTracker
-from app.services.game_state import GameStateManager
+from services.combat_system import InitiativeTracker
+from services.game_state import GameStateManager
 
 
 def initialize_combat():
