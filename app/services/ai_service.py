@@ -4,6 +4,7 @@ import requests
 from pathlib import Path
 import faiss
 from datetime import datetime
+import streamlit as st
 
 
 @dataclass
@@ -141,9 +142,9 @@ class AIService:
 
     def generate_response(self,
                           prompt: str,
-                          game_state: GameState,
-                          character: Character,
-                          temperature: float = 0.7) -> AIResponse:
+                          game_state: Optional[GameState] = None,
+                          character: Optional[Character] = None,
+                          temperature: float = 0.7) -> str:
         """Generate AI response with full context and parsing."""
         try:
             # Get relevant context
@@ -168,28 +169,22 @@ class AIService:
             response = requests.post(self.endpoint, json=payload)
             response.raise_for_status()
 
-            # Parse response
+            # Parse the response and get the content
             parsed_response = self.parser.parse_response(response.json())
 
-            # Update conversation history
             if parsed_response.success:
                 self.context_manager.add_to_history({
                     'prompt': prompt,
                     'response': parsed_response.content,
                     'metadata': parsed_response.metadata
                 })
+                return parsed_response.content
 
-            return parsed_response
+            return "The winds of fate are mysterious..."
 
         except Exception as e:
-            return AIResponse(
-                content="",
-                success=False,
-                response_type="error",
-                confidence_score=0.0,
-                metadata={},
-                error=f"Error generating response: {str(e)}"
-            )
+            st.error(f"Error generating response: {str(e)}")
+            return "Something mysterious occurs..."
 
     def _construct_prompt(self,
                           prompt: str,
@@ -199,16 +194,16 @@ class AIService:
         """Construct full prompt with all necessary context."""
         return f"""
 [Current Game State]
-Location: {game_state.location}
-Time: {game_state.time}
-Weather: {game_state.weather}
-Environmental Effects: {', '.join(game_state.environmental_effects)}
+Location: {game_state.location if game_state else 'Unknown'}
+Time: {game_state.time if game_state else 'Unknown'}
+Weather: {game_state.weather if game_state else 'Unknown'}
+Environmental Effects: {', '.join(game_state.environmental_effects) if game_state else 'None'}
 
 [Character State]
-Name: {character.name}
-Status: {character.status}
-Current Actions: {', '.join(character.current_actions)}
-Recent Events: {', '.join(character.recent_events)}
+Name: {character.name if character else 'Unknown'}
+Status: {character.status if character else {}}
+Current Actions: {', '.join(character.current_actions) if character else []}
+Recent Events: {', '.join(character.recent_events) if character else []}
 
 [Scene Context]
 Relevant Lore: {' '.join(context['lore'])}

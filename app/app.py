@@ -7,7 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from requests.exceptions import RequestException
 
-from config import OLLAMA_ENDPOINT, THEME, PAGE_CONFIG
+from config import OLLAMA_ENDPOINT, THEME
 
 
 def ollama_connection() -> bool:
@@ -99,7 +99,6 @@ def render_hero_section():
     st.markdown("""
         <div class="hero-section">
             <h1>⚔️ Aetherquill</h1>
-            <h3>Where Your Story Becomes Legend</h3>
         </div>
     """, unsafe_allow_html=True)
 
@@ -109,28 +108,20 @@ def render_main_menu():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("""
-            ### Begin Your Journey
-            Choose your path, brave adventurer:
-        """)
-
-        # New Game Flow
-        if st.button("📖 New Adventure", key="new_game"):
+        # New Story Flow
+        if st.button("Continue", key="continue"):
             if 'character' not in st.session_state:
                 st.switch_page("pages/01_Character_Creation.py")
             else:
-                st.warning(
-                    "You already have an active character. Load game or start fresh?")
-
-        # Continue Game
-        if st.button("🔄 Continue Journey", key="continue"):
-            if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
                 st.switch_page("pages/02_Active_Quest.py")
-            else:
-                st.error("No active character found! Start a new adventure first.")
 
-        # Load Game
-        if st.button("📂 Load Saved Tale", key="load"):
+        # New Character Flow
+        if st.button("New Character", key="new_char"):
+            if 'character' not in st.session_state:
+                st.switch_page("pages/01_Character_Creation.py")
+
+        # Load Story
+        if st.button("Load Story", key="load"):
             # TODO: Implement save/load system
             st.info("Save/Load system coming soon!")
 

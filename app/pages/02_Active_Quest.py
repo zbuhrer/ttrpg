@@ -33,6 +33,61 @@ def setup_ui_theme():
     st.markdown(THEME, unsafe_allow_html=True)
 
 
+def load_initial_scene():
+    """Load the initial scene description"""
+    if 'current_scene' not in st.session_state:
+        loading_message = st.empty()
+        progress_bar = st.progress(0)
+
+        loading_message.text("Loading your adventure...")
+        progress_bar.progress(25)
+
+        saved_state = st.session_state.game_state_manager.load_game_state(
+            st.session_state.character['id']
+        )
+        progress_bar.progress(50)
+
+        if saved_state:
+            st.session_state.current_scene = saved_state['scene']
+            st.session_state.game_data = saved_state['game_data']
+            progress_bar.progress(100)
+        else:
+            loading_message.text("Generating new adventure...")
+            progress_bar.progress(75)
+
+            # Create new game state
+            initial_state = st.session_state.game_state_manager.create_new_game(
+                st.session_state.character,
+                st.session_state.ai_service
+            )
+
+            st.session_state.current_scene = initial_state['scene']
+            st.session_state.game_data = initial_state['game_data']
+            progress_bar.progress(100)
+
+        loading_message.empty()
+        progress_bar.empty()
+
+
+def load_environmental_details():
+    """Load weather and environmental conditions"""
+    if 'game_data' in st.session_state:
+        with st.spinner("Observing the environment..."):
+            time.sleep(1)  # Add slight delay for effect
+            return st.session_state.game_data.get('weather', ''), \
+                st.session_state.game_data.get('environmental_effects', [])
+    return '', []
+
+
+def load_inventory():
+    """Load character inventory"""
+    if 'game_data' in st.session_state:
+        with st.spinner("Checking your belongings..."):
+            time.sleep(0.5)  # Add slight delay for effect
+            return st.session_state.game_data.get('character_state', {}).get('inventory', [])
+    return []
+
+
 setup_ui_theme()
 
 # Top Section
@@ -60,51 +115,13 @@ else:
 
     # Quest Interface
     col_story, col_status, col_map = st.columns([3, 2, 1])
+
+    # Load initial scene
+    load_initial_scene()
+
     with col_story:
         st.markdown("<div class='story-window'>", unsafe_allow_html=True)
         st.header("📜 Current Scene")
-
-        # AI-Generated Narrative
-        if 'current_scene' not in st.session_state:
-            loading_container = st.empty()
-            progress_bar = st.progress(0)
-
-            steps = [
-                ("Loading saved game state...", 0.2),
-                ("Generating world...", 0.4),
-                ("Creating scene...", 0.7),
-                ("Finalizing details...", 0.9)
-            ]
-
-            for message, progress in steps:
-                loading_container.text(message)
-                progress_bar.progress(progress)
-                time.sleep(0.5)
-
-            saved_state = st.session_state.game_state_manager.load_game_state(
-                st.session_state.character['id']
-            )
-
-            if saved_state:
-                loading_container.text("Loading saved game...")
-                progress_bar.progress(1.0)
-                st.session_state.current_scene = saved_state['scene']
-            else:
-                loading_container.text("Generating new scene...")
-                progress_bar.progress(0.8)
-                st.session_state.current_scene = st.session_state.game_state_manager.generate_scene_description(
-                    st.session_state.character,
-                    "the Mistwood Tavern",
-                    st.session_state.ai_service
-                )
-                st.session_state.game_state_manager.save_game_state(
-                    st.session_state.character['id'],
-                    st.session_state.current_scene
-                )
-
-            loading_container.empty()
-            progress_bar.empty()
-
         st.markdown(f"*{st.session_state.current_scene}*")
 
         # Enhanced Action Interface
@@ -184,6 +201,10 @@ else:
         st.markdown("<div class='status-panel'>", unsafe_allow_html=True)
         char = st.session_state['character']
 
+        # Load details progressively
+        weather, effects = load_environmental_details()
+        inventory = load_inventory()
+
         # Enhanced Character Status Display
         st.header("📊 Character Status")
         st.markdown(f"""
@@ -201,12 +222,9 @@ else:
             st.progress(value/100, f"{stat.title()}: {value}")
 
         # Quick Inventory
-        st.markdown("### Quick Inventory")
-        st.markdown("""
-        - Steel Sword
-        - Wooden Shield
-        - Health Potion (2)
-        """)
+        st.markdown("### 📦 Inventory")
+        for item in inventory:
+            st.write(f"- {item['item']} (x{item['quantity']})")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_map:
@@ -216,10 +234,8 @@ else:
         st.markdown('minimap placeholder')
 
         # Weather and Time
-        st.markdown("""
-        ### 🌤️ Conditions
-        - Time: Dusk
-        - Weather: Clear
-        - Region: Mistwood
-        """)
+        st.markdown("### 🌤️ Conditions")
+        st.write(weather)
+        for effect in effects:
+            st.write(f"- {effect}")
         st.markdown("</div>", unsafe_allow_html=True)

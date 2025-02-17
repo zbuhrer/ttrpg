@@ -3,7 +3,7 @@ import sqlite3
 import json
 
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from .models import GameState, Character
 
 
@@ -31,29 +31,163 @@ class GameStateManager:
         conn.commit()
         conn.close()
 
+    def create_new_game(self, character: Dict[str, Any], ai_service: Any) -> Dict[str, Any]:
+        """Create a personalized game state based on character details"""
+        # Safely get personality traits
+        traits = character.get('personality', {}).get('traits', [])
+        trait_description = f"with {traits[0]} tendencies" if traits else ""
+
+        # Safely get background details
+        background_details = character.get('background_details', {})
+        origin = background_details.get('origin', 'unknown origins')
+        profession = background_details.get('profession', 'mysterious past')
+        motivation = background_details.get('motivation', 'seeking adventure')
+
+        # Generate weather based on character background
+        weather_prompt = f"""
+        Based on {character['name']}'s background as a {character['background']} from
+        {origin}, {f"and their {
+            ', '.join(traits)} personality" if traits else ""},
+        describe the weather for their first adventure. Keep it brief but atmospheric.
+        """
+        weather_response = ai_service.generate_response(weather_prompt)
+
+        # Generate starting inventory based on background
+        inventory_prompt = f"""
+        Given {character['name']}'s previous profession as a {profession}
+        and their {character['class_type']} class, list 5 specific items they would carry.
+        Include one unique or personalized item that reflects their background.
+        """
+        inventory_response = ai_service.generate_response(inventory_prompt)
+
+        # Generate initial scene description
+        scene_prompt = f"""
+        Describe the scene where {character['name']}, a {character['race']} {character['class_type']}
+        {trait_description}, begins their adventure in the Mistwood Tavern.
+        Consider their background as a {profession} and their motivation: {motivation}.
+        """
+        scene_response = ai_service.generate_response(scene_prompt)
+
+        # Create initial game state with generated content
+        initial_state = {
+            'scene': scene_response,
+            'location': "Mistwood Tavern",
+            'game_data': {
+                'time': datetime.now().isoformat(),
+                'weather': weather_response,
+                'environmental_effects': self._generate_environmental_effects(weather_response),
+                'active_quests': ['The Call to Adventure'],
+                'recent_events': ['Arrived at Mistwood Tavern'],
+                'character_state': {
+                    'status': {
+                        'health': 100,
+                        'energy': 100,
+                        'rested': True
+                    },
+                    'inventory': self._parse_inventory(inventory_response)
+                }
+            }
+        }
+
+        # Save state and return
+        self.save_game_state(
+            char_id=character['id'],
+            scene=initial_state['scene'],
+            location=initial_state['location'],
+            game_data=initial_state['game_data']
+        )
+
+        return initial_state
+
+    def _generate_environmental_effects(self, weather_text: str) -> List[str]:
+        """Generate environmental effects based on weather description"""
+        effects = ['Tavern ambiance', 'Warm hearth']  # Default effects
+
+        # Simple weather keyword mapping
+        weather_lower = weather_text.lower()
+        if 'rain' in weather_lower:
+            effects.extend(['Wet ground', 'Poor visibility'])
+        if 'wind' in weather_lower:
+            effects.append('Strong breeze')
+        if 'storm' in weather_lower:
+            effects.extend(['Thunder', 'Lightning flashes'])
+        if 'snow' in weather_lower:
+            effects.extend(['Cold air', 'Slippery ground'])
+        if 'fog' in weather_lower:
+            effects.append('Limited visibility')
+        if 'sun' in weather_lower or 'clear' in weather_lower:
+            effects.append('Good visibility')
+
+        return effects
+
+    def _parse_inventory(self, inventory_text: str) -> List[Dict[str, Any]]:
+        """Parse inventory text into structured format"""
+        inventory_items = []
+
+        # Split the text into lines and process each item
+        for line in inventory_text.split('\n'):
+            line = line.strip()
+            if line:
+                # Remove any bullet points or numbers
+                line = line.lstrip('•-*1234567890. ')
+
+                # Default quantity is 1 unless specified
+                quantity = 1
+
+                # Check if quantity is specified in parentheses
+                if '(' in line and ')' in line:
+                    item_parts = line.split('(')
+                    item_name = item_parts[0].strip()
+                    try:
+                        quantity = int(
+                            ''.join(filter(str.isdigit, item_parts[1])))
+                    except ValueError:
+                        quantity = 1
+                else:
+                    item_name = line
+
+                inventory_items.append({
+                    'item': item_name,
+                    'quantity': quantity
+                })
+
+        # Ensure we have at least some basic items
+        if not inventory_items:
+            inventory_items = [
+                {'item': 'Adventurer\'s Pack', 'quantity': 1},
+                {'item': 'Waterskin', 'quantity': 1},
+                {'item': 'Trail Rations', 'quantity': 3}
+            ]
+
+        return inventory_items
+
     def save_game_state(self,
                         char_id: str,
                         scene: str,
                         location: str = "Mistwood Tavern",
                         game_data: Dict[str, Any] = None) -> None:
         """Save current game state to database"""
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
+        try:
+            conn = sqlite3.connect(self.db_path)
+            c = conn.cursor()
 
-        c.execute("""
-            INSERT OR REPLACE INTO game_states
-            (char_id, scene, location, timestamp, game_data)
-            VALUES (?, ?, ?, ?, ?)
-        """, (
-            char_id,
-            scene,
-            location,
-            datetime.now().isoformat(),
-            json.dumps(game_data) if game_data else "{}"
-        ))
+            c.execute("""
+                INSERT OR REPLACE INTO game_states
+                (char_id, scene, location, timestamp, game_data)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                char_id,
+                scene,
+                location,
+                datetime.now().isoformat(),
+                json.dumps(game_data) if game_data else "{}"
+            ))
 
-        conn.commit()
-        conn.close()
+            conn.commit()
+        except Exception as e:
+            st.error(f"Error saving game state: {str(e)}")
+        finally:
+            conn.close()
 
     def load_game_state(self, char_id: str) -> Optional[Dict[str, Any]]:
         """Load saved game state from database"""
