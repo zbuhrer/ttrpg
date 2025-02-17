@@ -161,3 +161,50 @@ class GameStateManager:
         except Exception as e:
             st.error(f"Error generating action response: {str(e)}")
             return f"You attempt to {action}, but something seems amiss..."
+
+    def start_combat(self, char_id: str) -> None:
+        """Initialize combat state in the game"""
+        game_state = self.load_game_state(char_id)
+        if game_state:
+            game_state['game_data']['combat_state'] = {
+                'active': True,
+                'round': 1,
+                'combatants': []
+            }
+            self.save_game_state(
+                char_id,
+                game_state['scene'],
+                game_state['location'],
+                game_state['game_data']
+            )
+
+    def add_combatant(self, char_id: str, name: str, initiative: int) -> None:
+        """Add a combatant to the active combat"""
+        game_state = self.load_game_state(char_id)
+        if game_state and game_state['game_data'].get('combat_state', {}).get('active'):
+            combat_state = game_state['game_data']['combat_state']
+            combat_state['combatants'].append({
+                'name': name,
+                'initiative': initiative
+            })
+            self.save_game_state(
+                char_id,
+                game_state['scene'],
+                game_state['location'],
+                game_state['game_data']
+            )
+
+    def end_combat(self, char_id: str) -> None:
+        """End the current combat encounter"""
+        game_state = self.load_game_state(char_id)
+        if game_state:
+            game_state['game_data']['combat_state'] = {
+                'active': False,
+                'combatants': []
+            }
+            self.save_game_state(
+                char_id,
+                game_state['scene'],
+                game_state['location'],
+                game_state['game_data']
+            )

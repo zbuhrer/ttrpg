@@ -22,16 +22,6 @@ def ollama_connection() -> bool:
         return False
 
 
-def ollama_models() -> bool:
-    """Check if Ollama models are available"""
-    try:
-        response = requests.get(
-            OLLAMA_ENDPOINT.replace('/api/generate', '/api/tags'))
-        return response.status_code == 200
-    except RequestException:
-        return False
-
-
 @dataclass
 class Character:
     name: str
@@ -80,8 +70,20 @@ def setup_ui_theme():
     st.markdown(THEME, unsafe_allow_html=True)
 
 
+def initialize_game_state():
+    if 'game_state' not in st.session_state:
+        st.session_state.game_state = {
+            'combat': {
+                'active': False,
+                'initiative_tracker': None,
+                'combat_log': []
+            }
+        }
+
+
 def main():
     setup_ui_theme()
+    initialize_game_state()
 
     header_col1, header_col2 = st.columns([6, 1])
     with header_col1:
@@ -90,18 +92,14 @@ def main():
 
     with header_col2:
         ollama_status = ollama_connection()
-        status_icon = "🟢" if ollama_status else "🔴"
+        status_icon = "🟢" if ollama_status else "#🔴"
         st.markdown(f"""
             <div style='text-align: right; padding-top: 1rem;'>
                 <span title='Ollama Connection Status'>Ollama: {status_icon}</span>
             </div>
         """, unsafe_allow_html=True)
 
-    # Initialize session state if needed
-    if 'game_state' not in st.session_state:
-        st.session_state.game_state = None
-
-    # Main Content (Tavern/Home)
+    # Mainontent (Tavern/Home)
     render_home_page()
 
 

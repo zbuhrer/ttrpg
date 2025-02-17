@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 
@@ -12,6 +12,7 @@ class GameState:
     environmental_effects: List[str]
     active_quests: List[str]
     recent_events: List[Dict[str, Any]]
+    combat_state: Optional[Dict[str, Any]] = None
 
 
 @dataclass

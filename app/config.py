@@ -130,5 +130,34 @@ THEME = """
                 margin: 2rem 0;
             }
 
+            /* Combat Specific Styling */
+            .combat-log {
+                background-color: rgba(0, 0, 0, 0.2);
+                border-radius: 5px;
+                padding: 10px;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .combatant-card {
+                background: linear-gradient(45deg, #2B2D42 0%, #1a1a2e 100%);
+                border: 1px solid #D4AF37;
+                border-radius: 5px;
+                padding: 10px;
+                margin: 5px 0;
+            }
+
+            .health-bar {
+                background-color: #45aa3a;
+                height: 10px;
+                border-radius: 5px;
+                transition: width 0.3s ease;
+            }
+
+            .initiative-marker {
+                color: #D4AF37;
+                font-weight: bold;
+            }
+
             </style>
 """
