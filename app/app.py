@@ -89,7 +89,7 @@ def main():
     st.markdown("---")
     st.markdown("""
         <div class="footer">
-            <p>Aetherquill v0.1 - Your Journey Awaits</p>
+            <p>Aetherquill v0.1 - <a href="https://github.com/zbuhrer/ttrpg">GitHub</a></p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -128,7 +128,6 @@ def render_main_menu():
     with col2:
         st.markdown("""
             ### Current Quest
-            *Your active story awaits...*
         """)
 
         if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
@@ -147,7 +146,6 @@ def render_main_menu():
         else:
             st.markdown("""
                 *No active quest found.*
-                Begin your journey by creating a new character!
             """)
 
 
