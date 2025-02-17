@@ -168,8 +168,8 @@ def render_quick_actions():
             st.switch_page("pages/01_Character_Creation.py")
 
     with cols[2]:
-        if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
-            if st.button("🗺️ World Map", key="map"):
+        if st.button("🗺️ World Map", key="map"):
+            if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
                 st.info("World Map coming soon!")
                 # TODO: Implement world map
 
