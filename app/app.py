@@ -7,7 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from requests.exceptions import RequestException
 
-from config import OLLAMA_ENDPOINT, THEME
+from config import OLLAMA_ENDPOINT, THEME, PAGE_CONFIG
 
 
 def ollama_connection() -> bool:

@@ -4,7 +4,8 @@ from config import THEME
 st.set_page_config(
     page_title="Character Creation - Aetherquill",
     page_icon="🎭",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 

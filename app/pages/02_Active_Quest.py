@@ -10,7 +10,8 @@ from services.game_state import GameStateManager
 st.set_page_config(
     page_title="Active Quest",
     page_icon="🗺️",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 # Ensure knowledge base directory exists

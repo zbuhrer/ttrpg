@@ -19,6 +19,13 @@ ASSETS_DIR = DATA_DIR / "assets"
 for dir in [DATA_DIR, SAVES_DIR, ASSETS_DIR]:
     dir.mkdir(parents=True, exist_ok=True)
 
+# Page Configuration
+PAGE_CONFIG = {
+    "page_title": "Aetherquill",
+    "layout": "wide",
+    "initial_sidebar_state": "collapsed"
+}
+
 # UI Theme Configuration
 THEME = """
         <style>
