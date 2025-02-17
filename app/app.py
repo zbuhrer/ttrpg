@@ -154,26 +154,32 @@ def render_quick_actions():
     st.markdown("---")
     cols = st.columns(4)
 
+    # Check if we have an active character
+    has_active_character = 'character' in st.session_state and isinstance(
+        st.session_state['character'], dict)
+
     with cols[0]:
-        if st.button("⚔️ Combat", key="combat"):
-            if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
-                st.switch_page("pages/04_Combat.py")
-            else:
-                st.error("Create a character before entering combat!")
+        st.button("⚔️ Combat",
+                  key="combat",
+                  disabled=not has_active_character,
+                  on_click=lambda: st.switch_page("pages/04_Combat.py") if has_active_character else None)
 
     with cols[1]:
-        if st.button("🎭 Character", key="character"):
-            st.switch_page("pages/01_Character_Creation.py")
+        st.button("🗺️ World Map",
+                  key="map",
+                  disabled=not has_active_character,
+                  on_click=lambda: st.info("World Map coming soon!") if has_active_character else None)
 
     with cols[2]:
-        if st.button("🗺️ World Map", key="map"):
-            if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
-                st.info("World Map coming soon!")
-                # TODO: Implement world map
+        st.button("🎭 Character",
+                  key="character",
+                  on_click=lambda: st.switch_page("pages/01_Character_Creation.py"))
+
 
     with cols[3]:
-        if st.button("⚙️ Settings", key="settings"):
-            st.switch_page("pages/03_Settings.py")
+        st.button("⚙️ Settings",
+                  key="settings",
+                  on_click=lambda: st.switch_page("pages/03_Settings.py"))
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@
   - [x] Design state classes
   - [x] Basic state transitions
   - [x] Add state validation
-  - [ ] Create state persistence
+  - [✓] Create state persistence (SQLite implemented)
 
 - [✓] Game Engine Core
   - [x] Turn management system
@@ -43,10 +43,10 @@
   - [ ] Level progression
   - [ ] Skills and abilities
 
-- [ ] Combat System
-  - [ ] Initiative tracking
-  - [ ] Action economy
-  - [ ] Damage calculation
+- [✓] Combat System
+  - [x] Initiative tracking
+  - [✓] Action economy
+  - [✓] Damage calculation
   - [ ] Status effects
 
 - [ ] Inventory System
@@ -54,6 +54,13 @@
   - [ ] Equipment handling
   - [ ] Resource tracking
   - [ ] Economy system
+
+### Phase 3.5: Game Balance
+- [ ] Combat Balance
+  - [ ] Damage scaling
+  - [ ] Enemy difficulty progression
+  - [ ] Reward scaling
+  - [ ] Player progression curve
 
 ### Phase 4: UI/UX Development
 - [x] Main Interface
@@ -64,7 +71,7 @@
 
 - [✓] Game Views (partial)
   - [x] Basic character sheet
-  - [ ] Combat interface
+  - [✓] Combat interface
   - [ ] Inventory management
   - [✓] Simple quest log (partial)
 
