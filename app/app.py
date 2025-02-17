@@ -58,10 +58,10 @@ for dir in [DATA_DIR, SAVES_DIR, ASSETS_DIR]:
 
 # --- UI Configuration ---
 st.set_page_config(
-    page_title="Echoes of Elysium",
+    page_title="Aetherquill",
     page_icon="⚔️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 
@@ -85,52 +85,109 @@ def main():
     setup_ui_theme()
     initialize_game_state()
 
-    header_col1, header_col2 = st.columns([6, 1])
-    with header_col1:
-        st.title("⚔️ Aetherquill")
-        st.subheader("The self-writing responsive RPG system")
+    render_hero_section()
+    render_main_menu()
+    render_quick_actions()
 
-    with header_col2:
-        ollama_status = ollama_connection()
-        status_icon = "🟢" if ollama_status else "#🔴"
-        st.markdown(f"""
-            <div style='text-align: right; padding-top: 1rem;'>
-                <span title='Ollama Connection Status'>Ollama: {status_icon}</span>
-            </div>
-        """, unsafe_allow_html=True)
-
-    # Mainontent (Tavern/Home)
-    render_home_page()
+    st.markdown("---")
+    st.markdown("""
+        <div class="footer">
+            <p>Aetherquill v0.1 - Your Journey Awaits</p>
+        </div>
+    """, unsafe_allow_html=True)
 
 
-def render_home_page():
-    st.header("Welcome to the Tavern")
+def render_hero_section():
+    """Render the main hero section with title and tagline"""
+    st.markdown("""
+        <div class="hero-section">
+            <h1>⚔️ Aetherquill</h1>
+            <h3>Where Your Story Becomes Legend</h3>
+        </div>
+    """, unsafe_allow_html=True)
 
+
+def render_main_menu():
+    """Render the main menu options"""
     col1, col2 = st.columns(2)
 
     with col1:
         st.markdown("""
-        ### Begin Your Journey
-        Choose your path, brave adventurer:
+            ### Begin Your Journey
+            Choose your path, brave adventurer:
         """)
 
-        if st.button("🎭 Create New Character"):
-            st.switch_page("pages/01_Character_Creation.py")
+        # New Game Flow
+        if st.button("📖 New Adventure", key="new_game"):
+            if 'character' not in st.session_state:
+                st.switch_page("pages/01_Character_Creation.py")
+            else:
+                st.warning(
+                    "You already have an active character. Load game or start fresh?")
 
-        if st.button("🗺️ Start New Quest"):
-            st.switch_page("pages/02_Active_Quest.py")
+        # Continue Game
+        if st.button("🔄 Continue Journey", key="continue"):
+            if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
+                st.switch_page("pages/02_Active_Quest.py")
+            else:
+                st.error("No active character found! Start a new adventure first.")
 
-        if st.button("📜 Load Saved Game"):
+        # Load Game
+        if st.button("📂 Load Saved Tale", key="load"):
             # TODO: Implement save/load system
-            st.info("save/load system coming soon")
-            pass
+            st.info("Save/Load system coming soon!")
 
     with col2:
         st.markdown("""
-        ### Recent Tales
-        *The latest adventures from fellow travelers...*
+            ### Current Quest
+            *Your active story awaits...*
         """)
-        # TODO: Implement recent games/high scores
+
+        if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
+            char = st.session_state['character']
+            if all(key in char for key in ['name', 'race', 'class_type']):
+                st.markdown(f"""
+                    **{char['name']}**
+                    *Level 1 {char['race']} {char['class_type']}*
+
+                    Current Location: Mistwood Tavern
+                    Active Quest: The Call to Adventure
+                """)
+            else:
+                st.markdown(
+                    "*Character data incomplete. Please create a new character.*")
+        else:
+            st.markdown("""
+                *No active quest found.*
+                Begin your journey by creating a new character!
+            """)
+
+
+def render_quick_actions():
+    """Render quick action buttons"""
+    st.markdown("---")
+    cols = st.columns(4)
+
+    with cols[0]:
+        if st.button("⚔️ Combat", key="combat"):
+            if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
+                st.switch_page("pages/04_Combat.py")
+            else:
+                st.error("Create a character before entering combat!")
+
+    with cols[1]:
+        if st.button("🎭 Character", key="character"):
+            st.switch_page("pages/01_Character_Creation.py")
+
+    with cols[2]:
+        if 'character' in st.session_state and isinstance(st.session_state['character'], dict):
+            if st.button("🗺️ World Map", key="map"):
+                st.info("World Map coming soon!")
+                # TODO: Implement world map
+
+    with cols[3]:
+        if st.button("⚙️ Settings", key="settings"):
+            st.switch_page("pages/03_Settings.py")
 
 
 if __name__ == "__main__":

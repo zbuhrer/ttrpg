@@ -159,5 +159,62 @@ THEME = """
                 font-weight: bold;
             }
 
+            /* Hero Section */
+            .hero-section {
+                text-align: center;
+                padding: 2rem 0;
+                margin-bottom: 2rem;
+                background: linear-gradient(
+                    rgba(43, 45, 66, 0.9),
+                    rgba(81, 156, 166, 0.1)
+                );
+                border-radius: 10px;
+                border: 1px solid rgba(212, 175, 55, 0.2);
+            }
+
+            .hero-section h1 {
+                font-size: 3.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .hero-section h3 {
+                font-size: 1.5rem;
+                color: #e0e0e0;
+                font-weight: normal;
+            }
+
+            /* Quick Action Buttons */
+            .stButton>button.quick-action {
+                width: 100%;
+                padding: 1rem;
+                margin: 0.5rem 0;
+                background-color: rgba(81, 156, 166, 0.2);
+            }
+
+            /* Footer */
+            .footer {
+                text-align: center;
+                padding: 1rem 0;
+                color: #888;
+                font-size: 0.9rem;
+            }
+
+            /* Status Indicators */
+            .status-indicator {
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                margin-right: 5px;
+            }
+
+            .status-active {
+                background-color: #45aa3a;
+            }
+
+            .status-inactive {
+                background-color: #aa3a3a;
+            }
+
             </style>
 """
