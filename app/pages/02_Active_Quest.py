@@ -5,6 +5,7 @@ from pathlib import Path
 from config import OLLAMA_ENDPOINT, THEME
 from services.ai_service import AIService
 from services.game_state import GameStateManager
+from services.character_service import CharacterService
 
 
 st.set_page_config(
@@ -13,6 +14,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# Initialize services
+character_service = CharacterService()
 
 # Ensure knowledge base directory exists
 knowledge_base_path = Path("data/knowledge_base")
@@ -27,10 +31,52 @@ if 'ai_service' not in st.session_state:
 if 'game_state_manager' not in st.session_state:
     st.session_state.game_state_manager = GameStateManager()
 
+if 'show_character_creation' not in st.session_state:
+    st.session_state.show_character_creation = False
+
 
 def setup_ui_theme():
     """Configure custom UI theme and styling"""
     st.markdown(THEME, unsafe_allow_html=True)
+
+
+def create_character():
+    """Handle character creation"""
+    st.subheader("✨ Create Your Character")
+
+    with st.form("character_creation_form"):
+        name = st.text_input("Character Name")
+        race = st.selectbox("Race", character_service.get_races())
+        class_type = st.selectbox("Class", character_service.get_classes())
+        background = st.selectbox(
+            "Background", character_service.get_backgrounds())
+
+        submitted = st.form_submit_button("Create Character")
+
+        if submitted:
+            if name and race and class_type and background:
+                # Generate character with starting stats and equipment
+                starting_stats = character_service.calculate_starting_stats(
+                    class_type)
+                starting_equipment = character_service.get_starting_equipment(
+                    class_type)
+
+                character = {
+                    "id": str(uuid.uuid4()),
+                    "name": name,
+                    "race": race,
+                    "class_type": class_type,
+                    "background": background,
+                    "stats": starting_stats,
+                    "equipment": starting_equipment
+                }
+
+                st.session_state.character = character
+                st.session_state.show_character_creation = False
+                st.success(f"Character {name} created successfully!")
+                st.rerun()
+            else:
+                st.error("Please fill in all required fields!")
 
 
 def load_initial_scene():
@@ -103,8 +149,14 @@ st.markdown("""
 if 'character' not in st.session_state:
     st.warning(
         "⚠️ No active character found! Begin your journey by creating a character first.")
-    if st.button("✨ Start Your Journey", key="create_char"):
-        st.switch_page("pages/01_Character_Creation.py")
+
+    # Add character creation trigger button
+    if st.button("✨ Start Your Journey"):
+        st.session_state.show_character_creation = True
+
+    # Show character creation if triggered
+    if st.session_state.show_character_creation:
+        create_character()
 
 else:
     # Add character ID check
