@@ -1,8 +1,7 @@
 import streamlit as st
-import os
 
 import requests
-from typing import Dict, List, Optional
+from typing import Dict, List
 from dataclasses import dataclass
 from pathlib import Path
 from dotenv import load_dotenv
@@ -45,8 +44,6 @@ class GameState:
 # --- Core Configuration ---
 load_dotenv()
 
-OLLAMA_ENDPOINT = os.getenv(
-    'OLLAMA_ENDPOINT', 'http://localhost:11434/api/generate')
 BASE_DIR = Path(__file__).parent.parent
 DATA_DIR = BASE_DIR / "data"
 SAVES_DIR = DATA_DIR / "saves"
