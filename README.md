@@ -1,6 +1,6 @@
 # Aetherquill
 
-<center><img src="questscreen.png" alt="Screenshot of the Questing menu" width="80%"></center>
+<img src="questscreen.png" alt="Screenshot of the Questing menu">
 
 ## Overview & Current Status
 
@@ -25,7 +25,7 @@ Current focus areas:
 3. Enhanced quest generation
 4. Save/load system refinement
 
-For more information, consult the [Roadmap](Roadmap.md).
+For more information, consult the [Roadmap](docs/Roadmap.md).
 
 ## System Architecture
 - Frontend: Streamlit web interface
