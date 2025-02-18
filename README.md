@@ -15,15 +15,15 @@ Aetherquill lets you create your own hero and jump into a world that's shaped by
 
 Here's what you can do right now:
 
--   **Create Your Character:** Choose a name, race, class, and background.  These choices influence the kind of stories you'll experience.
--   **Explore an Ever-Changing Story:** The game uses a smart storyteller to create scenes, conversations, and quests based on how you describe your character, and what *you* choose to do.
+-   **Create Your Character:** Choose a name, race, class, and background. These choices influence the kind of stories you'll experience.
+-   **Explore an Ever-Changing Story:** The game uses a smart storytelling system to create scenes, conversations, and quests based on how you describe your character, and what *you* choose to do.
 -   **Save Your Progress:**  Pick up where you left off and continue your unique adventure.
 -   **Engage in Simple Combat:** Face enemies, roll for initiative, and resolve basic attacks.
 -   **Navigate a Simple World:** Use the UI to begin questing.
 
 We're currently working on:
 
-1.  Making combat more exciting and strategic
+1.  Making combat more exciting and strategic.
 2.  Adding a cool inventory system to collect items and gear.
 3.  Creating more surprising and varied quests that branch in unexpected ways.
 
@@ -33,7 +33,7 @@ Want to know more? Check out the [Roadmap](docs/Roadmap.md)!
 
 -   **Frontend:** A web-based interface (easy to use in your browser).
 -   **Backend:** The engine that powers the game.
--   **Storyteller:** The "AI" that generates the story.
+-   **Ollama:** The "Storyteller" that generates the story.
 -   **Storage:** Saves your game so you can come back later.
 
 ## Component Dependencies
