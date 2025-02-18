@@ -1,82 +1,55 @@
 # Aetherquill
 
-<img src="questscreen.png" alt="Screenshot of the Questing menu" width="50%"><img src="mainscreen.png" alt="Screenshot of the main menu" width="50%">
+<p align="center">
+  <img src="docs/landing.png" alt="Screenshot of the Main Menu" width="45%" style="margin-right: 10px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);">
+  <img src="docs/questing.png" alt="Screenshot of the Active Quest screen" width="45%" style="box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);">
+</p>
 
-## Overview & Current Status
+## Overview
 
-Aetherquill is an AI-driven tabletop RPG system. It writes the story as you engage with the game world, guiding you through quests and adventures. The system has achieved several major milestones:
+Aetherquill is a tabletop RPG where the story comes to life as you play! The world reacts to your choices, guiding you through quests and adventures that are different every time. Instead of following a pre-written script, the game adapts and responds to *you*.
 
-- Robust AI Integration: Enhanced context management and response structuring
-- Advanced State Management: Comprehensive game state tracking and persistence
-- Improved UI Framework: Streamlined interface with better navigation and feedback
-- Character System: Functional character creation and management
-- Quest System: Basic quest tracking and progression
+## Current Status
 
-Recent improvements include:
-- Enhanced context awareness and history management
-- Standardized response formatting
-- Improved state validation and transitions
-- Expanded character creation interface
-- Better navigation and menu systems
+Aetherquill lets you create your own hero and jump into a world that's shaped by your actions.
 
-Current focus areas:
-1. Combat system implementation
-2. Inventory management
-3. Enhanced quest generation
-4. Save/load system refinement
+Here's what you can do right now:
 
-For more information, consult the [Roadmap](docs/Roadmap.md).
+-   **Create Your Character:** Choose a name, race, class, and background.  These choices influence the kind of stories you'll experience.
+-   **Explore an Ever-Changing Story:** The game uses a smart storyteller to create scenes, conversations, and quests based on how you describe your character, and what *you* choose to do.
+-   **Save Your Progress:**  Pick up where you left off and continue your unique adventure.
+-   **Engage in Simple Combat:** Face enemies, roll for initiative, and resolve basic attacks.
+-   **Navigate a Simple World:** Use the UI to begin questing.
+
+We're currently working on:
+
+1.  Making combat more exciting and strategic
+2.  Adding a cool inventory system to collect items and gear.
+3.  Creating more surprising and varied quests that branch in unexpected ways.
+
+Want to know more? Check out the [Roadmap](docs/Roadmap.md)!
 
 ## System Architecture
-- Frontend: Streamlit web interface
-- Backend: Python-based game engine
-- AI: Ollama for narrative generation
-- Storage: File-based with JSON serialization
+
+-   **Frontend:** A web-based interface (easy to use in your browser).
+-   **Backend:** The engine that powers the game.
+-   **Storyteller:** The "AI" that generates the story.
+-   **Storage:** Saves your game so you can come back later.
 
 ## Component Dependencies
-- Core Engine → State Management
-- State Management → Save System
-- AI Integration → Core Engine
-- UI Components → State Management
+
+-   The Core Game needs the Save System to work.
+-   The UI needs the Core Game to display information.
+-   The Storyteller needs the Core Game to create stories.
 
 ## Technical Requirements
-1. Python 3.8+
-2. Streamlit 1.10+
-3. Ollama API endpoint
-4. Access to file system for saves
 
-## Development Environment
-- VS Code with Python extension
-- Git for version control
-- Virtual environment
-- Local Ollama instance
-
-## Data Flow
-1. User Interface → Action Handler
-2. Action Handler → Game Engine
-3. Game Engine → AI Generator
-4. AI Generator → State Manager
-5. State Manager → User Interface
-
-## API Endpoints
-- /api/generate: Ollama story generation
-- /api/save: Game state persistence
-- /api/load: Game state restoration
-
-## Testing Strategy
-1. Unit tests for core logic
-2. Integration tests for AI
-3. UI tests with Streamlit
-4. Save/load verification
-
-## Deployment Strategy
-1. Local development setup
-2. Containerized testing
-3. Production deployment
-4. Monitoring implementation
+1.  Python 3.8 or higher
+2.  Streamlit 1.10 or higher
+3.  Ollama
 
 ## Performance Requirements
-- < 2s response for AI generation
-- < 1s for state updates
-- < 100ms for UI updates
-- < 5s for save/load
+
+-   Ollama model should respond in less than 2 seconds.
+-   The UI should feel smooth and responsive while following the [style guide](docs/Styleguide.md)
+-   Saving and loading should be quick (less than 5 seconds).
