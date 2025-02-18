@@ -135,19 +135,19 @@ This guide provides best practices and conventions for developing the Aetherquil
 
 ### 4.1 Consistent Indentation
 
-*   **Guideline:** Use consistent indentation (typically 4 spaces) throughout your code.
+*   **Guideline:** Use consistent indentation (typically 4 spaces) throughout your code.  Adhere to [PEP 8 - Style Guide for Python Code](https://peps.python.org/pep-0008/).
 
 *   **Rationale:** Consistent indentation improves code readability and makes it easier to identify code blocks.
 
 ### 4.2 Descriptive Comments
 
-*   **Guideline:** Add comments to explain complex logic or non-obvious code.
+*   **Guideline:** Add comments to explain complex logic or non-obvious code.  Use [Docstrings](https://peps.python.org/pep-0257/) for documenting functions, classes and modules.
 
 *   **Rationale:** Comments help other developers (and your future self) understand the code.
 
 ### 4.3 Reusable Functions
 
-*   **Best Practice:** Encapsulate UI logic into reusable functions or components. This reduces code duplication and makes it easier to maintain the application.
+*   **Best Practice:** Encapsulate UI logic into reusable functions or components. This reduces code duplication and makes it easier to maintain the application.  Consider using [Design Patterns](https://refactoring.guru/design-patterns/catalog) where appropriate to structure complex code.
 
 *   **Example:**
 
@@ -270,6 +270,50 @@ Cyclomatic complexity is a software metric that measures the number of linearly 
         # Default logic
     ```
 
+    **Before (High Complexity):**
+
+    ```python
+    def calculate_damage(attack_type, weapon, target_armor, base_damage):
+        if attack_type == "melee":
+            if weapon == "sword":
+                damage = base_damage * 1.2
+            elif weapon == "axe":
+                damage = base_damage * 1.5
+            else:
+                damage = base_damage
+        elif attack_type == "ranged":
+            if weapon == "bow":
+                damage = base_damage * 0.8
+            elif weapon == "crossbow":
+                damage = base_damage * 1.1
+            else:
+                damage = base_damage * 0.5
+        else:
+            damage = base_damage * 0.75
+
+        damage -= target_armor
+        return max(0, damage) # Ensure damage is not negative
+    ```
+
+    **After (Refactored - Lower Complexity):**
+
+    ```python
+    def calculate_damage(attack_type: str, weapon: str, target_armor: int, base_damage: int) -> int:
+        """Calculates damage based on attack type, weapon, and target armor."""
+
+        attack_modifiers = {
+            "melee": {"sword": 1.2, "axe": 1.5},
+            "ranged": {"bow": 0.8, "crossbow": 1.1},
+        }
+
+        modifier = attack_modifiers.get(attack_type, {}).get(weapon, 1.0) # Default modifier is 1.0
+
+        damage = base_damage * modifier - target_armor
+        return max(0, int(damage))
+    ```
+
+    **Explanation:** The refactored code uses a dictionary to store attack modifiers, reducing nested `if` statements and improving readability. Type hints are also included to improve code clarity. This significantly reduces the cyclomatic complexity.
+
 ### 7.5 Exceptions
 
 *   **Guideline:** Exceptions to the complexity threshold should be rare and well-justified. If you believe a function *must* exceed the threshold, document the reason clearly in a comment.
@@ -287,3 +331,161 @@ Cyclomatic complexity is a software metric that measures the number of linearly 
         # ... complex algorithm code ...
         pass
     ```
+
+## 8. Testing
+
+### 8.1 Unit Testing
+
+*   **Guideline:** Write unit tests for all critical functions and components.  Use a testing framework like `pytest`.
+
+*   **Example:**
+
+    ```python
+    # Function to be tested (in combat_module.py):
+    def calculate_damage(attack: int, defense: int) -> int:
+        damage = attack - defense
+        return max(0, damage)
+
+    # Test (in test_combat_module.py):
+    import pytest
+    from combat_module import calculate_damage
+
+    def test_calculate_damage_basic():
+        assert calculate_damage(10, 5) == 5
+
+    def test_calculate_damage_zero():
+        assert calculate_damage(5, 5) == 0
+
+    def test_calculate_damage_negative():
+        assert calculate_damage(5, 10) == 0
+
+    ```
+
+    **Explanation:** This example demonstrates how to write simple unit tests for a function using `pytest`.  The tests cover basic scenarios and edge cases. Run the tests using `pytest`.
+
+### 8.2 UI Testing
+
+*   **Guideline:** While comprehensive UI testing can be complex with Streamlit, focus on testing the core interactions and state changes. Consider using tools like `streamlit-test` or manual testing.
+
+## 9. Modular Design, Type Hinting, and Docstrings
+
+### 9.1 Modular Design
+
+*   **Guideline:** Break down the application into smaller, independent modules (functions and classes) with well-defined interfaces. This enhances reusability and testability.
+
+    **Example:**
+
+    ```python
+    # Instead of a single large script:
+
+    # character_module.py
+    class Character:
+        def __init__(self, name: str, health: int):
+            self.name = name
+            self.health = health
+
+        def take_damage(self, damage: int):
+            self.health -= damage
+            self.health = max(0, self.health)
+
+    # ui_module.py
+    import streamlit as st
+    from character_module import Character
+
+    def display_character(character: Character):
+        st.write(f"Name: {character.name}, Health: {character.health}")
+
+    # main.py
+    from character_module import Character
+    from ui_module import display_character
+
+    player = Character("Aella", 100)
+    display_character(player)
+    ```
+
+### 9.2 Type Hinting
+
+*   **Guideline:** Use type hints extensively to improve code clarity and enable static analysis tools to catch errors early. See [PEP 484 - Type Hints](https://peps.python.org/pep-0484/).
+
+    **Example:**
+
+    ```python
+    def calculate_experience(level: int, monster_difficulty: str) -> int:
+        """Calculates the experience gained from defeating a monster."""
+        if monster_difficulty == "easy":
+            return level * 10
+        elif monster_difficulty == "hard":
+            return level * 30
+        else:
+            return level * 20
+    ```
+
+### 9.3 Docstrings
+
+*   **Guideline:** Write comprehensive docstrings for all functions, classes, and modules. Explain the purpose, parameters, return values, and potential side effects. See [PEP 257 - Docstring Conventions](https://peps.python.org/pep-0257/).
+
+    **Example:**
+
+    ```python
+    def generate_random_name(race: str, gender: str) -> str:
+        """Generates a random name based on race and gender.
+
+        Args:
+            race: The race of the character (e.g., "elf", "human").
+            gender: The gender of the character ("male" or "female").
+
+        Returns:
+            A randomly generated name as a string.
+
+        Raises:
+            ValueError: If the race or gender is invalid.
+        """
+        # ... name generation logic ...
+        return "Generated Name"
+    ```
+
+## 10. Tools and Automation
+
+### 10.1 Linters and Code Formatters
+
+*   **Guideline:** Enforce a consistent code style using a linter (e.g., `pylint`, `flake8`) and a code formatter (e.g., `black`). This reduces stylistic debates and improves code readability.
+
+    *   **Linter Example (pylint):**  `pip install pylint; pylint your_module.py`
+    *   **Formatter Example (black):** `pip install black; black your_module.py`
+
+### 10.2 Version Control
+
+*   **Guideline:** Utilize Git for version control, with clear commit messages and a well-defined branching strategy (e.g., Gitflow).
+
+    *   **Resource:**  [Gitflow Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+
+### 10.3 Dependency Management
+
+*   **Guideline:** Use a requirements file (`requirements.txt` or `Pipfile`) to manage dependencies. This ensures that the application can be easily installed and run in different environments.
+
+    *   **Example (`requirements.txt`):**
+
+        ```
+        streamlit
+        pytest
+        requests
+        ```
+
+### 10.4 Configuration Management
+
+*   **Guideline:** Separate configuration settings from the code using environment variables or a configuration file.
+
+    *   **Example (using environment variables):**
+
+        ```python
+        import os
+
+        database_url = os.environ.get("DATABASE_URL")
+        debug_mode = os.environ.get("DEBUG_MODE", "False") == "True"
+        ```
+
+### 10.5 Continuous Integration
+
+*   **Guideline:** Set up a CI/CD pipeline (e.g., using GitHub Actions, GitLab CI) to automatically run tests, lint code, and deploy the application on every commit.
+
+    *   **Resource:** [GitHub Actions Documentation](https://docs.github.com/en/actions)

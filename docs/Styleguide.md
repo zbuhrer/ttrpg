@@ -2,10 +2,28 @@
 
 Aetherquill is a high-fantasy, story-generating engine with mechanical overtones. This guide defines the project’s visual, UI, and content style in modular components.
 
-## 1. Color Palette
+## 1. Visual Overview
+
+Before diving into specifics, here's a visual overview of the key elements of the Aetherquill style:
+
+| Element          | Description                                                   | Example                                                                   |
+|------------------|---------------------------------------------------------------|---------------------------------------------------------------------------|
+| **Color Palette** | Defines the primary colors used throughout the UI and branding. | See the "Color Palette" section below.                                   |
+| **Typography**    | Specifies the fonts used for headings, body text, and special elements. | See the "Typography" section below.                                    |
+| **Imagery**        | Illustrates the types of images and visual motifs to use.       | Celestial motifs, gears, clockwork shapes subtly incorporated into UI elements. |
+
+## 2. Color Palette
 Objective: Define a consistent color scheme for the UI and branding.
 
 Color Definitions:
+
+| Name          | Hex Code | Use                                                   | Visual Example |
+|---------------|----------|-------------------------------------------------------|----------------|
+| Deep Indigo   | `#2B2D42` | Backgrounds, primary text, headers                   | ![Deep Indigo Color](https://via.placeholder.com/20x20/2B2D42/FFFFFF?text=) |
+| Aether Teal   | `#519CA6` | Buttons, highlights                                   | ![Aether Teal Color](https://via.placeholder.com/20x20/519CA6/FFFFFF?text=) |
+| Runic Gold    | `#D4AF37` | Decorative borders, icons                            | ![Runic Gold Color](https://via.placeholder.com/20x20/D4AF37/000000?text=) |
+| Forged Iron   | `#707070` | Text dividers, hover effects                          | ![Forged Iron Color](https://via.placeholder.com/20x20/707070/FFFFFF?text=) |
+
 ```json
 {
   "primary": {
@@ -38,10 +56,17 @@ Color Definitions:
 * Use secondary for buttons and important action elements.
 * Accent with Runic Gold for status indicators or UI flourishes.
 
-## 2. Typography
+## 3. Typography
 Objective: Establish fonts for headings, body text, and special elements.
 
 Font Definitions:
+
+| Font Name          | Type       | Use                                          | Example Text          |
+|-------------------|------------|----------------------------------------------|-----------------------|
+| Cinzel            | Serif      | Page titles, section headings                | `<h1>Aetherquill</h1>` |
+| Quattrocento Sans | Sans-serif | Paragraphs, tooltips, instructions           | `This is body text.`  |
+| Great Vibes       | Handwritten| Quotes, story titles                         | `“Aetherquill Quote”` |
+
 ```json
 {
   "header_font": {
@@ -70,7 +95,7 @@ Font Definitions:
 * Use Quattrocento Sans for all paragraph text.
 * Use Great Vibes sparingly for quotes and unique headings.
 
-## 3. Logo Design
+## 4. Logo Design
 Objective: Create a logo to reflect the magical-mechanical theme of Aetherquill.
 
 **Logo Concept:**
@@ -84,7 +109,7 @@ Objective: Create a logo to reflect the magical-mechanical theme of Aetherquill.
   * Primary color scheme (Deep Indigo + Runic Gold).
   * Monochrome version for dark/light backgrounds.
 
-## 4. UI Component Style
+## 5. UI Component Style
 Objective: Define visual behaviors for buttons, backgrounds, dividers, and hover states.
 
 **Backgrounds:**
@@ -114,7 +139,7 @@ Directive:
 * Add rounded corners (8px) to all buttons.
 * Apply pulse on hover and slight shimmer when clicked.
 
-## 5. Imagery
+## 6. Imagery
 Objective: Incorporate imagery that evokes high-fantasy and mystical storytelling.
 
 ### Imagery Concept:
@@ -126,7 +151,7 @@ Directive:
 * Maintain a consistent visual theme across all pages.
 * Ensure all images are optimized for web (max 300kb per image).
 
-## 6. Interactive Tone
+## 7. Interactive Tone
 Objective: Establish a consistent narrative voice for all UI text and prompts.
 
 ### Tone Guide:
@@ -141,14 +166,14 @@ Directive:
 * Avoid overly modern or technical language.
 * Use vivid, evocative descriptions when presenting choices or actions.
 
-## 7. Implementation Notes
+## 8. Implementation Notes
 * **Framework:** Ensure all CSS styles are modular and reusable across different UI components.
 * **Accessibility:**
   * Provide high contrast for text and buttons.
   * Add alt text to all images for screen reader support.
 * **Consistency:** Apply all style rules globally to ensure branding cohesion.
 
-## 8. Implementation Details
+## 9. Implementation Details
 For detailed guidance on how to implement the styles and UI patterns described in this document, please refer to the [Development Practices Guide](DevelopmentPractices.md).
 
 ## Final Steps:
