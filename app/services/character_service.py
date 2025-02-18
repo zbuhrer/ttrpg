@@ -289,4 +289,103 @@ class CharacterService:
         character['inventory'] = self.get_starting_equipment(
             character['class_type'])
 
-        return character
+        # Return a dictionary with the character's final attributes
+        return {
+            'name': character['name'],
+            'race': character['race'],
+            'class_type': character['class_type'],
+            'background': character['background'],
+            'stats': character['stats'],
+            'max_health': character['max_health'],
+            'defense': character['defense'],
+            'initiative': character['initiative'],
+            'movement_speed': character['movement_speed'],
+            'inventory': character['inventory']
+        }
+
+    def generate_initial_story(self, character_data):
+        """Generate initial story text using AI."""
+        if not self.ai_service:
+            return "A hero's journey begins..."
+
+        prompt = f"""
+        Craft an engaging opening scene for {character_data['name']},
+        a {character_data['race']} {character_data['class_type']} with a background as a {character_data['background']}.
+        Set the scene in the Mistwood Tavern and hint at an upcoming adventure.
+        Keep it concise (around 5 sentences).
+        """
+        return self.ai_service.generate_response(prompt)
+
+    def generate_inventory(self, character_data):
+        """Generate a list of items appropriate for the character."""
+        if not self.ai_service:
+            return ["Basic supplies"]
+
+        prompt = f"""
+        Based on the details of {character_data['name']},
+        a {character_data['race']} {character_data['class_type']} from background {character_data['background']},
+        provide a list of 5 relevant starting items. Format the list as item name, quantity, and description.
+        Limit to one sentence per item.
+        """
+        inventory_text = self.ai_service.generate_response(prompt)
+
+        # Basic parsing to create a list of items
+        items = []
+        for line in inventory_text.split('\n'):
+            parts = line.split(',')
+            if len(parts) >= 2:
+                item_name = parts[0].strip()
+                quantity = 1  # Default quantity
+                try:
+                    quantity = int(parts[1].strip())
+                except ValueError:
+                    pass  # Use default if quantity is not a number
+
+                description = ','.join(parts[2:]).strip() if len(
+                    parts) > 2 else "A useful item."
+                items.append({
+                    "item": item_name,
+                    "quantity": quantity,
+                    "description": description
+                })
+            elif line.strip():
+                # If the line doesn't follow the "item, quantity" format,
+                # treat the entire line as the item name with a default quantity of 1.
+                items.append({
+                    "item": line.strip(),
+                    "quantity": 1,
+                    "description": "A basic item."
+                })
+
+        return items
+
+    def generate_conditions(self, character_data):
+        """Generate a list of conditions appropriate for the character."""
+        if not self.ai_service:
+            return ["Well-rested"]
+
+        prompt = f"""
+        Considering {character_data['name']},
+        a {character_data['race']} {character_data['class_type']} with background {character_data['background']},
+        what are 3 relevant starting conditions or status effects (positive or negative) that describe them.
+        Provide short descriptions of these conditions and use simple present tense.
+        """
+        conditions_text = self.ai_service.generate_response(prompt)
+
+        # Basic parsing to create a list of conditions
+        conditions = []
+        for line in conditions_text.split('\n'):
+            parts = line.split(',')
+            if len(parts) >= 2:
+                condition_name = parts[0].strip()
+                description = ','.join(parts[1:]).strip()
+                conditions.append({
+                    "condition": condition_name,
+                    "description": description
+                })
+            elif line.strip():
+                conditions.append({
+                    "condition": line.strip(),
+                    "description": "A typical condition."
+                })
+        return conditions

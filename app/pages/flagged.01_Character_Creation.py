@@ -1,6 +1,10 @@
 import streamlit as st
 from config import THEME
 
+
+"""
+This file is flagged for deletion; we are handling character creation directly in the active quest page of the app"""
+
 st.set_page_config(
     page_title="Character Creation - Aetherquill",
     page_icon="🎭",

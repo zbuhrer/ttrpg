@@ -49,104 +49,138 @@ def create_character():
 
     # Step indicators
     steps = ['Basic Info', 'Attributes',
-             'Background', 'Customization', 'Review']
+             'Review', 'Finalize']
     st.progress((st.session_state.creation_step - 1) / len(steps))
 
     if st.session_state.creation_step == 1:
-        with st.form("basic_info"):
-            name = st.text_input("Character Name")
-            race = st.selectbox("Race", character_service.get_races())
+        # Step 1: Basic Information
+        col1, col2 = st.columns(2)
 
-            # Show race details
-            if race:
-                race_details = character_service.get_race_details(race)
-                with st.expander(f"About {race}"):
+        with st.form("basic_info"):
+            with col1:
+                st.write("### Basic Information")
+                name = st.text_input("Character Name")
+                race = st.selectbox("Race", character_service.get_races())
+                class_type = st.selectbox(
+                    "Class", character_service.get_classes())
+
+                # Background selection
+                backgrounds = character_service.get_backgrounds()
+                background_type = st.radio(
+                    "Choose a Background",
+                    options=["Predefined", "Custom"],
+                    horizontal=True
+                )
+
+                if background_type == "Predefined":
+                    background = st.selectbox(
+                        "Background", backgrounds)
+                    # Store the selected background for AI generation later
+                    st.session_state.temp_character = st.session_state.get(
+                        'temp_character', {})
+                    st.session_state.temp_character['background'] = background
+                else:
+                    background = st.text_area("Custom Background",
+                                              placeholder="Enter your character's background")
+                    st.session_state.temp_character = st.session_state.get(
+                        'temp_character', {})
+                    st.session_state.temp_character['background'] = background
+
+            with col2:
+                st.write("### Details")
+                if race:
+                    race_details = character_service.get_race_details(race)
+                    st.write(f"#### {race} Details")
                     st.write(race_details['description'])
                     st.write("**Racial Abilities:**")
                     for ability in race_details['abilities']:
                         st.write(f"- {ability}")
 
-            class_type = st.selectbox("Class", character_service.get_classes())
-
-            # Show class details
-            if class_type:
-                class_details = character_service.get_class_details(class_type)
-                with st.expander(f"About {class_type}"):
+                if class_type:
+                    class_details = character_service.get_class_details(
+                        class_type)
+                    st.write(f"#### {class_type} Details")
                     st.write(f"**Hit Dice:** {class_details['hit_dice']}")
                     st.write("**Special Abilities:**")
                     for ability, desc in class_details['special_abilities'].items():
                         st.write(f"- {ability}: {desc}")
 
-            if st.form_submit_button("Next"):
-                if name and race and class_type:
-                    st.session_state.temp_character = {
-                        'name': name,
-                        'race': race,
-                        'class_type': class_type
-                    }
-                    st.session_state.creation_step = 2
-                    st.rerun()
-                else:
-                    st.error("Please fill in all required fields!")
+                if background and background_type == "Predefined":
+                    st.write(
+                        f"#### {background} Details")  # Placeholder for now
+
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                if st.form_submit_button("Next"):
+                    if name and race and class_type and background:
+                        st.session_state.temp_character = st.session_state.get(
+                            'temp_character', {})
+                        st.session_state.temp_character['name'] = name
+                        st.session_state.temp_character['race'] = race
+                        st.session_state.temp_character['class_type'] = class_type
+                        st.session_state.creation_step = 2
+                        st.rerun()
+                    else:
+                        st.error("Please fill in all required fields!")
+            with col3:
+                pass  # This is the next button; we'll move it here later
+
+        # AI Background Generation - Separate Form
+        ai_gen_col, spacer, next_col = st.columns([1, 1, 1])
+        with st.form("ai_background_generation"):
+            if 'selected_background' in st.session_state and st.session_state.get('temp_character', {}).get('name') and st.session_state.get('temp_character', {}).get('race') and st.session_state.get('temp_character', {}).get('class_type'):
+                if st.form_submit_button(f"AI Generate Description for {st.session_state.temp_character['background']}"):
+
+                    with st.spinner("Generating background story..."):
+                        # Generate AI description
+                        ai_description = character_service.generate_background_story(
+                            st.session_state.temp_character)
+                        st.session_state.temp_character['background_story'] = ai_description
+                        st.rerun()
 
     elif st.session_state.creation_step == 2:
+        # Step 2: Attributes
         with st.form("attributes"):
-            st.write("### Attribute Points")
-            st.write("Distribute your attribute points wisely!")
-
-            remaining_points = 27
-            attributes = {}
-
+            st.write("### Attributes")
             col1, col2 = st.columns(2)
 
+            # Roll stats button outside the columns
+            roll_stats_pressed = st.form_submit_button("Roll Stats")
+
+            if roll_stats_pressed:
+                import random
+                st.session_state.rolled_stats = {
+                    attr: sum(random.randint(1, 6) for _ in range(3)) for attr in ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma']
+                }
+
             with col1:
-                for attr in ['strength', 'dexterity', 'constitution']:
-                    attributes[attr] = st.slider(
-                        attr.capitalize(),
-                        min_value=8,
-                        max_value=15,
-                        value=10,
-                        help=character_service._base_attributes[attr]['description']
-                    )
-
+                if 'rolled_stats' in st.session_state:
+                    for attr in ['strength', 'dexterity', 'constitution']:
+                        st.write(
+                            f"{attr.capitalize()}: {st.session_state.rolled_stats.get(attr, 0)}")
             with col2:
-                for attr in ['intelligence', 'wisdom', 'charisma']:
-                    attributes[attr] = st.slider(
-                        attr.capitalize(),
-                        min_value=8,
-                        max_value=15,
-                        value=10,
-                        help=character_service._base_attributes[attr]['description']
-                    )
+                if 'rolled_stats' in st.session_state:
+                    for attr in ['intelligence', 'wisdom', 'charisma']:
+                        st.write(
+                            f"{attr.capitalize()}: {st.session_state.rolled_stats.get(attr, 0)}")
 
-            if st.form_submit_button("Next"):
-                st.session_state.temp_character['attributes'] = attributes
-                st.session_state.creation_step = 3
-                st.rerun()
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                if st.form_submit_button("Previous"):
+                    st.session_state.creation_step = 1
+                    st.rerun()
+
+            with col3:
+                if st.form_submit_button("Next"):
+                    if 'rolled_stats' in st.session_state:
+                        st.session_state.temp_character['attributes'] = st.session_state.rolled_stats
+                        st.session_state.creation_step = 3
+                        st.rerun()
+                    else:
+                        st.error("Please roll your stats!")
 
     elif st.session_state.creation_step == 3:
-        with st.form("background"):
-            background = st.selectbox(
-                "Background", character_service.get_backgrounds())
-
-            # Generate AI-assisted background story
-            if background:
-                temp_data = st.session_state.temp_character.copy()
-                temp_data['background'] = background
-
-                if st.form_submit_button("Generate Background Story"):
-                    story = character_service.generate_background_story(
-                        temp_data)
-                    st.session_state.temp_character['background'] = background
-                    st.session_state.temp_character['background_story'] = story
-                    st.markdown(f"*{story}*")
-
-            if st.form_submit_button("Next"):
-                st.session_state.creation_step = 4
-                st.rerun()
-
-    elif st.session_state.creation_step == 4:
-        # Final customization and review
+        # Step 3: Review
         st.write("### Review Your Character")
 
         col1, col2 = st.columns(2)
@@ -160,23 +194,88 @@ def create_character():
 
         with col2:
             st.write("#### Attributes")
-            for attr, value in st.session_state.temp_character['attributes'].items():
-                st.write(f"**{attr.capitalize()}:** {value}")
+            if 'attributes' in st.session_state.temp_character:
+                for attr, value in st.session_state.temp_character['attributes'].items():
+                    st.write(f"**{attr.capitalize()}:** {value}")
+            else:
+                st.write("*No attributes generated yet.*")
 
         st.write("#### Background Story")
-        st.markdown(
-            f"*{st.session_state.temp_character.get('background_story', '')}*")
+        if 'background_story' in st.session_state.temp_character:
+            st.markdown(
+                f"*{st.session_state.temp_character.get('background_story', '')}*")
+        else:
+            st.info("No background story generated yet.")
 
-        if st.button("Complete Character Creation"):
-            # Generate final character with all calculations
-            final_character = character_service.finalize_character(
-                st.session_state.temp_character
-            )
-            st.session_state.character = final_character
-            st.session_state.show_character_creation = False
-            st.success(
-                f"Character {final_character['name']} created successfully!")
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col1:
+            if st.button("Previous"):
+                st.session_state.creation_step = 2
+                st.rerun()
+        with col3:
+            if st.button("Next"):
+                st.session_state.creation_step = 4
+                st.rerun()
+
+    elif st.session_state.creation_step == 4:
+        # Step 4: Finalize
+        st.write("### Finalizing Character")
+
+        # Initialize a flag to track if character finalization is in progress
+        if 'finalizing_character' not in st.session_state:
+            st.session_state.finalizing_character = False
+
+        # Button to start the finalization process
+        if not st.session_state.finalizing_character and st.button("Complete Character Creation"):
+            st.session_state.finalizing_character = True
+            st.session_state.character = None  # Reset character
             st.rerun()
+
+        # If the character finalization is in progress, proceed with the steps
+        if st.session_state.finalizing_character:
+            # Step 1: Finalize Character
+            with st.spinner("Finalizing character stats..."):
+                if 'final_character' not in st.session_state:
+                    st.session_state.final_character = character_service.finalize_character(
+                        st.session_state.temp_character
+                    )
+                final_character = st.session_state.final_character
+
+            # Step 2: Generate Initial Story
+            with st.spinner("Generating Initial Story..."):
+                if 'initial_story' not in st.session_state:
+                    st.session_state.initial_story = character_service.generate_initial_story(
+                        st.session_state.temp_character)
+                initial_story = st.session_state.initial_story
+
+            # Step 3: Generate Inventory
+            with st.spinner("Generating Inventory..."):
+                if 'inventory' not in st.session_state:
+                    st.session_state.inventory = character_service.generate_inventory(
+                        st.session_state.temp_character)
+                inventory = st.session_state.inventory
+
+            # Step 4: Generate Conditions
+            with st.spinner("Generating Conditions..."):
+                if 'conditions' not in st.session_state:
+                    st.session_state.conditions = character_service.generate_conditions(
+                        st.session_state.temp_character)
+                conditions = st.session_state.conditions
+
+            # Display the results
+            st.write("### Character Finalized!")
+            st.write(f"**Name:** {final_character['name']}")
+            st.write("### Initial Story")
+            st.write(initial_story)
+            st.write("### Inventory")
+            st.write(inventory)
+            st.write("### Conditions")
+            st.write(conditions)
+
+            # Set the character and reset the flag
+            st.session_state.character = final_character
+            st.session_state.finalizing_character = False
+            st.success("Character creation complete!")
 
 
 def load_initial_scene():
@@ -188,31 +287,35 @@ def load_initial_scene():
         loading_message.text("Loading your adventure...")
         progress_bar.progress(25)
 
-        saved_state = st.session_state.game_state_manager.load_game_state(
-            st.session_state.character['id']
-        )
-        progress_bar.progress(50)
+        if st.session_state.get('character') and st.session_state['character'].get('id'):
 
-        if saved_state:
-            st.session_state.current_scene = saved_state['scene']
-            st.session_state.game_data = saved_state['game_data']
-            progress_bar.progress(100)
-        else:
-            loading_message.text("Generating new adventure...")
-            progress_bar.progress(75)
-
-            # Create new game state
-            initial_state = st.session_state.game_state_manager.create_new_game(
-                st.session_state.character,
-                st.session_state.ai_service
+            saved_state = st.session_state.game_state_manager.load_game_state(
+                st.session_state.character['id']
             )
+            progress_bar.progress(50)
 
-            st.session_state.current_scene = initial_state['scene']
-            st.session_state.game_data = initial_state['game_data']
-            progress_bar.progress(100)
+            if saved_state:
+                st.session_state.current_scene = saved_state['scene']
+                st.session_state.game_data = saved_state['game_data']
+                progress_bar.progress(100)
+            else:
+                loading_message.text("Generating new adventure...")
+                progress_bar.progress(75)
 
-        loading_message.empty()
-        progress_bar.empty()
+                # Create new game state
+                initial_state = st.session_state.game_state_manager.create_new_game(
+                    st.session_state.character,
+                    st.session_state.ai_service
+                )
+
+                st.session_state.current_scene = initial_state['scene']
+                st.session_state.game_data = initial_state['game_data']
+                progress_bar.progress(100)
+
+            loading_message.empty()
+            progress_bar.empty()
+        else:
+            st.info("Create a character to begin your adventure!")
 
 
 def load_environmental_details():
@@ -237,11 +340,10 @@ def load_inventory():
 setup_ui_theme()
 
 # Top Section
-st.title("🗺️ Active Quest")
+st.title("Active Quest")
 st.markdown("""
     <div class='story-window'>
         <h3>The Chronicles of Adventure</h3>
-        <p style='font-style: italic;'>Where every choice shapes your destiny...</p>
     </div>
 """, unsafe_allow_html=True)
 
