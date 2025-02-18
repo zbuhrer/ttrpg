@@ -23,11 +23,12 @@ Here's what you can do right now:
 
 We're currently working on:
 
-1.  Making combat more exciting and strategic.
-2.  Adding a cool inventory system to collect items and gear.
-3.  Creating more surprising and varied quests that branch in unexpected ways.
+1.  Character Development and Customization System
+2.  Combat Initiative System
+3.  Inventory System
+4.  Story/Quest System
 
-Want to know more? Check out the [Roadmap](docs/Roadmap.md)!
+Want to know more? Check out the [Roadmap](docs/Roadmap.md).
 
 ## System Architecture
 
