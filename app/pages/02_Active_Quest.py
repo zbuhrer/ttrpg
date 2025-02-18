@@ -147,11 +147,8 @@ st.markdown("""
 
 # Check if there's an active character
 if 'character' not in st.session_state:
-    st.warning(
-        "⚠️ No active character found! Begin your journey by creating a character first.")
-
     # Add character creation trigger button
-    if st.button("✨ Start Your Journey"):
+    if st.button("Create Character"):
         st.session_state.show_character_creation = True
 
     # Show character creation if triggered

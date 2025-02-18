@@ -29,6 +29,8 @@ PAGE_CONFIG = {
 # UI Theme Configuration
 THEME = """
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Alegreya:ital,wght@0,400;0,700;1,400&display=swap');
+
             /* Base Theme */
             .stApp {
                 background: linear-gradient(
@@ -38,15 +40,25 @@ THEME = """
                 );
                 background-attachment: fixed;
                 color: #e0e0e0;
-                font-family: 'Quattrocento Sans', Arial, sans-serif;
+                font-family: 'Alegreya', serif;
             }
 
             /* Typography */
             h1, h2, h3 {
-                font-family: 'Cinzel', Times New Roman, serif;
+                font-family: 'Cinzel Decorative', serif;
                 color: #D4AF37; /* Runic Gold */
                 text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
                 margin-bottom: 1.5rem;
+            }
+
+            h1 {
+                font-weight: 700;
+            }
+
+            .narrative-text {
+                font-family: 'Alegreya', serif;
+                font-style: italic;
+                line-height: 1.6;
             }
 
             /* Button Styling */
