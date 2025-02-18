@@ -2,57 +2,62 @@ import streamlit as st
 import uuid
 import time
 from pathlib import Path
-from config import OLLAMA_ENDPOINT, THEME
+from config import OLLAMA_ENDPOINT, THEME  # Assuming THEME is in config.py
 from services.ai_service import AIService
 from services.game_state import GameStateManager
 from services.character_service import CharacterService
 
 
-st.set_page_config(
-    page_title="Active Quest",
-    page_icon="🗺️",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# --- Session State Initialization (MUST BE AT TOP) ---
+if "character" not in st.session_state:
+    st.session_state.character = None
+if 'ai_service' not in st.session_state:
+    st.session_state.ai_service = None  # Explicit initialization to None
+if 'game_state_manager' not in st.session_state:
+    st.session_state.game_state_manager = None  # Explicit initialization to None
+if 'character_creation_flag_visible' not in st.session_state:
+    st.session_state.character_creation_flag_visible = False  # Renamed
+if 'character_creation_int_step' not in st.session_state:
+    st.session_state.character_creation_int_step = 1  # Renamed
+if 'active_quest_text_current_scene' not in st.session_state:
+    # Renamed and improved default
+    st.session_state.active_quest_text_current_scene = "The mists of adventure swirl around you..."
+if 'game_data' not in st.session_state:
+    st.session_state.game_data = {}
 
-# Initialize services
+# --- Service Initialization ---
 character_service = CharacterService()
 
 # Ensure knowledge base directory exists
 knowledge_base_path = Path("data/knowledge_base")
 knowledge_base_path.mkdir(parents=True, exist_ok=True)
 
-if 'ai_service' not in st.session_state:
+if st.session_state.ai_service is None:
     st.session_state.ai_service = AIService(
         endpoint=OLLAMA_ENDPOINT,
         knowledge_base_path=knowledge_base_path
     )
 
-if 'game_state_manager' not in st.session_state:
+if st.session_state.game_state_manager is None:
     st.session_state.game_state_manager = GameStateManager()
 
-if 'show_character_creation' not in st.session_state:
-    st.session_state.show_character_creation = False
-
-if 'creation_step' not in st.session_state:
-    st.session_state.creation_step = 1
+# --- UI Theme Setup ---
 
 
 def setup_ui_theme():
-    """Configure custom UI theme and styling"""
+    """Configures custom UI theme and styling (from config.py)."""
     st.markdown(THEME, unsafe_allow_html=True)
 
 
 def create_character():
-    """Enhanced character creation interface"""
+    """Enhanced character creation interface."""
     st.subheader("✨ Create Your Character")
 
     # Step indicators
-    steps = ['Basic Info', 'Attributes',
-             'Review', 'Finalize']
-    st.progress((st.session_state.creation_step - 1) / len(steps))
+    steps = ['Basic Info', 'Attributes', 'Review', 'Finalize']
+    st.progress((st.session_state.character_creation_int_step - 1) / len(steps))
 
-    if st.session_state.creation_step == 1:
+    if st.session_state.character_creation_int_step == 1:
         # Step 1: Basic Information
         col1, col2 = st.columns(2)
 
@@ -118,7 +123,7 @@ def create_character():
                         st.session_state.temp_character['name'] = name
                         st.session_state.temp_character['race'] = race
                         st.session_state.temp_character['class_type'] = class_type
-                        st.session_state.creation_step = 2
+                        st.session_state.character_creation_int_step = 2
                         st.rerun()
                     else:
                         st.error("Please fill in all required fields!")
@@ -138,7 +143,7 @@ def create_character():
                         st.session_state.temp_character['background_story'] = ai_description
                         st.rerun()
 
-    elif st.session_state.creation_step == 2:
+    elif st.session_state.character_creation_int_step == 2:
         # Step 2: Attributes
         with st.form("attributes"):
             st.write("### Attributes")
@@ -167,19 +172,19 @@ def create_character():
             col1, col2, col3 = st.columns([1, 1, 1])
             with col1:
                 if st.form_submit_button("Previous"):
-                    st.session_state.creation_step = 1
+                    st.session_state.character_creation_int_step = 1
                     st.rerun()
 
             with col3:
                 if st.form_submit_button("Next"):
                     if 'rolled_stats' in st.session_state:
                         st.session_state.temp_character['attributes'] = st.session_state.rolled_stats
-                        st.session_state.creation_step = 3
+                        st.session_state.character_creation_int_step = 3
                         st.rerun()
                     else:
                         st.error("Please roll your stats!")
 
-    elif st.session_state.creation_step == 3:
+    elif st.session_state.character_creation_int_step == 3:
         # Step 3: Review
         st.write("### Review Your Character")
 
@@ -210,14 +215,14 @@ def create_character():
         col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
             if st.button("Previous"):
-                st.session_state.creation_step = 2
+                st.session_state.character_creation_int_step = 2
                 st.rerun()
         with col3:
             if st.button("Next"):
-                st.session_state.creation_step = 4
+                st.session_state.character_creation_int_step = 4
                 st.rerun()
 
-    elif st.session_state.creation_step == 4:
+    elif st.session_state.character_creation_int_step == 4:
         # Step 4: Finalize
         st.write("### Finalizing Character")
 
@@ -279,23 +284,24 @@ def create_character():
 
 
 def load_initial_scene():
-    """Load the initial scene description"""
-    if 'current_scene' not in st.session_state:
+    """Loads the initial scene description from saved state or generates a new one."""
+    # Only load the scene if a character exists
+    if 'character' in st.session_state and st.session_state['character'] is not None:
         loading_message = st.empty()
         progress_bar = st.progress(0)
 
         loading_message.text("Loading your adventure...")
         progress_bar.progress(25)
 
-        if st.session_state.get('character') and st.session_state['character'].get('id'):
-
+        if 'id' in st.session_state['character']:
             saved_state = st.session_state.game_state_manager.load_game_state(
                 st.session_state.character['id']
             )
             progress_bar.progress(50)
 
             if saved_state:
-                st.session_state.current_scene = saved_state['scene']
+                # Renamed
+                st.session_state.active_quest_text_current_scene = saved_state['scene']
                 st.session_state.game_data = saved_state['game_data']
                 progress_bar.progress(100)
             else:
@@ -308,18 +314,22 @@ def load_initial_scene():
                     st.session_state.ai_service
                 )
 
-                st.session_state.current_scene = initial_state['scene']
+                # Renamed
+                st.session_state.active_quest_text_current_scene = initial_state['scene']
                 st.session_state.game_data = initial_state['game_data']
                 progress_bar.progress(100)
 
             loading_message.empty()
             progress_bar.empty()
         else:
-            st.info("Create a character to begin your adventure!")
+            st.info(
+                "Please complete character creation to begin your adventure!")
+    else:
+        st.info("Create a character to begin your adventure!")
 
 
 def load_environmental_details():
-    """Load weather and environmental conditions"""
+    """Loads weather and environmental conditions for display."""
     if 'game_data' in st.session_state:
         with st.spinner("Observing the environment..."):
             time.sleep(1)  # Add slight delay for effect
@@ -329,7 +339,7 @@ def load_environmental_details():
 
 
 def load_inventory():
-    """Load character inventory"""
+    """Loads character inventory for display."""
     if 'game_data' in st.session_state:
         with st.spinner("Checking your belongings..."):
             time.sleep(0.5)  # Add slight delay for effect
@@ -337,9 +347,10 @@ def load_inventory():
     return []
 
 
+# --- UI Setup ---
 setup_ui_theme()
 
-# Top Section
+# --- Top Section ---
 st.title("Active Quest")
 st.markdown("""
     <div class='story-window'>
@@ -347,86 +358,82 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Check if there's an active character
-if 'character' not in st.session_state:
-    # Add character creation trigger button
-    if st.button("Create Character"):
-        st.session_state.show_character_creation = True
+# --- Character Creation and Quest Interface Logic ---
+if st.session_state.character is None:
+    # --- Character Creation ---
+    if st.button("Embark on a New Quest"):
+        st.session_state.character_creation_flag_visible = True  # Renamed
 
-    # Show character creation if triggered
-    if st.session_state.show_character_creation:
+    if st.session_state.character_creation_flag_visible:  # Renamed
         create_character()
-
 else:
+    # --- Active Quest Interface ---
     # Add character ID check
-    char = st.session_state['character']
-    if 'id' not in char:
-        char['id'] = str(uuid.uuid4())
-        st.session_state['character'] = char
+    if 'id' not in st.session_state.character:
+        st.session_state.character['id'] = str(uuid.uuid4())
 
-    # Quest Interface
-    col_story, col_status, col_map = st.columns([3, 2, 1])
-
-    # Load initial scene
+    # Load initial scene *before* displaying the quest interface
     load_initial_scene()
+
+    col_story, col_status, col_map = st.columns([3, 2, 1])
 
     with col_story:
         st.markdown("<div class='story-window'>", unsafe_allow_html=True)
         st.header("📜 Current Scene")
-        st.markdown(f"*{st.session_state.current_scene}*")
+        # Renamed
+        st.markdown(f"*{st.session_state.active_quest_text_current_scene}*")
 
-        # Enhanced Action Interface
+        # --- Enhanced Action Interface ---
         st.subheader("🎭 Your Next Move")
 
         # Quick Action Buttons
         quick_actions = st.columns(4)
         with quick_actions[0]:
-            if st.button("🗣️ Talk", key="talk"):
+            if st.button("🗣️ Converse", key="talk"):  # Improved Label
                 new_scene = st.session_state.game_state_manager.generate_action_response(
                     st.session_state.character,
-                    "talk to nearest person",
                     st.session_state.ai_service
                 )
-                st.session_state.current_scene = new_scene
+                st.session_state.active_quest_text_current_scene = new_scene  # Renamed
                 st.session_state.game_state_manager.save_game_state(
                     st.session_state.character['id'],
                     new_scene
                 )
 
         with quick_actions[1]:
-            if st.button("👀 Look", key="look"):
+            if st.button("👀 Observe", key="look"):  # Improved Label
                 new_scene = st.session_state.game_state_manager.generate_action_response(
                     st.session_state.character,
                     "examine surroundings",
                     st.session_state.ai_service
                 )
-                st.session_state.current_scene = new_scene
+                st.session_state.active_quest_text_current_scene = new_scene  # Renamed
                 st.session_state.game_state_manager.save_game_state(
                     st.session_state.character['id'],
                     new_scene
                 )
 
         with quick_actions[2]:
-            if st.button("🔍 Search", key="search"):
+            if st.button("🔍 Scrutinize", key="search"):  # Improved Label
                 new_scene = st.session_state.game_state_manager.generate_action_response(
                     st.session_state.character,
-                    "search the area",
+                    "sarch the area",
                     st.session_state.ai_service
                 )
-                st.session_state.current_scene = new_scene
+                st.session_state.active_quest_text_current_scene = new_scene  # Renamed
                 st.session_state.game_state_manager.save_game_state(
                     st.session_state.character['id'],
                     new_scene
                 )
 
         with quick_actions[3]:
-            if st.button("📖 Journal", key="journal"):
+            if st.button("📖 Ponder", key="journal"):  # Improved Label
                 new_scene = st.session_state.game_state_manager.generate_action_response(
                     st.session_state.character,
                     "check quest journal",
                     st.session_state.ai_service
                 )
-                st.session_state.current_scene = new_scene
+                st.session_state.active_quest_text_current_scene = new_scene  # Renamed
                 st.session_state.game_state_manager.save_game_state(
                     st.session_state.character['id'],
                     new_scene
@@ -434,14 +441,14 @@ else:
 
         # Custom Action Input
         action = st.text_input(
-            "🎯 Custom Action", placeholder="What would you like to do?")
-        if st.button("✨ Take Action", key="action"):
+            "🔮 What fate will you weave?", placeholder="Unleash your ingenuity...")  # Improved Tone
+        if st.button("✨ Invoke Action", key="action"):  # Improved Label
             new_scene = st.session_state.game_state_manager.generate_action_response(
                 st.session_state.character,
                 action,
                 st.session_state.ai_service
             )
-            st.session_state.current_scene = new_scene
+            st.session_state.active_quest_text_current_scene = new_scene  # Renamed
             st.session_state.game_state_manager.save_game_state(
                 st.session_state.character['id'],
                 new_scene
@@ -449,37 +456,43 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_status:
-        st.markdown("<div class='status-panel'>", unsafe_allow_html=True)
-        char = st.session_state['character']
+        st.markdown("<div class='status-panel'>",
+                    unsafe_allow_html=True)
+        if st.session_state.character is not None:
+            char = st.session_state.character
 
-        # Load details progressively
-        weather, effects = load_environmental_details()
-        inventory = load_inventory()
+            # Load details progressively
+            weather, effects = load_environmental_details()
+            inventory = load_inventory()
 
-        # Enhanced Character Status Display
-        st.header("📊 Character Status")
-        st.markdown(f"""
+            # Enhanced Character Status Display
+            st.header("📊 Character Status")
+            st.markdown(f"""
         ### {char['name']}
         #### {char['race']} {char['class_type']}
         *{char['background']}*
+        *{char['background']}*
 
         ---
-
         ### ⚔️ Combat Stats
         """)
 
-        # Visual Stats Bars
-        for stat, value in char['stats'].items():
-            st.progress(value/100, f"{stat.title()}: {value}")
+            # Visual Stats Bars
+            if 'stats' in char:
+                for stat, value in char['stats'].items():
+                    st.progress(
+                        value/100, f"{stat.title()}: {value}")
 
-        # Quick Inventory
-        st.markdown("### 📦 Inventory")
-        for item in inventory:
-            st.write(f"- {item['item']} (x{item['quantity']})")
+            # Quick Inventory
+            st.markdown("### 📦 Inventory")
+            for item in inventory:
+                st.write(
+                    f"- {item['item']} (x{item['quantity']})")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_map:
-        st.markdown("<div class='status-panel'>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='status-panel'>", unsafe_allow_html=True)
         st.header("🗺️ Location")
         # Mini-map or location description
         st.markdown('minimap placeholder')
@@ -489,4 +502,9 @@ else:
         st.write(weather)
         for effect in effects:
             st.write(f"- {effect}")
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(
+            "</div>", unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)

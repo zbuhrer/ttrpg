@@ -45,26 +45,43 @@ class GameStateManager:
 
         # Generate weather based on character background
         weather_prompt = f"""
-        Based on {character['name']}'s background as a {character['background']} from
-        {origin}, {f"and their {
-            ', '.join(traits)} personality" if traits else ""},
-        describe the weather for their first adventure. Keep it brief but atmospheric.
+        Describe the weather in the Mistwood Tavern, where {character['name']}'s first adventure begins.
+        {character['name']} is a {character['race']} {character['class_type']} with a background as a {character['background']} from {origin}.
+        {f"Their personality is described as {
+            ', '.join(traits)}." if traits else "They have no defined personality traits."}
+
+        Consider the character's background and the location when creating the description.
+        Specify the season.
+        Limit the description to 2 sentences.
+        The weather should be atmospheric and evocative.
         """
         weather_response = ai_service.generate_response(weather_prompt)
 
         # Generate starting inventory based on background
         inventory_prompt = f"""
-        Given {character['name']}'s previous profession as a {profession}
-        and their {character['class_type']} class, list 5 specific items they would carry.
-        Include one unique or personalized item that reflects their background.
+        As a {character['race']} {character['class_type']} named {character['name']} with a background as a {profession}, what 5 items would they realistically carry?
+        Generate a bulleted list of items.
+        For each item, include a one-sentence description that adds flavor and context. The quantity should always be '1' unless there is an obvious reason to have more.
+        Include a unique or personalized item reflecting their background as {character['background']}.
+
+        Example output:
+        * Shortsword - A reliable weapon for close combat.
+        * Waterskin - Holds a day's worth of water.
+        * A worn map of the Mistwood
         """
         inventory_response = ai_service.generate_response(inventory_prompt)
 
         # Generate initial scene description
         scene_prompt = f"""
-        Describe the scene where {character['name']}, a {character['race']} {character['class_type']}
-        {trait_description}, begins their adventure in the Mistwood Tavern.
-        Consider their background as a {profession} and their motivation: {motivation}.
+        {character['name']}, a {character['race']} {character['class_type']}, arrives in the Mistwood Tavern to begin their adventure.
+        They are {trait_description} and have a background as a {profession} with the motivation to {motivation}.
+
+        Describe the tavern scene, including the following:
+        *   The overall atmosphere (e.g., lively, dreary, mysterious).
+        *   A few notable NPCs (brief descriptions).
+        *   A potential "hook" or hint at an upcoming quest or problem.
+
+        Keep the description concise (around 4-5 sentences) and descriptive. Imbue the description with a sense of adventure and mystery.
         """
         scene_response = ai_service.generate_response(scene_prompt)
 
@@ -217,10 +234,15 @@ class GameStateManager:
         """Generate AI scene description"""
         try:
             prompt = f"""
-            Describe a scene where a {character['race']} {character['class_type']}
-            named {character['name']} is in {location}.
-            Keep it brief but atmospheric, focusing on sensory details.
-            """
+        {character['name']}, a {character['race']} {character['class_type']}, is in {location}.
+
+        Create a short scene description focusing on:
+        *   What they see
+        *   What they hear
+        *   What they smell
+
+        Imbue the description with mystery. Limit the description to 3 sentences.
+        """
 
             # Create minimal GameState for the scene
             game_state = GameState(
@@ -260,10 +282,16 @@ class GameStateManager:
         """Generate AI response to character actions"""
         try:
             prompt = f"""
-            Describe how {character['name']} attempts to {action}.
-            Include sensory details and any consequences.
-            Keep it under 3 sentences.
-            """
+        {character['name']} attempts to {action}.
+
+        Describe the immediate outcome, focusing on:
+        *   Sensory details (what they see, hear, feel).
+        *   Any immediate consequences of the action (positive or negative).
+        *   If the action would obviously succeed or fail.
+
+        Limit the description to 3 sentences.
+        The tone should be descriptive and engaging.
+        """
 
             # Create minimal GameState for the action
             game_state = GameState(

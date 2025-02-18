@@ -148,6 +148,9 @@ Directive:
   * Add alt text to all images for screen reader support.
 * **Consistency:** Apply all style rules globally to ensure branding cohesion.
 
+## 8. Implementation Details
+For detailed guidance on how to implement the styles and UI patterns described in this document, please refer to the [Development Practices Guide](DevelopmentPractices.md).
+
 ## Final Steps:
 **Asset Creation:** Develop the logo, backgrounds, and icons according to the style guide.
 **UI Styling:** Implement CSS rules and confirm proper hover/active states.
