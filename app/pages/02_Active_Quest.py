@@ -34,6 +34,9 @@ if 'game_state_manager' not in st.session_state:
 if 'show_character_creation' not in st.session_state:
     st.session_state.show_character_creation = False
 
+if 'creation_step' not in st.session_state:
+    st.session_state.creation_step = 1
+
 
 def setup_ui_theme():
     """Configure custom UI theme and styling"""
@@ -41,42 +44,139 @@ def setup_ui_theme():
 
 
 def create_character():
-    """Handle character creation"""
+    """Enhanced character creation interface"""
     st.subheader("✨ Create Your Character")
 
-    with st.form("character_creation_form"):
-        name = st.text_input("Character Name")
-        race = st.selectbox("Race", character_service.get_races())
-        class_type = st.selectbox("Class", character_service.get_classes())
-        background = st.selectbox(
-            "Background", character_service.get_backgrounds())
+    # Step indicators
+    steps = ['Basic Info', 'Attributes',
+             'Background', 'Customization', 'Review']
+    st.progress((st.session_state.creation_step - 1) / len(steps))
 
-        submitted = st.form_submit_button("Create Character")
+    if st.session_state.creation_step == 1:
+        with st.form("basic_info"):
+            name = st.text_input("Character Name")
+            race = st.selectbox("Race", character_service.get_races())
 
-        if submitted:
-            if name and race and class_type and background:
-                # Generate character with starting stats and equipment
-                starting_stats = character_service.calculate_starting_stats(
-                    class_type)
-                starting_equipment = character_service.get_starting_equipment(
-                    class_type)
+            # Show race details
+            if race:
+                race_details = character_service.get_race_details(race)
+                with st.expander(f"About {race}"):
+                    st.write(race_details['description'])
+                    st.write("**Racial Abilities:**")
+                    for ability in race_details['abilities']:
+                        st.write(f"- {ability}")
 
-                character = {
-                    "id": str(uuid.uuid4()),
-                    "name": name,
-                    "race": race,
-                    "class_type": class_type,
-                    "background": background,
-                    "stats": starting_stats,
-                    "equipment": starting_equipment
-                }
+            class_type = st.selectbox("Class", character_service.get_classes())
 
-                st.session_state.character = character
-                st.session_state.show_character_creation = False
-                st.success(f"Character {name} created successfully!")
+            # Show class details
+            if class_type:
+                class_details = character_service.get_class_details(class_type)
+                with st.expander(f"About {class_type}"):
+                    st.write(f"**Hit Dice:** {class_details['hit_dice']}")
+                    st.write("**Special Abilities:**")
+                    for ability, desc in class_details['special_abilities'].items():
+                        st.write(f"- {ability}: {desc}")
+
+            if st.form_submit_button("Next"):
+                if name and race and class_type:
+                    st.session_state.temp_character = {
+                        'name': name,
+                        'race': race,
+                        'class_type': class_type
+                    }
+                    st.session_state.creation_step = 2
+                    st.rerun()
+                else:
+                    st.error("Please fill in all required fields!")
+
+    elif st.session_state.creation_step == 2:
+        with st.form("attributes"):
+            st.write("### Attribute Points")
+            st.write("Distribute your attribute points wisely!")
+
+            remaining_points = 27
+            attributes = {}
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                for attr in ['strength', 'dexterity', 'constitution']:
+                    attributes[attr] = st.slider(
+                        attr.capitalize(),
+                        min_value=8,
+                        max_value=15,
+                        value=10,
+                        help=character_service._base_attributes[attr]['description']
+                    )
+
+            with col2:
+                for attr in ['intelligence', 'wisdom', 'charisma']:
+                    attributes[attr] = st.slider(
+                        attr.capitalize(),
+                        min_value=8,
+                        max_value=15,
+                        value=10,
+                        help=character_service._base_attributes[attr]['description']
+                    )
+
+            if st.form_submit_button("Next"):
+                st.session_state.temp_character['attributes'] = attributes
+                st.session_state.creation_step = 3
                 st.rerun()
-            else:
-                st.error("Please fill in all required fields!")
+
+    elif st.session_state.creation_step == 3:
+        with st.form("background"):
+            background = st.selectbox(
+                "Background", character_service.get_backgrounds())
+
+            # Generate AI-assisted background story
+            if background:
+                temp_data = st.session_state.temp_character.copy()
+                temp_data['background'] = background
+
+                if st.form_submit_button("Generate Background Story"):
+                    story = character_service.generate_background_story(
+                        temp_data)
+                    st.session_state.temp_character['background'] = background
+                    st.session_state.temp_character['background_story'] = story
+                    st.markdown(f"*{story}*")
+
+            if st.form_submit_button("Next"):
+                st.session_state.creation_step = 4
+                st.rerun()
+
+    elif st.session_state.creation_step == 4:
+        # Final customization and review
+        st.write("### Review Your Character")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.write("#### Basic Information")
+            st.write(f"**Name:** {st.session_state.temp_character['name']}")
+            st.write(f"**Race:** {st.session_state.temp_character['race']}")
+            st.write(
+                f"**Class:** {st.session_state.temp_character['class_type']}")
+
+        with col2:
+            st.write("#### Attributes")
+            for attr, value in st.session_state.temp_character['attributes'].items():
+                st.write(f"**{attr.capitalize()}:** {value}")
+
+        st.write("#### Background Story")
+        st.markdown(
+            f"*{st.session_state.temp_character.get('background_story', '')}*")
+
+        if st.button("Complete Character Creation"):
+            # Generate final character with all calculations
+            final_character = character_service.finalize_character(
+                st.session_state.temp_character
+            )
+            st.session_state.character = final_character
+            st.session_state.show_character_creation = False
+            st.success(
+                f"Character {final_character['name']} created successfully!")
+            st.rerun()
 
 
 def load_initial_scene():
