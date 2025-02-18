@@ -84,7 +84,6 @@ def main():
 
     render_hero_section()
     render_main_menu()
-    render_quick_actions()
 
     st.markdown("---")
     st.markdown("""
@@ -98,7 +97,7 @@ def render_hero_section():
     """Render the main hero section with title and tagline"""
     st.markdown("""
         <div class="hero-section">
-            <h1>⚔️ Aetherquill</h1>
+            <h1>Aetherquill</h1>
         </div>
     """, unsafe_allow_html=True)
 
@@ -108,24 +107,6 @@ def render_main_menu():
     col1, col2 = st.columns(2)
 
     with col1:
-        # New Story Flow
-        if st.button("Continue", key="continue"):
-            if 'character' not in st.session_state:
-                st.switch_page("pages/01_Character_Creation.py")
-            else:
-                st.switch_page("pages/02_Active_Quest.py")
-
-        # New Character Flow
-        if st.button("New Character", key="new_char"):
-            if 'character' not in st.session_state:
-                st.switch_page("pages/01_Character_Creation.py")
-
-        # Load Story
-        if st.button("Load Story", key="load"):
-            # TODO: Implement save/load system
-            st.info("Save/Load system coming soon!")
-
-    with col2:
         st.markdown("""
             ### Current Quest
         """)
@@ -148,38 +129,22 @@ def render_main_menu():
                 *No active quest found.*
             """)
 
+    with col2:
 
-def render_quick_actions():
-    """Render quick action buttons"""
-    st.markdown("---")
-    cols = st.columns(4)
+        with st.container():
+            st.markdown('<div class="button-container">',
+                        unsafe_allow_html=True)
 
-    # Check if we have an active character
-    has_active_character = 'character' in st.session_state and isinstance(
-        st.session_state['character'], dict)
+            if st.button("Play", key="play"):
+                st.switch_page("pages/02_Active_Quest.py")
 
-    with cols[0]:
-        st.button("⚔️ Combat",
-                  key="combat",
-                  disabled=not has_active_character,
-                  on_click=lambda: st.switch_page("pages/04_Combat.py") if has_active_character else None)
+            if st.button("Load", key="load", disabled=True, help="Save/Load system coming soon!"):
+                st.info("Save/Load system coming soon!")
 
-    with cols[1]:
-        st.button("🗺️ World Map",
-                  key="map",
-                  disabled=not has_active_character,
-                  on_click=lambda: st.info("World Map coming soon!") if has_active_character else None)
+            if st.button("Settings", key="settings"):
+                st.switch_page("pages/03_Settings.py")
 
-    with cols[2]:
-        st.button("🎭 Character",
-                  key="character",
-                  on_click=lambda: st.switch_page("pages/01_Character_Creation.py"))
-
-
-    with cols[3]:
-        st.button("⚙️ Settings",
-                  key="settings",
-                  on_click=lambda: st.switch_page("pages/03_Settings.py"))
+            st.markdown('</div>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
