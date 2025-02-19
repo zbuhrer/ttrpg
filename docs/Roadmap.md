@@ -15,7 +15,7 @@
   - [x] Turn management system
   - [✓] Action resolution framework
   - [x] Event dispatch system
-  - [ ] Game loop implementation
+  - [✓] Game loop implementation
 
 ### Phase 2: AI Integration
  - [x] Ollama Setup
@@ -40,8 +40,8 @@
  - [✓] Character System (partial)
   - [x] Basic character creation interface
   - [x] Initial stat management
-  - [ ] Level progression
-  - [ ] Skills and abilities
+  - [✓] Level progression
+  - [✓] Skills and abilities
 
  - [✓] Combat System
   - [x] Initiative tracking
