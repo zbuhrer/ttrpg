@@ -282,12 +282,13 @@ class GameStateManager:
         """Generate AI response to character actions"""
         try:
             prompt = f"""
-        {character['name']} attempts to {action}.
+        {character['name']}, a {character['race']} {character['class_type']} with skills in {', '.join(character.get('skills', []))}, attempts to {action}.
 
         Describe the immediate outcome, focusing on:
         *   Sensory details (what they see, hear, feel).
         *   Any immediate consequences of the action (positive or negative).
-        *   If the action would obviously succeed or fail.
+        *   If the action would obviously succeed or fail. If it is a testable skill, mention if the character's skill in that area helped or hindered their progress.
+        *   Include a skill check if it is relevant to the action.
 
         Limit the description to 3 sentences.
         The tone should be descriptive and engaging.
