@@ -1,39 +1,97 @@
 import streamlit as st
 import sqlite3
 import json
+import logging
 
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Protocol
+from dataclasses import dataclass, field
+# Assuming these are your data model classes
 from .models import GameState, Character
+from typing import TypedDict
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)  # Or logging.DEBUG for more detail
+
+
+class AIServiceInterface(Protocol):
+    """Protocol defining the expected methods of the AI service."""
+
+    def generate_response(self, prompt: str, game_state: Optional[GameState] = None, character: Optional[Character] = None) -> str:
+        ...
+
+
+class GameData(TypedDict, total=False):
+    """TypedDict to represent Game Data Dictionary"""
+    time: str
+    weather: str
+    environmental_effects: List[str]
+    active_quests: List[str]
+    recent_events: List[str]
+    character_state: Dict[str, Any]
+
+
+@dataclass
+class GameStateConfig:
+    """Configuration for the Game State Manager."""
+    db_path: str = 'game_data.db'
+    default_location: str = "Mistwood Tavern"
+    initial_health: int = 100
+    initial_energy: int = 100
+    default_weather: str = "clear"
 
 
 class GameStateManager:
-    def __init__(self, db_path: str = 'game_data.db'):
-        self.db_path = db_path
+    """Manages the game state, including saving, loading, and generating content."""
+
+    def __init__(self, config: Optional[GameStateConfig] = None):
+        """Initializes the GameStateManager with an optional configuration."""
+        self.config = config or GameStateConfig()
         self._init_database()
 
     def _init_database(self) -> None:
-        """Initialize the database with required tables"""
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
+        """Initializes the SQLite database."""
+        try:
+            conn = sqlite3.connect(self.config.db_path)
+            c = conn.cursor()
 
-        # Create game states table
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS game_states (
-                char_id TEXT PRIMARY KEY,
-                scene TEXT,
-                location TEXT,
-                timestamp TEXT,
-                game_data JSON
-            )
-        ''')
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS game_states (
+                    char_id TEXT PRIMARY KEY,
+                    scene TEXT,
+                    location TEXT,
+                    timestamp TEXT,
+                    game_data JSON
+                )
+            ''')
 
-        conn.commit()
-        conn.close()
+            conn.commit()
+            logger.info("Database initialized successfully.")
+        except sqlite3.Error as e:
+            logger.error(f"Database initialization failed: {e}")
+            raise
+        finally:
+            conn.close()
 
-    def create_new_game(self, character: Dict[str, Any], ai_service: Any) -> Dict[str, Any]:
-        """Create a personalized game state based on character details"""
-        # Safely get personality traits
+    def create_new_game(self, character: Dict[str, Any], ai_service: AIServiceInterface) -> Dict[str, Any]:
+        """Creates a new game state for the given character using the AI service."""
+        initial_state = self._generate_initial_game_state(
+            character, ai_service)
+
+        # Save the initial state to the database
+        self.save_game_state(
+            char_id=character['id'],
+            scene=initial_state['scene'],
+            location=initial_state['location'],
+            game_data=initial_state['game_data']
+        )
+
+        return initial_state
+
+    def _generate_initial_game_state(self, character: Dict[str, Any], ai_service: AIServiceInterface) -> Dict[str, Any]:
+        """Generates the initial game state content using the AI service."""
+
         traits = character.get('personality', {}).get('traits', [])
         trait_description = f"with {traits[0]} tendencies" if traits else ""
 
@@ -43,7 +101,6 @@ class GameStateManager:
         profession = background_details.get('profession', 'mysterious past')
         motivation = background_details.get('motivation', 'seeking adventure')
 
-        # Generate weather based on character background
         weather_prompt = f"""
         Describe the weather in the Mistwood Tavern, where {character['name']}'s first adventure begins.
         {character['name']} is a {character['race']} {character['class_type']} with a background as a {character['background']} from {origin}.
@@ -55,9 +112,9 @@ class GameStateManager:
         Limit the description to 2 sentences.
         The weather should be atmospheric and evocative.
         """
-        weather_response = ai_service.generate_response(weather_prompt)
+        weather_response = self._safe_generate_response(
+            ai_service, weather_prompt, "The weather is typical.")
 
-        # Generate starting inventory based on background
         inventory_prompt = f"""
         As a {character['race']} {character['class_type']} named {character['name']} with a background as a {profession}, what 5 items would they realistically carry?
         Generate a bulleted list of items.
@@ -69,9 +126,9 @@ class GameStateManager:
         * Waterskin - Holds a day's worth of water.
         * A worn map of the Mistwood
         """
-        inventory_response = ai_service.generate_response(inventory_prompt)
+        inventory_response = self._safe_generate_response(
+            ai_service, inventory_prompt, "* Empty pack.")
 
-        # Generate initial scene description
         scene_prompt = f"""
         {character['name']}, a {character['race']} {character['class_type']}, arrives in the Mistwood Tavern to begin their adventure.
         They are {trait_description} and have a background as a {profession} with the motivation to {motivation}.
@@ -83,44 +140,35 @@ class GameStateManager:
 
         Keep the description concise (around 4-5 sentences) and descriptive. Imbue the description with a sense of adventure and mystery.
         """
-        scene_response = ai_service.generate_response(scene_prompt)
+        scene_response = self._safe_generate_response(
+            ai_service, scene_prompt, "You arrive at a bustling tavern.")
 
-        # Create initial game state with generated content
-        initial_state = {
-            'scene': scene_response,
-            'location': "Mistwood Tavern",
-            'game_data': {
-                'time': datetime.now().isoformat(),
-                'weather': weather_response,
-                'environmental_effects': self._generate_environmental_effects(weather_response),
-                'active_quests': ['The Call to Adventure'],
-                'recent_events': ['Arrived at Mistwood Tavern'],
-                'character_state': {
-                    'status': {
-                        'health': 100,
-                        'energy': 100,
-                        'rested': True
-                    },
-                    'inventory': self._parse_inventory(inventory_response)
-                }
+        initial_game_data: GameData = {
+            'time': datetime.now().isoformat(),
+            'weather': weather_response,
+            'environmental_effects': self._generate_environmental_effects(weather_response),
+            'active_quests': ['The Call to Adventure'],
+            'recent_events': ['Arrived at Mistwood Tavern'],
+            'character_state': {
+                'status': {
+                    'health': self.config.initial_health,
+                    'energy': self.config.initial_energy,
+                    'rested': True
+                },
+                'inventory': self._parse_inventory(inventory_response)
             }
         }
 
-        # Save state and return
-        self.save_game_state(
-            char_id=character['id'],
-            scene=initial_state['scene'],
-            location=initial_state['location'],
-            game_data=initial_state['game_data']
-        )
-
-        return initial_state
+        return {
+            'scene': scene_response,
+            'location': self.config.default_location,
+            'game_data': initial_game_data
+        }
 
     def _generate_environmental_effects(self, weather_text: str) -> List[str]:
-        """Generate environmental effects based on weather description"""
+        """Generates environmental effects based on the weather description."""
         effects = ['Tavern ambiance', 'Warm hearth']  # Default effects
 
-        # Simple weather keyword mapping
         weather_lower = weather_text.lower()
         if 'rain' in weather_lower:
             effects.extend(['Wet ground', 'Poor visibility'])
@@ -138,18 +186,16 @@ class GameStateManager:
         return effects
 
     def _parse_inventory(self, inventory_text: str) -> List[Dict[str, Any]]:
-        """Parse inventory text into structured format"""
+        """Parses inventory text into a structured format."""
         inventory_items = []
 
-        # Split the text into lines and process each item
         for line in inventory_text.split('\n'):
             line = line.strip()
             if line:
-                # Remove any bullet points or numbers
-                line = line.lstrip('•-*1234567890. ')
+                line = line.lstrip('•-*1234567890. ')  # Remove bullet points
 
-                # Default quantity is 1 unless specified
-                quantity = 1
+                quantity = 1  # Default quantity
+                item_name = line  # Assume the whole line is the item name
 
                 # Check if quantity is specified in parentheses
                 if '(' in line and ')' in line:
@@ -160,15 +206,12 @@ class GameStateManager:
                             ''.join(filter(str.isdigit, item_parts[1])))
                     except ValueError:
                         quantity = 1
-                else:
-                    item_name = line
 
                 inventory_items.append({
                     'item': item_name,
                     'quantity': quantity
                 })
 
-        # Ensure we have at least some basic items
         if not inventory_items:
             inventory_items = [
                 {'item': 'Adventurer\'s Pack', 'quantity': 1},
@@ -181,11 +224,13 @@ class GameStateManager:
     def save_game_state(self,
                         char_id: str,
                         scene: str,
-                        location: str = "Mistwood Tavern",
-                        game_data: Dict[str, Any] = None) -> None:
-        """Save current game state to database"""
+                        location: Optional[str] = None,
+                        game_data: Optional[Dict[str, Any]] = None) -> None:
+        """Saves the current game state to the database."""
+        location = location or self.config.default_location  # Use default if None
+
         try:
-            conn = sqlite3.connect(self.db_path)
+            conn = sqlite3.connect(self.config.db_path)
             c = conn.cursor()
 
             c.execute("""
@@ -201,135 +246,183 @@ class GameStateManager:
             ))
 
             conn.commit()
-        except Exception as e:
-            st.error(f"Error saving game state: {str(e)}")
+            logger.info(f"Game state saved for character {char_id}.")
+        except sqlite3.Error as e:
+            logger.error(f"Error saving game state: {e}")
+            st.error(f"Error saving game: {str(e)}")
         finally:
             conn.close()
 
     def load_game_state(self, char_id: str) -> Optional[Dict[str, Any]]:
-        """Load saved game state from database"""
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
+        """Loads a saved game state from the database."""
+        try:
+            conn = sqlite3.connect(self.config.db_path)
+            c = conn.cursor()
 
-        result = c.execute("""
-            SELECT scene, location, game_data
-            FROM game_states
-            WHERE char_id = ?
-        """, (char_id,)).fetchone()
+            c.execute("""
+                SELECT scene, location, game_data
+                FROM game_states
+                WHERE char_id = ?
+            """, (char_id,))
+            result = c.fetchone()
 
-        conn.close()
+            if result:
+                scene, location, game_data_json = result
+                game_data = json.loads(
+                    game_data_json) if game_data_json else {}
 
-        if result:
-            return {
-                'scene': result[0],
-                'location': result[1],
-                'game_data': json.loads(result[2])
-            }
-        return None
+                # Basic data validation
+                if not isinstance(scene, str):
+                    logger.warning(f"Invalid scene data for char_id {
+                                   char_id}. Using default.")
+                    scene = "You are standing in a mysterious place."
+                if not isinstance(location, str):
+                    logger.warning(f"Invalid location data for char_id {
+                                   char_id}. Using default.")
+                    location = self.config.default_location
+                if not isinstance(game_data, dict):
+                    logger.warning(f"Invalid game_data for char_id {
+                                   char_id}. Using default.")
+                    game_data = {}
+
+                return {
+                    'scene': scene,
+                    'location': location,
+                    'game_data': game_data
+                }
+            else:
+                logger.info(f"No game state found for character {char_id}.")
+                return None
+
+        except sqlite3.Error as e:
+            logger.error(f"Error loading game state: {e}")
+            st.error(f"Error loading game: {str(e)}")
+            return None
+        except json.JSONDecodeError as e:
+            logger.error(f"Error decoding game data JSON: {e}")
+            st.error(f"Error loading game (corrupted save): {str(e)}")
+            return None
+        finally:
+            conn.close()
 
     def generate_scene_description(self,
                                    character: Dict[str, Any],
                                    location: str,
-                                   ai_service: Any) -> str:
-        """Generate AI scene description"""
-        try:
-            prompt = f"""
-        {character['name']}, a {character['race']} {character['class_type']}, is in {location}.
+                                   ai_service: AIServiceInterface) -> str:
+        """Generates a scene description using the AI service."""
+        prompt = f"""
+            {character['name']}, a {character['race']} {character['class_type']}, is in {location}.
 
-        Create a short scene description focusing on:
-        *   What they see
-        *   What they hear
-        *   What they smell
+            Create a short scene description focusing on:
+            *   What they see
+            *   What they hear
+            *   What they smell
 
-        Imbue the description with mystery. Limit the description to 3 sentences.
-        """
+            Imbue the description with mystery. Limit the description to 3 sentences.
+            """
 
-            # Create minimal GameState for the scene
-            game_state = GameState(
-                location=location,
-                time=datetime.now(),
-                weather="clear",
-                environmental_effects=[],
-                active_quests=[],
-                recent_events=[]
-            )
+        game_state = GameState(
+            location=location,
+            time=datetime.now(),
+            weather=self.config.default_weather,
+            environmental_effects=[],
+            active_quests=[],
+            recent_events=[]
+        )
 
-            # Create Character state from dictionary
-            char_state = Character(
-                name=character['name'],
-                status={"health": 100, "energy": 100},
-                current_actions=[],
-                recent_events=[],
-                stats=character['stats'],
-                inventory=[]
-            )
+        char_state = Character(
+            name=character['name'],
+            status={"health": self.config.initial_health,
+                    "energy": self.config.initial_energy},
+            current_actions=[],
+            recent_events=[],
+            stats=character['stats'],
+            inventory=[]
+        )
 
-            response = ai_service.generate_response(
-                prompt=prompt,
-                game_state=game_state,
-                character=char_state
-            )
-
-            return response.content if response.success else "You find yourself in a mysterious place..."
-        except Exception as e:
-            st.error(f"Error generating scene: {str(e)}")
-            return "The scene slowly comes into focus..."
+        return self._safe_generate_response(
+            ai_service,
+            prompt,
+            "You find yourself in a mysterious place...",
+            game_state=game_state,
+            character=char_state
+        )
 
     def generate_action_response(self,
                                  character: Dict[str, Any],
                                  action: str,
-                                 ai_service: Any) -> str:
-        """Generate AI response to character actions"""
+                                 ai_service: AIServiceInterface) -> str:
+        """Generates an AI response to a character's action."""
+        prompt = f"""
+            {character['name']}, a {character['race']} {character['class_type']} with skills in {', '.join(character.get('skills', []))}, attempts to {action}.
+
+            Describe the immediate outcome, focusing on:
+            *   Sensory details (what they see, hear, feel).
+            *   Any immediate consequences of the action (positive or negative).
+            *   If the action would obviously succeed or fail. If it is a testable skill, mention if the character's skill in that area helped or hindered their progress.
+            *   Include a skill check if it is relevant to the action.
+
+            Limit the description to 3 sentences.
+            The tone should be descriptive and engaging.
+            """
+
+        game_state = GameState(
+            location="current location",
+            time=datetime.now(),
+            weather=self.config.default_weather,
+            environmental_effects=[],
+            active_quests=[],
+            recent_events=[]
+        )
+
+        char_state = Character(
+            name=character['name'],
+            status={"health": self.config.initial_health,
+                    "energy": self.config.initial_energy},
+            current_actions=[action],
+            recent_events=[],
+            stats=character['stats'],
+            inventory=[]
+        )
+
+        return self._safe_generate_response(
+            ai_service,
+            prompt,
+            f"You attempt to {action}, but the outcome is unclear...",
+            game_state=game_state,
+            character=char_state
+        )
+
+    def _safe_generate_response(self,
+                                ai_service: AIServiceInterface,
+                                prompt: str,
+                                fallback_message: str,
+                                game_state: Optional[GameState] = None,
+                                character: Optional[Character] = None) -> str:
+        """Safely generates a response from the AI service with error handling and logging."""
         try:
-            prompt = f"""
-        {character['name']}, a {character['race']} {character['class_type']} with skills in {', '.join(character.get('skills', []))}, attempts to {action}.
-
-        Describe the immediate outcome, focusing on:
-        *   Sensory details (what they see, hear, feel).
-        *   Any immediate consequences of the action (positive or negative).
-        *   If the action would obviously succeed or fail. If it is a testable skill, mention if the character's skill in that area helped or hindered their progress.
-        *   Include a skill check if it is relevant to the action.
-
-        Limit the description to 3 sentences.
-        The tone should be descriptive and engaging.
-        """
-
-            # Create minimal GameState for the action
-            game_state = GameState(
-                location="current location",
-                time=datetime.now(),
-                weather="clear",
-                environmental_effects=[],
-                active_quests=[],
-                recent_events=[]
-            )
-
-            # Create Character state from dictionary
-            char_state = Character(
-                name=character['name'],
-                status={"health": 100, "energy": 100},
-                current_actions=[action],
-                recent_events=[],
-                stats=character['stats'],
-                inventory=[]
-            )
-
+            logger.info(f"Sending prompt to AI service: {prompt}")
             response = ai_service.generate_response(
-                prompt=prompt,
-                game_state=game_state,
-                character=char_state
-            )
+                prompt, game_state, character)
 
-            return response.content if response.success else f"You attempt to {action}..."
+            if response:
+                logger.info("AI service returned a response.")
+                return response
+            else:
+                logger.warning("AI service returned an empty response.")
+                return fallback_message
         except Exception as e:
-            st.error(f"Error generating action response: {str(e)}")
-            return f"You attempt to {action}, but something seems amiss..."
+            logger.error(f"Error generating AI response: {e}")
+            st.error(f"AI service error: {str(e)}")
+            return f"The world seems unresponsive. {fallback_message}"
 
     def start_combat(self, char_id: str) -> None:
-        """Initialize combat state in the game"""
+        """Initializes combat state in the game."""
         game_state = self.load_game_state(char_id)
         if game_state:
-            game_state['game_data']['combat_state'] = {
+            # Access game_data safely
+            game_data = game_state.get('game_data', {})
+            game_data['combat_state'] = {
                 'active': True,
                 'round': 1,
                 'combatants': []
@@ -338,11 +431,16 @@ class GameStateManager:
                 char_id,
                 game_state['scene'],
                 game_state['location'],
-                game_state['game_data']
+                game_data
             )
+        else:
+            logger.warning(f"No game state found for character {
+                           char_id}, cannot start combat.")
+            st.warning(
+                "Cannot start combat: No game state found for your character.")
 
     def add_combatant(self, char_id: str, name: str, initiative: int) -> None:
-        """Add a combatant to the active combat"""
+        """Adds a combatant to the active combat."""
         game_state = self.load_game_state(char_id)
         if game_state and game_state['game_data'].get('combat_state', {}).get('active'):
             combat_state = game_state['game_data']['combat_state']
@@ -356,12 +454,18 @@ class GameStateManager:
                 game_state['location'],
                 game_state['game_data']
             )
+        else:
+            logger.warning(f"Combat is not active or game state missing for {
+                           char_id}, cannot add combatant.")
+            st.warning("Cannot add combatant: Combat is not active.")
 
     def end_combat(self, char_id: str) -> None:
-        """End the current combat encounter"""
+        """Ends the current combat encounter."""
         game_state = self.load_game_state(char_id)
         if game_state:
-            game_state['game_data']['combat_state'] = {
+            # Access game_data safely
+            game_data = game_state.get('game_data', {})
+            game_data['combat_state'] = {
                 'active': False,
                 'combatants': []
             }
@@ -369,5 +473,10 @@ class GameStateManager:
                 char_id,
                 game_state['scene'],
                 game_state['location'],
-                game_state['game_data']
+                game_data
             )
+        else:
+            logger.warning(f"No game state found for character {
+                           char_id}, cannot end combat.")
+            st.warning(
+                "Cannot end combat: No game state found for your character.")

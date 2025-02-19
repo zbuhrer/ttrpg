@@ -35,6 +35,8 @@ if 'character_created' not in st.session_state:
     st.session_state.character_created = False  # Flag to disable the form
 if 'background_story' not in st.session_state:
     st.session_state.background_story = None  # To hold the AI generated story
+if 'generating_action' not in st.session_state:
+    st.session_state.generating_action = False
 
 # --- Service Initialization ---
 character_service = CharacterService()
@@ -145,77 +147,19 @@ def create_character():
 
                 # Set the character creation flag
                 st.session_state.character_created = True  # Disable the form
+
+                # Initialize game state (Moved here)
+                with st.spinner("Loading initial scene..."):
+                    initial_state = st.session_state.game_state_manager.create_new_game(
+                        st.session_state.character,
+                        st.session_state.ai_service
+                    )
+
+                    # Set initial scene and game data
+                    st.session_state.active_quest_text_current_scene = initial_state['scene']
+                    st.session_state.game_data = initial_state['game_data']
+
                 st.rerun()
-
-    # AI Background Generation (Outside the form)
-    if st.session_state.character_created and not st.session_state.background_story:
-        if st.button("✨ Generate Background Story"):
-            with st.spinner("Generating background story..."):
-                ai_description = character_service.generate_background_story(
-                    st.session_state.character)
-                st.session_state.background_story = ai_description
-                st.rerun()
-
-    # Display Background Story
-    if st.session_state.background_story:
-        st.markdown("### 📜 Background Story")
-        st.markdown(f"*{st.session_state.background_story}*")
-
-    if st.session_state.character_created:
-        # Initialize game state (Moved here)
-        initial_state = st.session_state.game_state_manager.create_new_game(
-            st.session_state.character,
-            st.session_state.ai_service
-        )
-
-        # Set initial scene and game data
-        st.session_state.active_quest_text_current_scene = initial_state['scene']
-        st.session_state.game_data = initial_state['game_data']
-
-
-def load_initial_scene():
-    """Loads the initial scene description from saved state or generates a new one."""
-    # Only load the scene if a character exists
-    if 'character' in st.session_state and st.session_state['character'] is not None:
-        loading_message = st.empty()
-        progress_bar = st.progress(0)
-
-        loading_message.text("Loading your adventure...")
-        progress_bar.progress(25)
-
-        if 'id' in st.session_state['character']:
-            saved_state = st.session_state.game_state_manager.load_game_state(
-                st.session_state.character['id']
-            )
-            progress_bar.progress(50)
-
-            if saved_state:
-                # Renamed
-                st.session_state.active_quest_text_current_scene = saved_state['scene']
-                st.session_state.game_data = saved_state['game_data']
-                progress_bar.progress(100)
-            else:
-                loading_message.text("Generating new adventure...")
-                progress_bar.progress(75)
-
-                # Create new game state
-                initial_state = st.session_state.game_state_manager.create_new_game(
-                    st.session_state.character,
-                    st.session_state.ai_service
-                )
-
-                # Renamed
-                st.session_state.active_quest_text_current_scene = initial_state['scene']
-                st.session_state.game_data = initial_state['game_data']
-                progress_bar.progress(100)
-
-            loading_message.empty()
-            progress_bar.empty()
-        else:
-            st.info(
-                "Please complete character creation to begin your adventure!")
-    else:
-        st.info("Create a character to begin your adventure!")
 
 
 def load_environmental_details():
@@ -299,70 +243,95 @@ else:
         # Quick Action Buttons
         quick_actions = st.columns(4)
         with quick_actions[0]:
-            if st.button("🗣️ Converse", key="talk"):  # Improved Label
-                new_scene = st.session_state.game_state_manager.generate_action_response(
-                    st.session_state.character,
-                    st.session_state.ai_service
-                )
-                st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-                st.session_state.game_state_manager.save_game_state(
-                    st.session_state.character['id'],
-                    new_scene
-                )
+            if st.button("🗣️ Converse", key="talk", disabled=st.session_state.generating_action):  # Improved Label
+                if not st.session_state.generating_action:
+                    st.session_state.generating_action = True
+                    with st.spinner("Generating action response..."):
+                        new_scene = st.session_state.game_state_manager.generate_action_response(
+                            st.session_state.character,
+                            st.session_state.ai_service
+                        )
+                        st.session_state.active_quest_text_current_scene = new_scene  # Renamed
+                        st.session_state.game_state_manager.save_game_state(
+                            st.session_state.character['id'],
+                            new_scene
+                        )
+                    st.session_state.generating_action = False
+                    st.rerun()
 
         with quick_actions[1]:
-            if st.button("👀 Observe", key="look"):  # Improved Label
-                new_scene = st.session_state.game_state_manager.generate_action_response(
-                    st.session_state.character,
-                    "examine surroundings",
-                    st.session_state.ai_service
-                )
-                st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-                st.session_state.game_state_manager.save_game_state(
-                    st.session_state.character['id'],
-                    new_scene
-                )
+            if st.button("👀 Observe", key="look", disabled=st.session_state.generating_action):  # Improved Label
+                if not st.session_state.generating_action:
+                    st.session_state.generating_action = True
+                    with st.spinner("Generating action response..."):
+                        new_scene = st.session_state.game_state_manager.generate_action_response(
+                            st.session_state.character,
+                            "examine surroundings",
+                            st.session_state.ai_service
+                        )
+                        st.session_state.active_quest_text_current_scene = new_scene  # Renamed
+                        st.session_state.game_state_manager.save_game_state(
+                            st.session_state.character['id'],
+                            new_scene
+                        )
+                    st.session_state.generating_action = False
+                    st.rerun()
 
         with quick_actions[2]:
-            if st.button("🔍 Scrutinize", key="search"):  # Improved Label
-                new_scene = st.session_state.game_state_manager.generate_action_response(
-                    st.session_state.character,
-                    "sarch the area",
-                    st.session_state.ai_service
-                )
-                st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-                st.session_state.game_state_manager.save_game_state(
-                    st.session_state.character['id'],
-                    new_scene
-                )
+            if st.button("🔍 Scrutinize", key="search", disabled=st.session_state.generating_action):  # Improved Label
+                if not st.session_state.generating_action:
+                    st.session_state.generating_action = True
+                    with st.spinner("Generating action response..."):
+                        new_scene = st.session_state.game_state_manager.generate_action_response(
+                            st.session_state.character,
+                            "sarch the area",
+                            st.session_state.ai_service
+                        )
+                        st.session_state.active_quest_text_current_scene = new_scene  # Renamed
+                        st.session_state.game_state_manager.save_game_state(
+                            st.session_state.character['id'],
+                            new_scene
+                        )
+                    st.session_state.generating_action = False
+                    st.rerun()
 
         with quick_actions[3]:
-            if st.button("📖 Ponder", key="journal"):  # Improved Label
-                new_scene = st.session_state.game_state_manager.generate_action_response(
-                    st.session_state.character,
-                    "check quest journal",
-                    st.session_state.ai_service
-                )
-                st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-                st.session_state.game_state_manager.save_game_state(
-                    st.session_state.character['id'],
-                    new_scene
-                )
+            if st.button("📖 Ponder", key="journal", disabled=st.session_state.generating_action):  # Improved Label
+                if not st.session_state.generating_action:
+                    st.session_state.generating_action = True
+                    with st.spinner("Generating action response..."):
+                        new_scene = st.session_state.game_state_manager.generate_action_response(
+                            st.session_state.character,
+                            "check quest journal",
+                            st.session_state.ai_service
+                        )
+                        st.session_state.active_quest_text_current_scene = new_scene  # Renamed
+                        st.session_state.game_state_manager.save_game_state(
+                            st.session_state.character['id'],
+                            new_scene
+                        )
+                    st.session_state.generating_action = False
+                    st.rerun()
 
         # Custom Action Input
         action = st.text_input(
-            "🔮 What fate will you weave?", placeholder="Unleash your ingenuity...")  # Improved Tone
-        if st.button("✨ Invoke Action", key="action"):  # Improved Label
-            new_scene = st.session_state.game_state_manager.generate_action_response(
-                st.session_state.character,
-                action,
-                st.session_state.ai_service
-            )
-            st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-            st.session_state.game_state_manager.save_game_state(
-                st.session_state.character['id'],
-                new_scene
-            )
+            "🔮 What fate will you weave?", placeholder="Unleash your ingenuity...", disabled=st.session_state.generating_action)  # Improved Tone
+        if st.button("✨ Invoke Action", key="action", disabled=st.session_state.generating_action):  # Improved Label
+            if not st.session_state.generating_action:
+                st.session_state.generating_action = True
+                with st.spinner("Generating action response..."):
+                    new_scene = st.session_state.game_state_manager.generate_action_response(
+                        st.session_state.character,
+                        action,
+                        st.session_state.ai_service
+                    )
+                    st.session_state.active_quest_text_current_scene = new_scene  # Renamed
+                    st.session_state.game_state_manager.save_game_state(
+                        st.session_state.character['id'],
+                        new_scene
+                    )
+                st.session_state.generating_action = False  # Renamed
+                st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_status:
