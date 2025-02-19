@@ -147,6 +147,16 @@ class CharacterService:
             "Artisan"
         ]
 
+        # Skills
+        self._skills = {
+            'strength': ['Athletics', 'Intimidation'],
+            'dexterity': ['Acrobatics', 'Stealth', 'Sleight of Hand'],
+            'constitution': ['Endurance'],
+            'intelligence': ['Arcana', 'Investigation', 'History'],
+            'wisdom': ['Insight', 'Perception', 'Survival', 'Medicine'],
+            'charisma': ['Deception', 'Persuasion', 'Performance']
+        }
+
     def get_races(self):
         """Return available character races"""
         return list(self._race_features.keys())
@@ -217,17 +227,11 @@ class CharacterService:
             return "Generic background story"
 
         prompt = f"""
-        Generate a compelling background story for:
-        Name: {character_data['name']}
-        Race: {character_data['race']}
-        Class: {character_data['class_type']}
-        Background: {character_data['background']}
-
-        Include:
-        - Early life experiences
-        - Motivation for adventuring
-        - A defining moment or event
-        - Connection to their chosen class and background
+        Generate a compelling and unique background story for a
+        {character_data['race']} {character_data['class_type']} named {character_data['name']}
+        with a {character_data['background']} background. The story should include a specific event
+        that led them to become an adventurer, and hint at a personal connection to the Mistwood Tavern.
+        The response must be under 100 words.
         """
 
         return self.ai_service.generate_response(prompt)
@@ -389,3 +393,7 @@ class CharacterService:
                     "description": "A typical condition."
                 })
         return conditions
+
+    def get_skills(self):
+        """Return available skills"""
+        return self._skills
