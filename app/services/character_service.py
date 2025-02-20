@@ -1,15 +1,18 @@
+import random
+
+
 class CharacterService:
     """Service class for managing character-related operations"""
 
     def __init__(self, ai_service=None):
         self.ai_service = ai_service
         self._base_attributes = {
-            'strength': {'base': 10, 'modifier': 0, 'description': 'Physical power and carrying capacity'},
-            'dexterity': {'base': 10, 'modifier': 0, 'description': 'Agility, reflexes, and balance'},
-            'constitution': {'base': 10, 'modifier': 0, 'description': 'Health, stamina, and vital force'},
-            'intelligence': {'base': 10, 'modifier': 0, 'description': 'Mental acuity, information recall, analytical skill'},
-            'wisdom': {'base': 10, 'modifier': 0, 'description': 'Awareness, intuition, and insight'},
-            'charisma': {'base': 10, 'modifier': 0, 'description': 'Force of personality, persuasiveness'},
+            'strength': {'base': 8, 'modifier': 0, 'description': 'Physical power and carrying capacity'},
+            'dexterity': {'base': 8, 'modifier': 0, 'description': 'Agility, reflexes, and balance'},
+            'constitution': {'base': 8, 'modifier': 0, 'description': 'Health, stamina, and vital force'},
+            'intelligence': {'base': 8, 'modifier': 0, 'description': 'Mental acuity, information recall, analytical skill'},
+            'wisdom': {'base': 8, 'modifier': 0, 'description': 'Awareness, intuition, and insight'},
+            'charisma': {'base': 8, 'modifier': 0, 'description': 'Force of personality, persuasiveness'},
         }
 
         self._race_features = {
@@ -273,12 +276,15 @@ class CharacterService:
         race_features = self._race_features.get(race, {})
         attribute_bonuses = race_features.get('attribute_bonuses', {})
 
-        for attr, bonus in attribute_bonuses.items():
-            if attr == 'all':
-                for attribute in character['attributes']:
-                    character['attributes'][attribute] += bonus
-            else:
-                character['attributes'][attr] += bonus
+        # Apply attribute bonuses
+        if 'attributes' in character:
+            for attr, bonus in attribute_bonuses.items():
+                if attr == 'all':
+                    for attribute in character['attributes']:
+                        character['attributes'][attribute] += bonus
+                else:
+                    if attr in character['attributes']:
+                        character['attributes'][attr] += bonus
 
         # Calculate starting stats
         character['stats'] = character['attributes']
@@ -293,8 +299,18 @@ class CharacterService:
         character['inventory'] = self.get_starting_equipment(
             character['class_type'])
 
+        # Add level, defaulting to 1
+        character['level'] = 1
+        character['experience'] = 0
+        character['experience_threshold'] = 100
+
+        # Copy over original character info
+        character_id = temp_character['id']
+        skills = temp_character['skills']
+
         # Return a dictionary with the character's final attributes
         return {
+            'id': character_id,
             'name': character['name'],
             'race': character['race'],
             'class_type': character['class_type'],
@@ -304,7 +320,11 @@ class CharacterService:
             'defense': character['defense'],
             'initiative': character['initiative'],
             'movement_speed': character['movement_speed'],
-            'inventory': character['inventory']
+            'inventory': character['inventory'],
+            'level': character['level'],  # Add level to the character
+            'experience': character['experience'],
+            'experience_threshold': character['experience_threshold'],
+            'skills': skills
         }
 
     def generate_initial_story(self, character_data):
@@ -397,3 +417,25 @@ class CharacterService:
     def get_skills(self):
         """Return available skills"""
         return self._skills
+
+    def level_up(self, character_data):
+        """Increases the character's level and stats."""
+        character_data['level'] += 1
+        # Add a bonus to two random stats
+        stats = list(character_data['stats'].keys())
+        chosen_stats = random.sample(stats, 2)  # Select two random stats
+        for stat in chosen_stats:
+            character_data['stats'][stat] += 1
+        character_data['experience_threshold'] = int(
+            character_data['experience_threshold'] * 1.5)  # Increase threshold
+        return character_data
+
+    def add_experience(self, character_data, xp):
+        """Adds experience to the character and handles level ups."""
+        character_data['experience'] += xp
+        while character_data['experience'] >= character_data['experience_threshold']:
+            # Level up the character
+            character_data['experience'] -= character_data['experience_threshold']
+            character_data = self.level_up(character_data)
+
+        return character_data

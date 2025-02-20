@@ -37,6 +37,7 @@ class AIResponse:
     response_type: str  # scene, action, dialogue, etc.
     confidence_score: float
     metadata: Dict[str, Any]
+    xp: int  # Experience point award
     error: Optional[str] = None
 
 
@@ -47,10 +48,10 @@ class ResponseParser:
         self.valid_response_types = [
             'scene', 'action', 'dialogue', 'description']
 
-    def parse_response(self, raw_response: Dict[str, Any]) -> AIResponse:
+    def parse_response(self, raw_response: str) -> AIResponse:
         """Parse raw AI response into structured format."""
         try:
-            content = raw_response.get('response', '')
+            content = raw_response.strip()
 
             # Basic content validation
             if not content.strip():
@@ -62,16 +63,26 @@ class ResponseParser:
             # Calculate confidence score based on response characteristics
             confidence_score = self._calculate_confidence(content)
 
+            # Determine success.  If 'success' is not passed, default to true.
+            # raw_response.get('success', True) #No longer supported
+            success = True
+
+            # Determine xp.  If 'xp' is not passed, default to zero.
+            xp = 0  # raw_response.get('xp', 0) #No longer supported
+
             return AIResponse(
                 content=content,
-                success=True,
+                success=success,
                 response_type=response_type,
                 confidence_score=confidence_score,
                 metadata={
-                    'model': raw_response.get('model'),
-                    'total_duration': raw_response.get('total_duration'),
+                    # raw_response.get('model'), #Hardcoded
+                    'model': "dolphin-phi",
+                    # raw_response.get('total_duration'), #No longer supported
+                    'total_duration': 0,
                     'timestamp': datetime.now().isoformat()
-                }
+                },
+                xp=xp
             )
         except Exception as e:
             return AIResponse(
@@ -80,6 +91,7 @@ class ResponseParser:
                 response_type="error",
                 confidence_score=0.0,
                 metadata={},
+                xp=0,
                 error=str(e)
             )
 
@@ -144,7 +156,7 @@ class AIService:
                           prompt: str,
                           game_state: Optional[GameState] = None,
                           character: Optional[Character] = None,
-                          temperature: float = 0.7) -> str:
+                          temperature: float = 0.7) -> AIResponse:
         """Generate AI response with full context and parsing."""
         try:
             # Get relevant context
@@ -170,7 +182,8 @@ class AIService:
             response.raise_for_status()
 
             # Parse the response and get the content
-            parsed_response = self.parser.parse_response(response.json())
+            parsed_response = self.parser.parse_response(
+                response.json()['response'])
 
             if parsed_response.success:
                 self.context_manager.add_to_history({
@@ -178,13 +191,28 @@ class AIService:
                     'response': parsed_response.content,
                     'metadata': parsed_response.metadata
                 })
-                return parsed_response.content
+                return parsed_response
 
-            return "The winds of fate are mysterious..."
+            return AIResponse(
+                content="The winds of fate are mysterious...",
+                success=False,
+                response_type='error',
+                confidence_score=0.0,
+                metadata={},
+                xp=0
+            )
 
         except Exception as e:
             st.error(f"Error generating response: {str(e)}")
-            return "Something mysterious occurs..."
+            return AIResponse(
+                content="Something mysterious occurs...",
+                success=False,
+                response_type='error',
+                confidence_score=0.0,
+                metadata={},
+                xp=0,
+                error=str(e)
+            )
 
     def _construct_prompt(self,
                           prompt: str,

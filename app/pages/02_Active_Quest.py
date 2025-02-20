@@ -38,6 +38,16 @@ if 'background_story' not in st.session_state:
 if 'generating_action' not in st.session_state:
     st.session_state.generating_action = False
 
+# --- XP Reward Values ---
+XP_REWARDS = {
+    "talk": 10,
+    "look": 5,
+    "search": 15,
+    "journal": 8,
+    "action": 20  # Base XP for custom actions
+}
+
+
 # --- Service Initialization ---
 character_service = CharacterService()
 
@@ -140,10 +150,12 @@ def create_character():
                     'race': race,
                     'class_type': class_type,
                     'background': background,
-                    'stats': stat_inputs.copy(),
+                    'attributes': stat_inputs.copy(),  # ADDED: The missing 'attributes' key
                     'skills': selected_skills.copy()  # Ensure a copy is stored
                 }
-                st.session_state.character = character_data
+                # Finalize character creation
+                st.session_state.character = character_service.finalize_character(
+                    character_data)
 
                 # Set the character creation flag
                 st.session_state.character_created = True  # Disable the form
@@ -215,6 +227,11 @@ else:
     for skill in char['skills']:
         st.write(f"- {skill}")
 
+    # Display Level and XP
+    st.write(f"Level: {char['level']}")
+    st.write(f"Experience: {char['experience']
+                            } / {char['experience_threshold']}")
+
     if st.session_state.background_story:
         st.markdown("### 📜 Background Story")
         st.markdown(f"*{st.session_state.background_story}*")
@@ -242,76 +259,55 @@ else:
 
         # Quick Action Buttons
         quick_actions = st.columns(4)
-        with quick_actions[0]:
-            if st.button("🗣️ Converse", key="talk", disabled=st.session_state.generating_action):  # Improved Label
-                if not st.session_state.generating_action:
-                    st.session_state.generating_action = True
+
+        def handle_action(action_key):
+            """Handles the action and updates the game state."""
+            if not st.session_state.generating_action:
+                st.session_state.generating_action = True
+                try:
                     with st.spinner("Generating action response..."):
-                        new_scene = st.session_state.game_state_manager.generate_action_response(
+                        ai_response = st.session_state.game_state_manager.generate_action_response(
                             st.session_state.character,
+                            action_key,  # Use the action key as the action
                             st.session_state.ai_service
                         )
-                        st.session_state.active_quest_text_current_scene = new_scene  # Renamed
+
+                        # Get the XP value
+                        xp_reward = XP_REWARDS.get(
+                            action_key, 0) + ai_response.xp
+                        # Update the character
+                        st.session_state.character = character_service.add_experience(
+                            st.session_state.character,
+                            xp_reward
+                        )
+                        # Save the scene
+                        st.session_state.active_quest_text_current_scene = ai_response.content  # Renamed
+
+                        # Save the game!
                         st.session_state.game_state_manager.save_game_state(
                             st.session_state.character['id'],
-                            new_scene
+                            st.session_state.active_quest_text_current_scene,
+                            game_data=st.session_state.game_data
                         )
+                finally:
                     st.session_state.generating_action = False
                     st.rerun()
+
+        with quick_actions[0]:
+            if st.button("🗣️ Converse", key="talk", disabled=st.session_state.generating_action):  # Improved Label
+                handle_action("talk")
 
         with quick_actions[1]:
             if st.button("👀 Observe", key="look", disabled=st.session_state.generating_action):  # Improved Label
-                if not st.session_state.generating_action:
-                    st.session_state.generating_action = True
-                    with st.spinner("Generating action response..."):
-                        new_scene = st.session_state.game_state_manager.generate_action_response(
-                            st.session_state.character,
-                            "examine surroundings",
-                            st.session_state.ai_service
-                        )
-                        st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-                        st.session_state.game_state_manager.save_game_state(
-                            st.session_state.character['id'],
-                            new_scene
-                        )
-                    st.session_state.generating_action = False
-                    st.rerun()
+                handle_action("look")
 
         with quick_actions[2]:
             if st.button("🔍 Scrutinize", key="search", disabled=st.session_state.generating_action):  # Improved Label
-                if not st.session_state.generating_action:
-                    st.session_state.generating_action = True
-                    with st.spinner("Generating action response..."):
-                        new_scene = st.session_state.game_state_manager.generate_action_response(
-                            st.session_state.character,
-                            "sarch the area",
-                            st.session_state.ai_service
-                        )
-                        st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-                        st.session_state.game_state_manager.save_game_state(
-                            st.session_state.character['id'],
-                            new_scene
-                        )
-                    st.session_state.generating_action = False
-                    st.rerun()
+                handle_action("search")
 
         with quick_actions[3]:
             if st.button("📖 Ponder", key="journal", disabled=st.session_state.generating_action):  # Improved Label
-                if not st.session_state.generating_action:
-                    st.session_state.generating_action = True
-                    with st.spinner("Generating action response..."):
-                        new_scene = st.session_state.game_state_manager.generate_action_response(
-                            st.session_state.character,
-                            "check quest journal",
-                            st.session_state.ai_service
-                        )
-                        st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-                        st.session_state.game_state_manager.save_game_state(
-                            st.session_state.character['id'],
-                            new_scene
-                        )
-                    st.session_state.generating_action = False
-                    st.rerun()
+                handle_action("journal")
 
         # Custom Action Input
         action = st.text_input(
@@ -319,19 +315,34 @@ else:
         if st.button("✨ Invoke Action", key="action", disabled=st.session_state.generating_action):  # Improved Label
             if not st.session_state.generating_action:
                 st.session_state.generating_action = True
-                with st.spinner("Generating action response..."):
-                    new_scene = st.session_state.game_state_manager.generate_action_response(
-                        st.session_state.character,
-                        action,
-                        st.session_state.ai_service
-                    )
-                    st.session_state.active_quest_text_current_scene = new_scene  # Renamed
-                    st.session_state.game_state_manager.save_game_state(
-                        st.session_state.character['id'],
-                        new_scene
-                    )
-                st.session_state.generating_action = False  # Renamed
-                st.rerun()
+                try:
+                    with st.spinner("Generating action response..."):
+                        ai_response = st.session_state.game_state_manager.generate_action_response(
+                            st.session_state.character,
+                            action,
+                            st.session_state.ai_service
+                        )
+
+                        # Get the XP value
+                        xp_reward = XP_REWARDS.get(
+                            "action", 0) + ai_response.xp
+                        # Update the character
+                        st.session_state.character = character_service.add_experience(
+                            st.session_state.character,
+                            xp_reward
+                        )
+                        # Save the scene
+                        st.session_state.active_quest_text_current_scene = ai_response.content  # Renamed
+
+                        # Save the game!
+                        st.session_state.game_state_manager.save_game_state(
+                            st.session_state.character['id'],
+                            st.session_state.active_quest_text_current_scene,
+                            game_data=st.session_state.game_data
+                        )
+                finally:
+                    st.session_state.generating_action = False
+                    st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_status:

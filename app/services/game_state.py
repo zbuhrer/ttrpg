@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 # Assuming these are your data model classes
 from .models import GameState, Character
 from typing import TypedDict
+from .ai_service import AIResponse
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ logger.setLevel(logging.INFO)  # Or logging.DEBUG for more detail
 class AIServiceInterface(Protocol):
     """Protocol defining the expected methods of the AI service."""
 
-    def generate_response(self, prompt: str, game_state: Optional[GameState] = None, character: Optional[Character] = None) -> str:
+    def generate_response(self, prompt: str, game_state: Optional[GameState] = None, character: Optional[Character] = None) -> AIResponse:
         ...
 
 
@@ -113,7 +114,7 @@ class GameStateManager:
         The weather should be atmospheric and evocative.
         """
         weather_response = self._safe_generate_response(
-            ai_service, weather_prompt, "The weather is typical.")
+            ai_service, weather_prompt, AIResponse(content="The weather is typical.", success=True, response_type='description', confidence_score=0.8, metadata={}, xp=0))
 
         inventory_prompt = f"""
         As a {character['race']} {character['class_type']} named {character['name']} with a background as a {profession}, what 5 items would they realistically carry?
@@ -127,7 +128,7 @@ class GameStateManager:
         * A worn map of the Mistwood
         """
         inventory_response = self._safe_generate_response(
-            ai_service, inventory_prompt, "* Empty pack.")
+            ai_service, inventory_prompt, AIResponse(content="* Empty pack.", success=True, response_type='description', confidence_score=0.8, metadata={}, xp=0))
 
         scene_prompt = f"""
         {character['name']}, a {character['race']} {character['class_type']}, arrives in the Mistwood Tavern to begin their adventure.
@@ -141,12 +142,12 @@ class GameStateManager:
         Keep the description concise (around 4-5 sentences) and descriptive. Imbue the description with a sense of adventure and mystery.
         """
         scene_response = self._safe_generate_response(
-            ai_service, scene_prompt, "You arrive at a bustling tavern.")
+            ai_service, scene_prompt, AIResponse(content="You arrive at a bustling tavern.", success=True, response_type='scene', confidence_score=0.8, metadata={}, xp=0))
 
         initial_game_data: GameData = {
             'time': datetime.now().isoformat(),
-            'weather': weather_response,
-            'environmental_effects': self._generate_environmental_effects(weather_response),
+            'weather': weather_response.content,
+            'environmental_effects': self._generate_environmental_effects(weather_response.content),
             'active_quests': ['The Call to Adventure'],
             'recent_events': ['Arrived at Mistwood Tavern'],
             'character_state': {
@@ -155,12 +156,15 @@ class GameStateManager:
                     'energy': self.config.initial_energy,
                     'rested': True
                 },
-                'inventory': self._parse_inventory(inventory_response)
+                'inventory': self._parse_inventory(inventory_response.content),
+                'level': character['level'],
+                'experience': character['experience'],
+                'experience_threshold': character['experience_threshold']
             }
         }
 
         return {
-            'scene': scene_response,
+            'scene': scene_response.content,
             'location': self.config.default_location,
             'game_data': initial_game_data
         }
@@ -308,7 +312,7 @@ class GameStateManager:
     def generate_scene_description(self,
                                    character: Dict[str, Any],
                                    location: str,
-                                   ai_service: AIServiceInterface) -> str:
+                                   ai_service: AIServiceInterface) -> AIResponse:
         """Generates a scene description using the AI service."""
         prompt = f"""
             {character['name']}, a {character['race']} {character['class_type']}, is in {location}.
@@ -343,7 +347,8 @@ class GameStateManager:
         return self._safe_generate_response(
             ai_service,
             prompt,
-            "You find yourself in a mysterious place...",
+            AIResponse(content="You find yourself in a mysterious place...", success=True,
+                       response_type='description', confidence_score=0.0, metadata={}, xp=0),
             game_state=game_state,
             character=char_state
         )
@@ -351,7 +356,7 @@ class GameStateManager:
     def generate_action_response(self,
                                  character: Dict[str, Any],
                                  action: str,
-                                 ai_service: AIServiceInterface) -> str:
+                                 ai_service: AIServiceInterface) -> AIResponse:
         """Generates an AI response to a character's action."""
         prompt = f"""
             {character['name']}, a {character['race']} {character['class_type']} with skills in {', '.join(character.get('skills', []))}, attempts to {action}.
@@ -388,7 +393,8 @@ class GameStateManager:
         return self._safe_generate_response(
             ai_service,
             prompt,
-            f"You attempt to {action}, but the outcome is unclear...",
+            AIResponse(content=f"You attempt to {action}, but the outcome is unclear...", success=False,
+                       response_type='action', confidence_score=0.0, metadata={}, xp=0),
             game_state=game_state,
             character=char_state
         )
@@ -396,25 +402,25 @@ class GameStateManager:
     def _safe_generate_response(self,
                                 ai_service: AIServiceInterface,
                                 prompt: str,
-                                fallback_message: str,
+                                fallback_message: AIResponse,
                                 game_state: Optional[GameState] = None,
-                                character: Optional[Character] = None) -> str:
+                                character: Optional[Character] = None) -> AIResponse:
         """Safely generates a response from the AI service with error handling and logging."""
         try:
             logger.info(f"Sending prompt to AI service: {prompt}")
             response = ai_service.generate_response(
                 prompt, game_state, character)
 
-            if response:
+            if response.success:
                 logger.info("AI service returned a response.")
                 return response
             else:
                 logger.warning("AI service returned an empty response.")
-                return fallback_message
+                return response
         except Exception as e:
             logger.error(f"Error generating AI response: {e}")
             st.error(f"AI service error: {str(e)}")
-            return f"The world seems unresponsive. {fallback_message}"
+            return AIResponse(content=f"The world seems unresponsive. {fallback_message.content}", success=False, response_type='error', confidence_score=0.0, metadata={}, xp=0)
 
     def start_combat(self, char_id: str) -> None:
         """Initializes combat state in the game."""
@@ -473,7 +479,7 @@ class GameStateManager:
                 char_id,
                 game_state['scene'],
                 game_state['location'],
-                game_data
+                game_state['game_data']
             )
         else:
             logger.warning(f"No game state found for character {
