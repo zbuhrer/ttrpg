@@ -1,4 +1,5 @@
 import streamlit as st
+import logging
 
 import requests
 from typing import Dict, List
@@ -8,6 +9,9 @@ from dotenv import load_dotenv
 from requests.exceptions import RequestException
 
 from config import OLLAMA_ENDPOINT, THEME
+
+logger = logging.getLogger(__name__)
+logger.info("Starting Streamlit app...")
 
 
 def ollama_connection() -> bool:

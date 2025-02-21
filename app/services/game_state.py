@@ -5,7 +5,7 @@ import logging
 
 from datetime import datetime
 from typing import Optional, Dict, Any, List, Protocol
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 # Assuming these are your data model classes
 from .models import GameState, Character
 from typing import TypedDict
@@ -30,7 +30,7 @@ class GameData(TypedDict, total=False):
     environmental_effects: List[str]
     active_quests: List[str]
     recent_events: List[str]
-    character_state: Dict[str, Any]
+    # No character data in GameData anymore
 
 
 @dataclass
@@ -63,7 +63,8 @@ class GameStateManager:
                     scene TEXT,
                     location TEXT,
                     timestamp TEXT,
-                    game_data JSON
+                    game_data JSON,
+                    character_data JSON  -- Add character data as JSON
                 )
             ''')
 
@@ -85,7 +86,8 @@ class GameStateManager:
             char_id=character['id'],
             scene=initial_state['scene'],
             location=initial_state['location'],
-            game_data=initial_state['game_data']
+            game_data=initial_state['game_data'],
+            character_data=character  # Save the entire character object
         )
 
         return initial_state
@@ -150,17 +152,6 @@ class GameStateManager:
             'environmental_effects': self._generate_environmental_effects(weather_response.content),
             'active_quests': ['The Call to Adventure'],
             'recent_events': ['Arrived at Mistwood Tavern'],
-            'character_state': {
-                'status': {
-                    'health': self.config.initial_health,
-                    'energy': self.config.initial_energy,
-                    'rested': True
-                },
-                'inventory': self._parse_inventory(inventory_response.content),
-                'level': character['level'],
-                'experience': character['experience'],
-                'experience_threshold': character['experience_threshold']
-            }
         }
 
         return {
@@ -229,7 +220,8 @@ class GameStateManager:
                         char_id: str,
                         scene: str,
                         location: Optional[str] = None,
-                        game_data: Optional[Dict[str, Any]] = None) -> None:
+                        game_data: Optional[Dict[str, Any]] = None,
+                        character_data: Optional[Dict[str, Any]] = None) -> None:
         """Saves the current game state to the database."""
         location = location or self.config.default_location  # Use default if None
 
@@ -239,14 +231,16 @@ class GameStateManager:
 
             c.execute("""
                 INSERT OR REPLACE INTO game_states
-                (char_id, scene, location, timestamp, game_data)
-                VALUES (?, ?, ?, ?, ?)
+                (char_id, scene, location, timestamp, game_data, character_data)
+                VALUES (?, ?, ?, ?, ?, ?)
             """, (
                 char_id,
                 scene,
                 location,
                 datetime.now().isoformat(),
-                json.dumps(game_data) if game_data else "{}"
+                json.dumps(game_data) if game_data else "{}",
+                # Save CharacterData as JSON
+                json.dumps(character_data) if character_data else "{}"
             ))
 
             conn.commit()
@@ -264,16 +258,18 @@ class GameStateManager:
             c = conn.cursor()
 
             c.execute("""
-                SELECT scene, location, game_data
+                SELECT scene, location, game_data, character_data
                 FROM game_states
                 WHERE char_id = ?
             """, (char_id,))
             result = c.fetchone()
 
             if result:
-                scene, location, game_data_json = result
+                scene, location, game_data_json, character_data_json = result
                 game_data = json.loads(
                     game_data_json) if game_data_json else {}
+                character_data = json.loads(
+                    character_data_json) if character_data_json else {}
 
                 # Basic data validation
                 if not isinstance(scene, str):
@@ -288,11 +284,16 @@ class GameStateManager:
                     logger.warning(f"Invalid game_data for char_id {
                                    char_id}. Using default.")
                     game_data = {}
+                if not isinstance(character_data, dict):
+                    logger.warning(f"Invalid character_data for char_id {
+                                   char_id}. Using default.")
+                    character_data = {}
 
                 return {
                     'scene': scene,
                     'location': location,
-                    'game_data': game_data
+                    'game_data': game_data,
+                    'character_data': character_data
                 }
             else:
                 logger.info(f"No game state found for character {char_id}.")
@@ -437,7 +438,8 @@ class GameStateManager:
                 char_id,
                 game_state['scene'],
                 game_state['location'],
-                game_data
+                game_data,
+                game_state['character_data']
             )
         else:
             logger.warning(f"No game state found for character {
@@ -458,7 +460,8 @@ class GameStateManager:
                 char_id,
                 game_state['scene'],
                 game_state['location'],
-                game_state['game_data']
+                game_state['game_data'],
+                game_state['character_data']
             )
         else:
             logger.warning(f"Combat is not active or game state missing for {
@@ -479,7 +482,8 @@ class GameStateManager:
                 char_id,
                 game_state['scene'],
                 game_state['location'],
-                game_state['game_data']
+                game_state['game_data'],
+                game_state['character_data']
             )
         else:
             logger.warning(f"No game state found for character {

@@ -1,0 +1,5 @@
+[logger]
+level = "INFO"
+
+[server]
+port = 8501

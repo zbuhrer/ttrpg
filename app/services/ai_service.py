@@ -1,10 +1,19 @@
+import logging
 from dataclasses import dataclass
 from typing import Optional, Dict, List, Any
 import requests
 from pathlib import Path
-import faiss
 from datetime import datetime
 import streamlit as st
+import faiss
+from sentence_transformers import SentenceTransformer
+import torch  # Import torch
+import numpy as np  # Import numpy
+
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @dataclass
@@ -64,11 +73,10 @@ class ResponseParser:
             confidence_score = self._calculate_confidence(content)
 
             # Determine success.  If 'success' is not passed, default to true.
-            # raw_response.get('success', True) #No longer supported
             success = True
 
             # Determine xp.  If 'xp' is not passed, default to zero.
-            xp = 0  # raw_response.get('xp', 0) #No longer supported
+            xp = 0
 
             return AIResponse(
                 content=content,
@@ -76,9 +84,7 @@ class ResponseParser:
                 response_type=response_type,
                 confidence_score=confidence_score,
                 metadata={
-                    # raw_response.get('model'), #Hardcoded
                     'model': "dolphin-phi",
-                    # raw_response.get('total_duration'), #No longer supported
                     'total_duration': 0,
                     'timestamp': datetime.now().isoformat()
                 },
@@ -96,12 +102,23 @@ class ResponseParser:
             )
 
     def _determine_response_type(self, content: str) -> str:
-        # TODO: Implement response type detection logic
-        return "scene"
+        """Determine response type based on content."""
+        content_lower = content.lower()
+        if content_lower.startswith("[scene]"):
+            return "scene"
+        elif content_lower.startswith("[action]"):
+            return "action"
+        # Simple dialogue check
+        elif ":" in content and len(content.split(":")[0]) < 20:
+            return "dialogue"
+        else:
+            return "description"
 
     def _calculate_confidence(self, content: str) -> float:
-        # TODO: Implement confidence scoring logic
-        return 0.8
+        """Calculate confidence score based on response characteristics."""
+        length = len(content)
+        # Longer responses are generally more confident
+        return min(length / 500.0, 1.0)  # Scale to a max of 1.0
 
 
 class ContextManager:
@@ -111,14 +128,74 @@ class ContextManager:
         self.knowledge_base_path = knowledge_base_path
         self.conversation_history: List[Dict[str, Any]] = []
         self.max_history_length = 10
+        self.embedding_model_name = "all-MiniLM-L6-v2"  # Fast and decent quality
+
+        torch.set_num_threads(1)  # Disable multithreading
+
+        self.embedding_model = SentenceTransformer(self.embedding_model_name)
+        self.dimension = self.embedding_model.get_sentence_embedding_dimension()
+        self.index = None
         # Initialize vector database
         self._init_vector_db()
 
     def _init_vector_db(self):
         """Initialize FAISS vector database."""
-        # TODO: Implement vector DB initialization
-        self.dimension = 384  # Example dimension for embeddings
-        self.index = faiss.IndexFlatL2(self.dimension)
+        try:
+            # Load knowledge base content (replace with your actual data)
+            self.knowledge_base = self._load_knowledge_base()
+
+            # Create FAISS index
+            self.index = faiss.IndexFlatL2(self.dimension)
+
+            # Generate embeddings and add to index
+            if self.knowledge_base:
+                self._build_index()
+            else:
+                logger.warning(
+                    "Knowledge base is empty. FAISS index not built.")
+
+            logger.info("FAISS vector database initialized.")
+
+        except Exception as e:
+            logger.error(f"Error initializing FAISS database: {e}")
+            st.error(f"Error initializing knowledge base: {e}")
+
+    def _load_knowledge_base(self) -> List[Dict[str, str]]:
+        """Load knowledge base content from files or database."""
+        knowledge_base = []
+        for file_path in self.knowledge_base_path.glob("*"):  # Read all files
+            try:
+                with open(file_path, "r") as f:
+                    content = f.read()
+                    knowledge_base.append({
+                        "type": "lore",  # Or "rule", etc.
+                        "content": content,
+                        "source": str(file_path)
+                    })
+            except Exception as e:
+                logger.warning(f"Could not read knowledge file {
+                               file_path}: {e}")
+
+    def _build_index(self):
+        """Build FAISS index from knowledge base."""
+        # Generate embeddings
+        embeddings = []
+        batch_size = 32  # Adjust this value
+        for i in range(0, len(self.knowledge_base), batch_size):
+            batch = self.knowledge_base[i:i + batch_size]
+            batch_embeddings = self.embedding_model.encode(
+                [item['content'] for item in batch], batch_size=batch_size
+            )
+            embeddings.extend(batch_embeddings)
+
+        # Convert to numpy array
+        embeddings = [emb.astype('float32') for emb in embeddings]
+        embeddings = np.array(embeddings)
+
+        # Add to FAISS index
+        self.index.add(embeddings)
+
+        logger.info(f"Added {len(self.knowledge_base)} items to FAISS index.")
 
     def add_to_history(self, interaction: Dict[str, Any]):
         """Add new interaction to conversation history."""
@@ -128,20 +205,50 @@ class ContextManager:
 
     def get_relevant_context(self, query: str) -> Dict[str, Any]:
         """Retrieve relevant context for current interaction."""
-        # TODO: Implement context retrieval logic
+        lore = self._get_relevant_lore(query)
+        rules = self._get_relevant_rules(query)
         return {
-            'lore': self._get_relevant_lore(query),
-            'rules': self._get_relevant_rules(query),
+            'lore': lore,
+            'rules': rules,
             'history': self.conversation_history[-3:]  # Last 3 interactions
         }
 
     def _get_relevant_lore(self, query: str) -> List[str]:
-        # TODO: Implement lore retrieval
-        return []
+        """Retrieve relevant lore from the knowledge base."""
+        return self._search_knowledge_base(query, "lore")
 
     def _get_relevant_rules(self, query: str) -> List[str]:
-        # TODO: Implement rules retrieval
-        return []
+        """Retrieve relevant rules from the knowledge base."""
+        return self._search_knowledge_base(query, "rule")
+
+    def _search_knowledge_base(self, query: str, content_type: str) -> List[str]:
+        """Search the FAISS index for relevant knowledge."""
+        if self.index is None or self.knowledge_base is None:
+            logger.warning(
+                "FAISS index or knowledge base not initialized. Returning empty context.")
+            return []
+
+        try:
+            # Generate embedding for the query
+            query_embedding = self.embedding_model.encode(query)
+            query_embedding = query_embedding.astype('float32').reshape(1, -1)
+
+            # Search the FAISS index
+            k = min(5, len(self.knowledge_base))  # Limit to top 5 results
+            distances, indices = self.index.search(query_embedding, k)
+
+            # Retrieve the content from the knowledge base
+            relevant_content = [
+                self.knowledge_base[i]['content']
+                for i in indices[0] if i < len(self.knowledge_base)
+                and self.knowledge_base[i]['type'] == content_type
+            ]
+
+            return relevant_content
+
+        except Exception as e:
+            logger.error(f"Error searching knowledge base: {e}")
+            return []
 
 
 class AIService:
@@ -246,6 +353,7 @@ Generate a response that:
 2. Respects game rules and mechanics
 3. Provides clear player agency
 4. Advances the narrative naturally
+5. Ends the scene with a call to action, so that the player can take the next step in the story.
 """
 
     def _format_history(self, history: List[Dict[str, Any]]) -> str:

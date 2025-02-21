@@ -4,24 +4,70 @@ import time
 from pathlib import Path
 from config import OLLAMA_ENDPOINT, THEME  # Assuming THEME is in config.py
 from services.ai_service import AIService
-from services.game_state import GameStateManager
+from services.game_state import GameStateManager, GameStateConfig
 from services.character_service import CharacterService
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)  # Or logging.DEBUG for more detail
+
+# --- Ensure Knowledge Base Exists and is Populated (CRUCIAL) ---
+knowledge_base_path = Path("data/knowledge_base")
+knowledge_base_path.mkdir(parents=True, exist_ok=True)
+# Add code here to create default knowledge base files if they don't exist
+# Example:
+if not (knowledge_base_path / "example_lore.txt").exists():
+    with open(knowledge_base_path / "example_lore.txt", "w") as f:
+        f.write(
+            "The Mistwood Tavern is a cozy place.  It is known for its strong ale and warm fire.")
+    logger.info("Created default knowledge base file: example_lore.txt")
+else:
+    logger.info("Knowledge base directory already exists and/or contains files.")
+
+
+# --- Cached Service Initialization ---
+@st.cache_resource
+def get_ai_service(knowledge_base_path: Path):
+    logger.info("Creating new AI Service instance.")
+    return AIService(
+        endpoint=OLLAMA_ENDPOINT,
+        knowledge_base_path=knowledge_base_path
+    )
+
+
+@st.cache_resource
+def get_game_state_manager(config: GameStateConfig):
+    logger.info("Creating new Game State Manager instance.")
+    return GameStateManager(config=config)
+
 
 # --- Session State Initialization (MUST BE AT TOP) ---
 if "character" not in st.session_state:
     st.session_state.character = None
 if 'ai_service' not in st.session_state:
-    st.session_state.ai_service = None  # Explicit initialization to None
+    st.session_state.ai_service = get_ai_service(knowledge_base_path)
+    logger.info("Initialized ai_service in session state.")
+else:
+    logger.info("ai_service already exists in session state.")
+
 if 'game_state_manager' not in st.session_state:
-    st.session_state.game_state_manager = None  # Explicit initialization to None
+    st.session_state.game_state_manager = get_game_state_manager(
+        GameStateConfig())
+    logger.info("Initialized game_state_manager in session state.")
+else:
+    logger.info("game_state_manager already exists in session state.")
+
 if 'active_quest_text_current_scene' not in st.session_state:
-    # Renamed and improved default
     st.session_state.active_quest_text_current_scene = "The mists of adventure swirl around you..."
+    logger.info("Initialized active_quest_text_current_scene in session state.")
 if 'game_data' not in st.session_state:
     st.session_state.game_data = {}
+    logger.info("Initialized game_data in session state.")
 # Point-buy system variables
 if 'stat_points' not in st.session_state:
     st.session_state.stat_points = 27
+    logger.info("Initialized stat_points in session state.")
 if 'base_stats' not in st.session_state:
     st.session_state.base_stats = {
         'strength': 8,
@@ -31,12 +77,16 @@ if 'base_stats' not in st.session_state:
         'wisdom': 8,
         'charisma': 8
     }
+    logger.info("Initialized base_stats in session state.")
 if 'character_created' not in st.session_state:
     st.session_state.character_created = False  # Flag to disable the form
+    logger.info("Initialized character_created in session state.")
 if 'background_story' not in st.session_state:
     st.session_state.background_story = None  # To hold the AI generated story
+    logger.info("Initialized background_story in session state.")
 if 'generating_action' not in st.session_state:
     st.session_state.generating_action = False
+    logger.info("Initialized generating_action in session state.")
 
 # --- XP Reward Values ---
 XP_REWARDS = {
@@ -47,22 +97,9 @@ XP_REWARDS = {
     "action": 20  # Base XP for custom actions
 }
 
-
 # --- Service Initialization ---
 character_service = CharacterService()
-
-# Ensure knowledge base directory exists
-knowledge_base_path = Path("data/knowledge_base")
-knowledge_base_path.mkdir(parents=True, exist_ok=True)
-
-if st.session_state.ai_service is None:
-    st.session_state.ai_service = AIService(
-        endpoint=OLLAMA_ENDPOINT,
-        knowledge_base_path=knowledge_base_path
-    )
-
-if st.session_state.game_state_manager is None:
-    st.session_state.game_state_manager = GameStateManager()
+logger.info("Character service initialized.")
 
 # --- UI Theme Setup ---
 
@@ -70,6 +107,9 @@ if st.session_state.game_state_manager is None:
 def setup_ui_theme():
     """Configures custom UI theme and styling (from config.py)."""
     st.markdown(THEME, unsafe_allow_html=True)
+
+
+logger.info("Theme configured.")
 
 
 def create_character():
@@ -128,12 +168,24 @@ def create_character():
             disabled=st.session_state.character_created
         )
 
+        # Calculate points remaining
+        total_stat_points_spent = sum(
+            [stat_inputs[stat] - 8 for stat in attributes])  # Use stat_inputs
+        points_remaining = st.session_state.stat_points - total_stat_points_spent
+
+        # Display remaining points
+        st.write(f"Points Remaining: {points_remaining}")
+
         # Submit button
         submitted = st.form_submit_button(
             "Create Character", disabled=st.session_state.character_created)
         if submitted:
+            # Update session state with the stat_inputs values
+            for stat in attributes:
+                st.session_state.base_stats[stat] = stat_inputs[stat]
+
             # Validate input and calculate remaining points
-            total_stat_points = sum(stat_inputs.values())
+            total_stat_points = sum(st.session_state.base_stats.values())
             # total - the result, since every stat started at 8
             remaining_points = 27 - (total_stat_points - (8*6))
 
@@ -150,7 +202,7 @@ def create_character():
                     'race': race,
                     'class_type': class_type,
                     'background': background,
-                    'attributes': stat_inputs.copy(),  # ADDED: The missing 'attributes' key
+                    'attributes': st.session_state.base_stats.copy(),
                     'skills': selected_skills.copy()  # Ensure a copy is stored
                 }
                 # Finalize character creation
@@ -174,6 +226,9 @@ def create_character():
                 st.rerun()
 
 
+logger.info("Create character defined.")
+
+
 def load_environmental_details():
     """Loads weather and environmental conditions for display."""
     if 'game_data' in st.session_state:
@@ -184,14 +239,22 @@ def load_environmental_details():
     return '', []
 
 
+logger.info("load_environmental_details defined.")
+
+
 def load_inventory():
     """Loads character inventory for display."""
     if 'game_data' in st.session_state:
+        # Access character data
+        # Access character data safely
+        character_data = st.session_state.game_data.get('character_data', {})
         with st.spinner("Checking your belongings..."):
             time.sleep(0.5)  # Add slight delay for effect
-            return st.session_state.game_data.get('character_state', {}).get('inventory', [])
+            return character_data.get('inventory', [])
     return []
 
+
+logger.info("load_inventory defined.")
 
 # --- UI Setup ---
 setup_ui_theme()
@@ -211,7 +274,9 @@ if st.session_state.character is None:
 else:
     # --- Character Sheet and Edit Button ---
     st.subheader("⚔️ Your Character")
+    # Load character data from game_data
     char = st.session_state.character
+
     st.markdown(f"""
 **Name:** {char['name']}<br>
 **Race:** {char['race']}<br>
@@ -221,7 +286,9 @@ else:
 
     st.write("Stats:")
     for stat, value in char['stats'].items():
-        st.write(f"- {stat}: {value}")
+        modifier = char['attribute_modifiers'][stat]  # Show the modifier
+        # Include modifier
+        st.write(f"- {stat}: {value} (Modifier: {modifier:+})")
 
     st.write("Skills:")
     for skill in char['skills']:
@@ -287,7 +354,8 @@ else:
                         st.session_state.game_state_manager.save_game_state(
                             st.session_state.character['id'],
                             st.session_state.active_quest_text_current_scene,
-                            game_data=st.session_state.game_data
+                            game_data=st.session_state.game_data,
+                            character_data=st.session_state.character
                         )
                 finally:
                     st.session_state.generating_action = False
@@ -338,7 +406,8 @@ else:
                         st.session_state.game_state_manager.save_game_state(
                             st.session_state.character['id'],
                             st.session_state.active_quest_text_current_scene,
-                            game_data=st.session_state.game_data
+                            game_data=st.session_state.game_data,
+                            character_data=st.session_state.character
                         )
                 finally:
                     st.session_state.generating_action = False
@@ -351,8 +420,12 @@ else:
         if st.session_state.character is not None:
             char = st.session_state.character
 
+            # Define weather and effects placeholders
+            weather = "Clear skies"
+            effects = ["Gentle breeze"]
+
             # Load details progressively
-            weather, effects = load_environmental_details()
+            # weather, effects = load_environmental_details() # Commented out, using placeholders for now
             inventory = load_inventory()
 
             # Enhanced Character Status Display
@@ -366,8 +439,13 @@ else:
             # Visual Stats Bars
             if 'stats' in char:
                 for stat, value in char['stats'].items():
+                    # Get the modifier
+                    modifier = char['attribute_modifiers'][stat]
+                    # Ensure progress value is within [0, 1]
+                    progress_value = min(value / 18, 1.0)  # Clamp the value
                     st.progress(
-                        value/100, f"{stat.title()}: {value}")
+                        # Show the modifier
+                        progress_value, f"{stat.title()}: {value} (Modifier: {modifier:+})")
 
             # Quick Inventory
             st.markdown("### 📦 Inventory")
@@ -394,3 +472,5 @@ else:
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
+
+logger.info("02_Active_Quest.py script finished.")

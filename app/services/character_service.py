@@ -1,6 +1,3 @@
-import random
-
-
 class CharacterService:
     """Service class for managing character-related operations"""
 
@@ -67,7 +64,15 @@ class CharacterService:
                     {'level': 1, 'feature': 'Fighting Style'},
                     {'level': 2, 'feature': 'Action Surge'},
                     {'level': 3, 'feature': 'Martial Archetype'}
-                ]
+                ],
+                'stat_progression': {  # Class-specific stat progression
+                    'strength': 2,
+                    'constitution': 1,
+                    'dexterity': 0,
+                    'intelligence': 0,
+                    'wisdom': 0,
+                    'charisma': 0
+                }
             },
             'Mage': {
                 'hit_dice': 'd6',
@@ -81,7 +86,15 @@ class CharacterService:
                     {'level': 1, 'feature': 'Spellcasting'},
                     {'level': 2, 'feature': 'Arcane Tradition'},
                     {'level': 3, 'feature': 'Cantrip Formulas'}
-                ]
+                ],
+                'stat_progression': {  # Class-specific stat progression
+                    'strength': 0,
+                    'constitution': 0,
+                    'dexterity': 0,
+                    'intelligence': 2,
+                    'wisdom': 1,
+                    'charisma': 0
+                }
             },
             'Rogue': {
                 'hit_dice': 'd8',
@@ -95,7 +108,15 @@ class CharacterService:
                     {'level': 1, 'feature': 'Expertise'},
                     {'level': 2, 'feature': 'Cunning Action'},
                     {'level': 3, 'feature': 'Roguish Archetype'}
-                ]
+                ],
+                'stat_progression': {  # Class-specific stat progression
+                    'strength': 0,
+                    'constitution': 0,
+                    'dexterity': 2,
+                    'intelligence': 0,
+                    'wisdom': 0,
+                    'charisma': 1
+                }
             },
             'Cleric': {
                 'hit_dice': 'd8',
@@ -109,7 +130,15 @@ class CharacterService:
                     {'level': 1, 'feature': 'Divine Domain'},
                     {'level': 2, 'feature': 'Channel Divinity'},
                     {'level': 3, 'feature': 'Domain Feature'}
-                ]
+                ],
+                'stat_progression': {  # Class-specific stat progression
+                    'strength': 0,
+                    'constitution': 1,
+                    'dexterity': 0,
+                    'intelligence': 0,
+                    'wisdom': 2,
+                    'charisma': 0
+                }
             },
             'Ranger': {
                 'hit_dice': 'd10',
@@ -123,7 +152,15 @@ class CharacterService:
                     {'level': 1, 'feature': 'Favored Enemy'},
                     {'level': 2, 'feature': 'Fighting Style'},
                     {'level': 3, 'feature': 'Ranger Conclave'}
-                ]
+                ],
+                'stat_progression': {  # Class-specific stat progression
+                    'strength': 1,
+                    'constitution': 0,
+                    'dexterity': 2,
+                    'intelligence': 0,
+                    'wisdom': 0,
+                    'charisma': 0
+                }
             },
             'Paladin': {
                 'hit_dice': 'd10',
@@ -137,7 +174,15 @@ class CharacterService:
                     {'level': 1, 'feature': 'Divine Sense'},
                     {'level': 2, 'feature': 'Fighting Style'},
                     {'level': 3, 'feature': 'Sacred Oath'}
-                ]
+                ],
+                'stat_progression': {  # Class-specific stat progression
+                    'strength': 2,
+                    'constitution': 0,
+                    'dexterity': 0,
+                    'intelligence': 0,
+                    'wisdom': 0,
+                    'charisma': 1
+                }
             }
         }
 
@@ -250,7 +295,6 @@ class CharacterService:
 
         # Apply racial modifiers
         race_features = self._race_features.get(race, {})
-        race_bonuses = race_features.get('attribute_bonuses', {})
 
         # Apply class features
         class_features = self._class_features.get(class_type, {})
@@ -266,6 +310,10 @@ class CharacterService:
         derived_stats['defense'] += (base_stats['dexterity'] - 10) // 2
 
         return derived_stats
+
+    def _calculate_attribute_modifier(self, attribute_value):
+        """Calculates the attribute modifier based on the attribute value."""
+        return (attribute_value - 10) // 2
 
     def finalize_character(self, temp_character):
         """Finalize character creation, applying racial/class bonuses and calculating stats."""
@@ -308,13 +356,20 @@ class CharacterService:
         character_id = temp_character['id']
         skills = temp_character['skills']
 
+        # Calculate attribute modifiers and store them
+        modifiers = {}
+        for stat, value in character['stats'].items():
+            modifiers[stat] = self._calculate_attribute_modifier(value)
+        character['attribute_modifiers'] = modifiers
+
         # Return a dictionary with the character's final attributes
         return {
             'id': character_id,
             'name': character['name'],
             'race': character['race'],
             'class_type': character['class_type'],
-            'background': character['background'],
+            # Use .get() with a default value
+            'background': character.get('background', None),
             'stats': character['stats'],
             'max_health': character['max_health'],
             'defense': character['defense'],
@@ -324,7 +379,8 @@ class CharacterService:
             'level': character['level'],  # Add level to the character
             'experience': character['experience'],
             'experience_threshold': character['experience_threshold'],
-            'skills': skills
+            'skills': skills,
+            'attribute_modifiers': character['attribute_modifiers'],
         }
 
     def generate_initial_story(self, character_data):
@@ -419,15 +475,26 @@ class CharacterService:
         return self._skills
 
     def level_up(self, character_data):
-        """Increases the character's level and stats."""
+        """Increases the character's level and stats based on class progression."""
+        class_type = character_data['class_type']
+        class_features = self._class_features.get(class_type, {})
+        stat_progression = class_features.get(
+            'stat_progression', {})  # Get the stat progression for the class
+
         character_data['level'] += 1
-        # Add a bonus to two random stats
-        stats = list(character_data['stats'].keys())
-        chosen_stats = random.sample(stats, 2)  # Select two random stats
-        for stat in chosen_stats:
-            character_data['stats'][stat] += 1
+
+        # Apply the stat progression
+        for stat, bonus in stat_progression.items():
+            character_data['stats'][stat] += bonus
+
+        # Recalculate attribute modifiers after stat increases
+        for stat, value in character_data['stats'].items():
+            character_data['attribute_modifiers'][stat] = self._calculate_attribute_modifier(
+                value)
+
         character_data['experience_threshold'] = int(
             character_data['experience_threshold'] * 1.5)  # Increase threshold
+
         return character_data
 
     def add_experience(self, character_data, xp):
