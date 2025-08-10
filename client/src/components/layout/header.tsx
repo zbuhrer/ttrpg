@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { QuickAddModal } from "@/components/modals/quick-add-modal";
-import { Plus, Play, Save, Edit } from "lucide-react";
-import { useCampaigns, useUpdateCampaign } from "../../hooks/use-campaigns";
+import { CampaignManagerModal } from "@/components/campaign/campaign-manager-modal";
+import { Plus, Play, Save, Edit, Settings, FolderOpen } from "lucide-react";
+import { useUpdateCampaign } from "../../hooks/use-campaigns";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useCampaignContext } from "@/contexts/campaign-context";
 
 export function Header() {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [isCampaignManagerOpen, setIsCampaignManagerOpen] = useState(false);
   const [isEditingCampaignName, setIsEditingCampaignName] = useState(false);
-  const { data: campaigns, isLoading } = useCampaigns();
+  const { currentCampaign, setCurrentCampaign, isLoading } =
+    useCampaignContext();
   const updateCampaignMutation = useUpdateCampaign();
   const { toast } = useToast();
 
-  const currentCampaign =
-    campaigns && campaigns.length > 0 ? campaigns[0] : null;
   const [editedCampaignName, setEditedCampaignName] = useState("");
 
   // Initialize and synchronize editedCampaignName with the fetched campaign name
@@ -182,13 +184,25 @@ export function Header() {
 
           <div className="flex items-center space-x-4">
             <Button
+              onClick={() => setIsCampaignManagerOpen(true)}
+              variant="outline"
+              className="px-4 py-2 border-fantasy-charcoal text-fantasy-text hover:bg-fantasy-charcoal transition-colors duration-300 font-manuscript"
+            >
+              <FolderOpen className="w-4 h-4 mr-2" />
+              {currentCampaign ? "Switch Campaign" : "New Campaign"}
+            </Button>
+            <Button
               onClick={() => setIsQuickAddOpen(true)}
-              className="px-4 py-2 bg-fantasy-primary hover:bg-fantasy-secondary text-white rounded-lg transition-colors duration-300 hover-glow mystical-glow font-manuscript"
+              disabled={!currentCampaign}
+              className="px-4 py-2 bg-fantasy-primary hover:bg-fantasy-secondary text-white rounded-lg transition-colors duration-300 hover-glow mystical-glow font-manuscript disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="w-4 h-4 mr-2" />
               Quick Add
             </Button>
-            <Button className="px-4 py-2 bg-fantasy-success hover:bg-green-600 text-white rounded-lg transition-colors duration-300 hover-glow mystical-glow font-manuscript">
+            <Button
+              disabled={!currentCampaign}
+              className="px-4 py-2 bg-fantasy-success hover:bg-green-600 text-white rounded-lg transition-colors duration-300 hover-glow mystical-glow font-manuscript disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Play className="w-4 h-4 mr-2" />
               Start Session
             </Button>
@@ -203,6 +217,13 @@ export function Header() {
       <QuickAddModal
         isOpen={isQuickAddOpen}
         onClose={() => setIsQuickAddOpen(false)}
+      />
+
+      <CampaignManagerModal
+        isOpen={isCampaignManagerOpen}
+        onClose={() => setIsCampaignManagerOpen(false)}
+        onCampaignSelected={setCurrentCampaign}
+        currentCampaignId={currentCampaign?.id || null}
       />
     </>
   );

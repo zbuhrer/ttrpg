@@ -8,34 +8,95 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Users, Calendar, CheckSquare, GitBranch, UserPlus, Save } from "lucide-react";
+import {
+  Users,
+  Calendar,
+  CheckSquare,
+  GitBranch,
+  UserPlus,
+  Save,
+  FolderOpen,
+} from "lucide-react";
 import { Character, Quest, StoryBranch, Activity } from "@shared/schema";
-
-const CAMPAIGN_ID = 1; // Default campaign for demo
+import { useCampaignContext } from "@/contexts/campaign-context";
+import { CampaignManagerModal } from "@/components/campaign/campaign-manager-modal";
+import { useState } from "react";
 
 export default function Dashboard() {
-  const { data: characters = [], isLoading: charactersLoading } = useQuery<Character[]>({
-    queryKey: ["/api/campaigns", CAMPAIGN_ID, "characters"],
+  const { currentCampaign, setCurrentCampaign } = useCampaignContext();
+  const [isCampaignManagerOpen, setIsCampaignManagerOpen] = useState(false);
+
+  const { data: characters = [], isLoading: charactersLoading } = useQuery<
+    Character[]
+  >({
+    queryKey: ["/api/campaigns", currentCampaign?.id, "characters"],
+    enabled: !!currentCampaign?.id,
   });
 
   const { data: quests = [], isLoading: questsLoading } = useQuery<Quest[]>({
-    queryKey: ["/api/campaigns", CAMPAIGN_ID, "quests"],
+    queryKey: ["/api/campaigns", currentCampaign?.id, "quests"],
+    enabled: !!currentCampaign?.id,
   });
 
-  const { data: storyBranches = [], isLoading: branchesLoading } = useQuery<StoryBranch[]>({
-    queryKey: ["/api/campaigns", CAMPAIGN_ID, "story-branches"],
+  const { data: storyBranches = [], isLoading: branchesLoading } = useQuery<
+    StoryBranch[]
+  >({
+    queryKey: ["/api/campaigns", currentCampaign?.id, "story-branches"],
+    enabled: !!currentCampaign?.id,
   });
 
-  const { data: activities = [], isLoading: activitiesLoading } = useQuery<Activity[]>({
-    queryKey: ["/api/campaigns", CAMPAIGN_ID, "activities"],
+  const { data: activities = [], isLoading: activitiesLoading } = useQuery<
+    Activity[]
+  >({
+    queryKey: ["/api/campaigns", currentCampaign?.id, "activities"],
+    enabled: !!currentCampaign?.id,
   });
 
   const stats = {
-    activePlayers: characters.length,
-    sessionsPlayed: 12,
-    activeQuests: quests.filter(q => q.status === 'in_progress').length,
+    activePlayers: currentCampaign?.activePlayers || 0,
+    sessionsPlayed: currentCampaign?.totalSessions || 0,
+    activeQuests: quests.filter((q) => q.status === "in_progress").length,
     storyBranches: storyBranches.length,
   };
+
+  // Show campaign selection prompt if no campaign is selected
+  if (!currentCampaign) {
+    return (
+      <>
+        <div className="p-6 flex items-center justify-center min-h-[60vh]">
+          <Card className="bg-fantasy-slate border-fantasy-charcoal shadow-card max-w-lg w-full">
+            <CardContent className="p-8 text-center">
+              <div className="text-6xl mb-6">⚔️</div>
+              <h2 className="text-2xl font-fantasy font-semibold text-fantasy-accent mystical-glow mb-4">
+                Welcome to Aetherquill
+              </h2>
+              <p className="text-gray-400 font-manuscript mb-6">
+                Your digital TTRPG companion awaits. Create a new campaign or
+                load an existing one to begin your adventure.
+              </p>
+              <Button
+                onClick={() => setIsCampaignManagerOpen(true)}
+                className="w-full bg-fantasy-primary hover:bg-fantasy-secondary text-white font-manuscript mb-4"
+              >
+                <FolderOpen className="w-4 h-4 mr-2" />
+                Manage Campaigns
+              </Button>
+              <p className="text-xs text-gray-500 font-manuscript">
+                All your campaign data is automatically saved as you play
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <CampaignManagerModal
+          isOpen={isCampaignManagerOpen}
+          onClose={() => setIsCampaignManagerOpen(false)}
+          onCampaignSelected={setCurrentCampaign}
+          currentCampaignId={null}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -45,7 +106,9 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm font-manuscript">Active Players</p>
+                <p className="text-gray-400 text-sm font-manuscript">
+                  Active Players
+                </p>
                 <p className="text-3xl font-bold text-fantasy-accent mt-1 font-fantasy ethereal-pulse">
                   {stats.activePlayers}
                 </p>
@@ -61,7 +124,9 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm font-manuscript">Sessions Played</p>
+                <p className="text-gray-400 text-sm font-manuscript">
+                  Sessions Played
+                </p>
                 <p className="text-3xl font-bold text-fantasy-accent mt-1 font-fantasy ethereal-pulse">
                   {stats.sessionsPlayed}
                 </p>
@@ -77,7 +142,9 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm font-manuscript">Active Quests</p>
+                <p className="text-gray-400 text-sm font-manuscript">
+                  Active Quests
+                </p>
                 <p className="text-3xl font-bold text-fantasy-accent mt-1 font-fantasy ethereal-pulse">
                   {stats.activeQuests}
                 </p>
@@ -93,7 +160,9 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm font-manuscript">Story Branches</p>
+                <p className="text-gray-400 text-sm font-manuscript">
+                  Story Branches
+                </p>
                 <p className="text-3xl font-bold text-fantasy-accent mt-1 font-fantasy ethereal-pulse">
                   {stats.storyBranches}
                 </p>
@@ -113,7 +182,9 @@ export default function Dashboard() {
             <CardTitle className="text-xl font-fantasy font-semibold text-fantasy-accent mystical-glow">
               📜 Recent Activity
             </CardTitle>
-            <p className="text-gray-400 text-sm font-manuscript">Latest campaign developments and player actions</p>
+            <p className="text-gray-400 text-sm font-manuscript">
+              Latest campaign developments and player actions
+            </p>
           </CardHeader>
           <CardContent className="p-6 space-y-4 max-h-96 overflow-y-auto scroll-hidden">
             {activitiesLoading ? (
@@ -137,8 +208,12 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-400 font-manuscript">No recent activity</p>
-                <p className="text-sm text-gray-500 mt-1 font-manuscript">Start playing to see campaign events here</p>
+                <p className="text-gray-400 font-manuscript">
+                  No recent activity
+                </p>
+                <p className="text-sm text-gray-500 mt-1 font-manuscript">
+                  Start playing to see campaign events here
+                </p>
               </div>
             )}
           </CardContent>
@@ -178,7 +253,9 @@ export default function Dashboard() {
               <CardTitle className="text-xl font-fantasy font-semibold text-fantasy-accent mystical-glow">
                 ⚔️ Party Overview
               </CardTitle>
-              <p className="text-gray-400 text-sm mt-1 font-manuscript">Current player characters and their status</p>
+              <p className="text-gray-400 text-sm mt-1 font-manuscript">
+                Current player characters and their status
+              </p>
             </div>
             <Button className="px-4 py-2 bg-fantasy-primary hover:bg-fantasy-secondary text-white rounded-lg transition-colors duration-300 hover-glow mystical-glow font-manuscript">
               <UserPlus className="w-4 h-4 mr-2" />
@@ -211,8 +288,12 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-400 font-manuscript">No characters created yet</p>
-              <p className="text-sm text-gray-500 mt-1 font-manuscript">Add your first character to get started</p>
+              <p className="text-gray-400 font-manuscript">
+                No characters created yet
+              </p>
+              <p className="text-sm text-gray-500 mt-1 font-manuscript">
+                Add your first character to get started
+              </p>
             </div>
           )}
         </CardContent>
@@ -225,13 +306,18 @@ export default function Dashboard() {
             <CardTitle className="text-xl font-fantasy font-semibold text-fantasy-accent mystical-glow">
               🌟 Active Story Branches
             </CardTitle>
-            <p className="text-gray-400 text-sm mt-1 font-manuscript">Current narrative paths and decision points</p>
+            <p className="text-gray-400 text-sm mt-1 font-manuscript">
+              Current narrative paths and decision points
+            </p>
           </CardHeader>
           <CardContent className="p-6 space-y-4">
             {branchesLoading ? (
               <div className="space-y-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="animate-pulse p-4 bg-fantasy-dark/30 rounded-lg">
+                  <div
+                    key={i}
+                    className="animate-pulse p-4 bg-fantasy-dark/30 rounded-lg"
+                  >
                     <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
                     <div className="h-3 bg-gray-700 rounded w-full mb-3"></div>
                     <div className="h-2 bg-gray-700 rounded w-1/4"></div>
@@ -245,7 +331,9 @@ export default function Dashboard() {
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-400">No story branches yet</p>
-                <p className="text-sm text-gray-500 mt-1">Create story branches to track narrative paths</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Create story branches to track narrative paths
+                </p>
               </div>
             )}
           </CardContent>
@@ -256,13 +344,18 @@ export default function Dashboard() {
             <CardTitle className="text-xl font-fantasy font-semibold text-fantasy-accent mystical-glow">
               📜 Quest Tracker
             </CardTitle>
-            <p className="text-gray-400 text-sm mt-1 font-manuscript">Active objectives and their completion status</p>
+            <p className="text-gray-400 text-sm mt-1 font-manuscript">
+              Active objectives and their completion status
+            </p>
           </CardHeader>
           <CardContent className="p-6 space-y-4">
             {questsLoading ? (
               <div className="space-y-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="animate-pulse p-4 bg-fantasy-dark/30 rounded-lg">
+                  <div
+                    key={i}
+                    className="animate-pulse p-4 bg-fantasy-dark/30 rounded-lg"
+                  >
                     <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
                     <div className="h-3 bg-gray-700 rounded w-full mb-3"></div>
                     <div className="h-2 bg-gray-700 rounded w-full"></div>
@@ -270,13 +363,15 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : quests.length > 0 ? (
-              quests.slice(0, 3).map((quest) => (
-                <QuestCard key={quest.id} quest={quest} />
-              ))
+              quests
+                .slice(0, 3)
+                .map((quest) => <QuestCard key={quest.id} quest={quest} />)
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-400">No quests created yet</p>
-                <p className="text-sm text-gray-500 mt-1">Add quests to track objectives</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Add quests to track objectives
+                </p>
               </div>
             )}
           </CardContent>

@@ -20,8 +20,8 @@ services:
       PORT: 5000
     depends_on:
       - db
-    # Use dev:setup command that runs migrations then starts the app
-    command: npm run dev:setup
+    # Use startup script that waits for DB and handles migrations
+    command: sh /app/scripts/startup.sh
 
   db:
     image: postgres:15-alpine
