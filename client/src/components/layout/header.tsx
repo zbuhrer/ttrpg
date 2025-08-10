@@ -7,6 +7,8 @@ import { useUpdateCampaign } from "../../hooks/use-campaigns";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useCampaignContext } from "@/contexts/campaign-context";
+import { useIncrementSession } from "@/hooks/use-campaign-sync";
+import { SessionControls } from "@/components/session/session-controls";
 
 export function Header() {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
@@ -15,6 +17,7 @@ export function Header() {
   const { currentCampaign, setCurrentCampaign, isLoading } =
     useCampaignContext();
   const updateCampaignMutation = useUpdateCampaign();
+  const { incrementSession, isIncrementing } = useIncrementSession();
   const { toast } = useToast();
 
   const [editedCampaignName, setEditedCampaignName] = useState("");
@@ -94,6 +97,23 @@ export function Header() {
     }
   };
 
+  const handleStartSession = async () => {
+    try {
+      await incrementSession();
+      toast({
+        title: "New Session Started!",
+        description: `Welcome to Session ${currentCampaign?.currentSession || 1}`,
+      });
+    } catch (error) {
+      console.error("Failed to start session:", error);
+      toast({
+        title: "Error",
+        description: "Failed to start new session. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <header className="bg-fantasy-slate/90 backdrop-blur-sm border-b border-fantasy-charcoal px-6 py-4 sticky top-0 z-10 arcane-shimmer">
@@ -119,13 +139,11 @@ export function Header() {
                       currentCampaign && setIsEditingCampaignName(true)
                     }
                   >
-                    ⚔️{" "}
                     {isLoading
                       ? "Loading..."
                       : currentCampaign
                         ? currentCampaign.name
-                        : "No Campaign Set"}{" "}
-                    ⚔️
+                        : "No Campaign Set"}
                   </h2>
                   {!isLoading && currentCampaign && (
                     <Button
@@ -177,9 +195,20 @@ export function Header() {
                 </div>
               )}
             </div>
-            <p className="text-gray-400 text-sm mt-1 font-manuscript">
-              Campaign Dashboard • Session 12 • 4 Active Players
-            </p>
+            <div className="flex items-center gap-2 text-sm mt-1 font-manuscript">
+              <span className="text-gray-400">Campaign Dashboard</span>
+              {currentCampaign && (
+                <>
+                  <span className="text-gray-500">•</span>
+                  <SessionControls />
+                  <span className="text-gray-500">•</span>
+                  <span className="text-gray-400">
+                    {currentCampaign.activePlayers || 0} Active Player
+                    {currentCampaign.activePlayers === 1 ? "" : "s"}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center space-x-4">
@@ -200,11 +229,21 @@ export function Header() {
               Quick Add
             </Button>
             <Button
-              disabled={!currentCampaign}
+              onClick={handleStartSession}
+              disabled={!currentCampaign || isIncrementing}
               className="px-4 py-2 bg-fantasy-success hover:bg-green-600 text-white rounded-lg transition-colors duration-300 hover-glow mystical-glow font-manuscript disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Play className="w-4 h-4 mr-2" />
-              Start Session
+              {isIncrementing ? (
+                <>
+                  <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  Starting...
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Session
+                </>
+              )}
             </Button>
             <div className="text-gray-400 flex items-center">
               <Save className="w-4 h-4 mr-1" />

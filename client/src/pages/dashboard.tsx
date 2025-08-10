@@ -20,11 +20,15 @@ import {
 import { Character, Quest, StoryBranch, Activity } from "@shared/schema";
 import { useCampaignContext } from "@/contexts/campaign-context";
 import { CampaignManagerModal } from "@/components/campaign/campaign-manager-modal";
+import { useCampaignSync } from "@/hooks/use-campaign-sync";
 import { useState } from "react";
 
 export default function Dashboard() {
   const { currentCampaign, setCurrentCampaign } = useCampaignContext();
   const [isCampaignManagerOpen, setIsCampaignManagerOpen] = useState(false);
+
+  // Automatically sync campaign data with actual counts
+  useCampaignSync();
 
   const { data: characters = [], isLoading: charactersLoading } = useQuery<
     Character[]
