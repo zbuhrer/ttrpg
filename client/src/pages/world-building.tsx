@@ -4,15 +4,42 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { insertLocationSchema } from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MapPin, Plus, Search, Map, Building, Trees, Mountain } from "lucide-react";
+import {
+  MapPin,
+  Plus,
+  Search,
+  Map,
+  Building,
+  Trees,
+  Mountain,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const CAMPAIGN_ID = 1;
@@ -34,8 +61,8 @@ export default function WorldBuilding() {
       name: "",
       type: "",
       description: "",
-      inhabitants: [],
-      keyFeatures: [],
+      inhabitants: "",
+      keyFeatures: "",
       notes: "",
       mapUrl: "",
     },
@@ -43,11 +70,17 @@ export default function WorldBuilding() {
 
   const createLocationMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", `/api/campaigns/${CAMPAIGN_ID}/locations`, data);
+      const response = await apiRequest(
+        "POST",
+        `/api/campaigns/${CAMPAIGN_ID}/locations`,
+        data,
+      );
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/campaigns", CAMPAIGN_ID, "locations"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/campaigns", CAMPAIGN_ID, "locations"],
+      });
       setIsCreateOpen(false);
       form.reset();
       toast({
@@ -68,36 +101,57 @@ export default function WorldBuilding() {
     // Convert comma-separated strings to arrays
     const processedData = {
       ...data,
-      inhabitants: data.inhabitants ? data.inhabitants.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
-      keyFeatures: data.keyFeatures ? data.keyFeatures.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
+      inhabitants: data.inhabitants
+        ? data.inhabitants
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
+      keyFeatures: data.keyFeatures
+        ? data.keyFeatures
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
     };
     createLocationMutation.mutate(processedData);
   };
 
   const getLocationIcon = (type: string) => {
     switch (type) {
-      case 'city': return <Building className="w-5 h-5" />;
-      case 'dungeon': return <Mountain className="w-5 h-5" />;
-      case 'wilderness': return <Trees className="w-5 h-5" />;
-      default: return <MapPin className="w-5 h-5" />;
+      case "city":
+        return <Building className="w-5 h-5" />;
+      case "dungeon":
+        return <Mountain className="w-5 h-5" />;
+      case "wilderness":
+        return <Trees className="w-5 h-5" />;
+      default:
+        return <MapPin className="w-5 h-5" />;
     }
   };
 
   const filteredLocations = locations.filter((location) => {
-    const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         location.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      location.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === "all" || location.type === filterType;
     return matchesSearch && matchesType;
   });
 
-  const locationTypes = [...new Set(locations.map(l => l.type).filter(Boolean))];
+  const locationTypes = [
+    ...new Set(locations.map((l) => l.type).filter(Boolean)),
+  ];
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-fantasy font-bold text-fantasy-accent">World Building</h1>
-          <p className="text-gray-400 mt-1">Manage locations and world details</p>
+          <h1 className="text-3xl font-fantasy font-bold text-fantasy-accent">
+            World Building
+          </h1>
+          <p className="text-gray-400 mt-1">
+            Manage locations and world details
+          </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
@@ -113,7 +167,10 @@ export default function WorldBuilding() {
               </DialogTitle>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -122,7 +179,10 @@ export default function WorldBuilding() {
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-fantasy-dark border-fantasy-charcoal" />
+                          <Input
+                            {...field}
+                            className="bg-fantasy-dark border-fantasy-charcoal"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -135,7 +195,10 @@ export default function WorldBuilding() {
                       <FormItem>
                         <FormLabel>Type</FormLabel>
                         <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <SelectTrigger className="bg-fantasy-dark border-fantasy-charcoal">
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
@@ -144,7 +207,9 @@ export default function WorldBuilding() {
                               <SelectItem value="town">Town</SelectItem>
                               <SelectItem value="village">Village</SelectItem>
                               <SelectItem value="dungeon">Dungeon</SelectItem>
-                              <SelectItem value="wilderness">Wilderness</SelectItem>
+                              <SelectItem value="wilderness">
+                                Wilderness
+                              </SelectItem>
                               <SelectItem value="fortress">Fortress</SelectItem>
                               <SelectItem value="temple">Temple</SelectItem>
                               <SelectItem value="ruins">Ruins</SelectItem>
@@ -163,8 +228,8 @@ export default function WorldBuilding() {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="Describe this location..."
                         />
@@ -180,8 +245,8 @@ export default function WorldBuilding() {
                     <FormItem>
                       <FormLabel>Inhabitants (comma-separated)</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field} 
+                        <Input
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="e.g. Humans, Elves, Dwarves"
                         />
@@ -197,8 +262,8 @@ export default function WorldBuilding() {
                     <FormItem>
                       <FormLabel>Key Features (comma-separated)</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field} 
+                        <Input
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="e.g. Grand Library, Ancient Tower, Hidden Passages"
                         />
@@ -214,8 +279,8 @@ export default function WorldBuilding() {
                     <FormItem>
                       <FormLabel>Notes</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="Additional notes about this location..."
                         />
@@ -225,19 +290,21 @@ export default function WorldBuilding() {
                   )}
                 />
                 <div className="flex justify-end space-x-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setIsCreateOpen(false)}
                   >
                     Cancel
                   </Button>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={createLocationMutation.isPending}
                     className="bg-fantasy-primary hover:bg-fantasy-secondary"
                   >
-                    {createLocationMutation.isPending ? "Creating..." : "Create Location"}
+                    {createLocationMutation.isPending
+                      ? "Creating..."
+                      : "Create Location"}
                   </Button>
                 </div>
               </form>
@@ -297,10 +364,13 @@ export default function WorldBuilding() {
           ) : filteredLocations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredLocations.map((location) => (
-                <div key={location.id} className="bg-fantasy-dark/30 rounded-lg border border-fantasy-charcoal/50 p-6 hover-glow">
+                <div
+                  key={location.id}
+                  className="bg-fantasy-dark/30 rounded-lg border border-fantasy-charcoal/50 p-6 hover-glow"
+                >
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-white flex items-center">
-                      {getLocationIcon(location.type || '')}
+                      {getLocationIcon(location.type || "")}
                       <span className="ml-2">{location.name}</span>
                     </h3>
                     {location.type && (
@@ -310,17 +380,27 @@ export default function WorldBuilding() {
                     )}
                   </div>
                   {location.description && (
-                    <p className="text-gray-400 text-sm mb-4">{location.description}</p>
+                    <p className="text-gray-400 text-sm mb-4">
+                      {location.description}
+                    </p>
                   )}
                   {location.inhabitants && location.inhabitants.length > 0 && (
                     <div className="mb-3">
-                      <p className="text-xs font-medium text-fantasy-accent mb-1">Inhabitants:</p>
+                      <p className="text-xs font-medium text-fantasy-accent mb-1">
+                        Inhabitants:
+                      </p>
                       <div className="flex flex-wrap gap-1">
-                        {location.inhabitants.slice(0, 3).map((inhabitant, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {inhabitant}
-                          </Badge>
-                        ))}
+                        {location.inhabitants
+                          .slice(0, 3)
+                          .map((inhabitant, index) => (
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {inhabitant}
+                            </Badge>
+                          ))}
                         {location.inhabitants.length > 3 && (
                           <Badge variant="secondary" className="text-xs">
                             +{location.inhabitants.length - 3} more
@@ -331,13 +411,21 @@ export default function WorldBuilding() {
                   )}
                   {location.keyFeatures && location.keyFeatures.length > 0 && (
                     <div className="mb-3">
-                      <p className="text-xs font-medium text-fantasy-accent mb-1">Key Features:</p>
+                      <p className="text-xs font-medium text-fantasy-accent mb-1">
+                        Key Features:
+                      </p>
                       <div className="flex flex-wrap gap-1">
-                        {location.keyFeatures.slice(0, 2).map((feature, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {feature}
-                          </Badge>
-                        ))}
+                        {location.keyFeatures
+                          .slice(0, 2)
+                          .map((feature, index) => (
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {feature}
+                            </Badge>
+                          ))}
                         {location.keyFeatures.length > 2 && (
                           <Badge variant="outline" className="text-xs">
                             +{location.keyFeatures.length - 2} more
@@ -354,8 +442,8 @@ export default function WorldBuilding() {
               <Map className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-400 text-lg">No locations found</p>
               <p className="text-sm text-gray-500 mt-1">
-                {searchTerm || filterType !== "all" 
-                  ? "Try a different search term or filter" 
+                {searchTerm || filterType !== "all"
+                  ? "Try a different search term or filter"
                   : "Create your first location to start building your world"}
               </p>
             </div>

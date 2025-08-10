@@ -36,13 +36,12 @@ app.use(logger.requestLogger());
     server.listen(
       {
         port,
-        host: "0.0.0.0",
-        reusePort: true,
+        host: "localhost",
       },
       () => {
         logger.info("server", `Server started successfully`, {
           port,
-          host: "0.0.0.0",
+          host: "localhost",
           logFile: logger.getLogFilePath(),
           environment: app.get("env"),
         });

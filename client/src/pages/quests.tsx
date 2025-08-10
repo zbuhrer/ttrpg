@@ -4,9 +4,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { QuestCard } from "@/components/quest-card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { insertQuestSchema } from "@shared/schema";
@@ -38,7 +57,7 @@ export default function Quests() {
       priority: "normal",
       progress: 0,
       maxProgress: 100,
-      objectives: [],
+      objectives: "",
       completedObjectives: [],
       reward: "",
       timeLimit: "",
@@ -48,11 +67,17 @@ export default function Quests() {
 
   const createQuestMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", `/api/campaigns/${CAMPAIGN_ID}/quests`, data);
+      const response = await apiRequest(
+        "POST",
+        `/api/campaigns/${CAMPAIGN_ID}/quests`,
+        data,
+      );
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/campaigns", CAMPAIGN_ID, "quests"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/campaigns", CAMPAIGN_ID, "quests"],
+      });
       setIsCreateOpen(false);
       form.reset();
       toast({
@@ -73,30 +98,46 @@ export default function Quests() {
     // Convert comma-separated strings to arrays
     const processedData = {
       ...data,
-      objectives: data.objectives ? data.objectives.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
+      objectives: data.objectives
+        ? data.objectives
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
     };
     createQuestMutation.mutate(processedData);
   };
 
   const filteredQuests = quests.filter((quest) => {
-    const matchesSearch = quest.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         quest.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || quest.status === filterStatus;
-    const matchesPriority = filterPriority === "all" || quest.priority === filterPriority;
+    const matchesSearch =
+      quest.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      quest.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      filterStatus === "all" || quest.status === filterStatus;
+    const matchesPriority =
+      filterPriority === "all" || quest.priority === filterPriority;
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  const inProgressQuests = filteredQuests.filter(q => q.status === 'in_progress');
-  const completedQuests = filteredQuests.filter(q => q.status === 'completed');
-  const failedQuests = filteredQuests.filter(q => q.status === 'failed');
-  const optionalQuests = filteredQuests.filter(q => q.status === 'optional');
+  const inProgressQuests = filteredQuests.filter(
+    (q) => q.status === "in_progress",
+  );
+  const completedQuests = filteredQuests.filter(
+    (q) => q.status === "completed",
+  );
+  const failedQuests = filteredQuests.filter((q) => q.status === "failed");
+  const optionalQuests = filteredQuests.filter((q) => q.status === "optional");
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-fantasy font-bold text-fantasy-accent">Quests</h1>
-          <p className="text-gray-400 mt-1">Manage campaign objectives and progress</p>
+          <h1 className="text-3xl font-fantasy font-bold text-fantasy-accent">
+            Quests
+          </h1>
+          <p className="text-gray-400 mt-1">
+            Manage campaign objectives and progress
+          </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
@@ -112,7 +153,10 @@ export default function Quests() {
               </DialogTitle>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="title"
@@ -120,7 +164,10 @@ export default function Quests() {
                     <FormItem>
                       <FormLabel>Title</FormLabel>
                       <FormControl>
-                        <Input {...field} className="bg-fantasy-dark border-fantasy-charcoal" />
+                        <Input
+                          {...field}
+                          className="bg-fantasy-dark border-fantasy-charcoal"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -133,8 +180,8 @@ export default function Quests() {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="Describe this quest and its context..."
                         />
@@ -151,13 +198,20 @@ export default function Quests() {
                       <FormItem>
                         <FormLabel>Status</FormLabel>
                         <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <SelectTrigger className="bg-fantasy-dark border-fantasy-charcoal">
                               <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="in_progress">In Progress</SelectItem>
-                              <SelectItem value="completed">Completed</SelectItem>
+                              <SelectItem value="in_progress">
+                                In Progress
+                              </SelectItem>
+                              <SelectItem value="completed">
+                                Completed
+                              </SelectItem>
                               <SelectItem value="failed">Failed</SelectItem>
                               <SelectItem value="optional">Optional</SelectItem>
                             </SelectContent>
@@ -174,7 +228,10 @@ export default function Quests() {
                       <FormItem>
                         <FormLabel>Priority</FormLabel>
                         <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <SelectTrigger className="bg-fantasy-dark border-fantasy-charcoal">
                               <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
@@ -198,8 +255,8 @@ export default function Quests() {
                     <FormItem>
                       <FormLabel>Objectives (comma-separated)</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="e.g. Find the ancient artifact, Defeat the dragon, Return to the village"
                         />
@@ -216,8 +273,8 @@ export default function Quests() {
                       <FormItem>
                         <FormLabel>Reward</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
+                          <Input
+                            {...field}
                             className="bg-fantasy-dark border-fantasy-charcoal"
                             placeholder="e.g. 500 gold, Magic sword"
                           />
@@ -233,8 +290,8 @@ export default function Quests() {
                       <FormItem>
                         <FormLabel>Time Limit</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
+                          <Input
+                            {...field}
                             className="bg-fantasy-dark border-fantasy-charcoal"
                             placeholder="e.g. 3 days, 1 week"
                           />
@@ -251,8 +308,8 @@ export default function Quests() {
                     <FormItem>
                       <FormLabel>Notes</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="Additional notes about this quest..."
                         />
@@ -262,19 +319,21 @@ export default function Quests() {
                   )}
                 />
                 <div className="flex justify-end space-x-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setIsCreateOpen(false)}
                   >
                     Cancel
                   </Button>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={createQuestMutation.isPending}
                     className="bg-fantasy-primary hover:bg-fantasy-secondary"
                   >
-                    {createQuestMutation.isPending ? "Creating..." : "Create Quest"}
+                    {createQuestMutation.isPending
+                      ? "Creating..."
+                      : "Create Quest"}
                   </Button>
                 </div>
               </form>
@@ -338,7 +397,9 @@ export default function Quests() {
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-400">No quests in progress</p>
-                <p className="text-sm text-gray-500 mt-1">Create new quests to track objectives</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Create new quests to track objectives
+                </p>
               </div>
             )}
           </CardContent>
@@ -405,7 +466,10 @@ export default function Quests() {
       {isLoading && (
         <div className="space-y-6">
           {[...Array(3)].map((_, i) => (
-            <Card key={i} className="bg-fantasy-slate border-fantasy-charcoal shadow-card animate-pulse">
+            <Card
+              key={i}
+              className="bg-fantasy-slate border-fantasy-charcoal shadow-card animate-pulse"
+            >
               <CardHeader>
                 <div className="h-6 bg-gray-700 rounded w-1/4"></div>
               </CardHeader>
@@ -431,7 +495,7 @@ export default function Quests() {
           <p className="text-gray-400 text-lg">No quests found</p>
           <p className="text-sm text-gray-500 mt-1">
             {searchTerm || filterStatus !== "all" || filterPriority !== "all"
-              ? "Try a different search term or filter" 
+              ? "Try a different search term or filter"
               : "Create your first quest to start tracking objectives"}
           </p>
         </div>
