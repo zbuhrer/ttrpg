@@ -1,4 +1,29 @@
-homebrewery
-.DS_*
-__pycache__
-*.db
+# Node
+node_modules/
+.env
+
+# Build artifacts
+dist/
+build/
+coverage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE and other temporary files
+.vscode/
+.idea/
+*.iml
+*.swp
+.project
+.classpath
+
+# custom additions cos they need to stay outta this repo
+*.pdf

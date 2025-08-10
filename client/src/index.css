@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 3.7%, 15.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(267, 57%, 50%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+  
+  /* Fantasy theme colors - Aetherquill */
+  --fantasy-primary: hsl(280, 70%, 55%);
+  --fantasy-secondary: hsl(290, 60%, 40%);
+  --fantasy-accent: hsl(50, 100%, 65%);
+  --fantasy-dark: hsl(240, 20%, 8%);
+  --fantasy-slate: hsl(245, 20%, 15%);
+  --fantasy-charcoal: hsl(250, 18%, 22%);
+  --fantasy-amber: hsl(40, 95%, 55%);
+  --fantasy-success: hsl(140, 70%, 50%);
+  --fantasy-error: hsl(0, 85%, 58%);
+  --fantasy-mystical: hsl(260, 80%, 70%);
+  --fantasy-ethereal: hsl(200, 90%, 85%);
+  --fantasy-arcane: hsl(300, 75%, 60%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(267, 57%, 50%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    background: radial-gradient(ellipse at top, hsl(280, 30%, 12%) 0%, hsl(240, 20%, 8%) 50%, hsl(220, 25%, 6%) 100%);
+    min-height: 100vh;
+    position: relative;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 20% 20%, hsla(280, 70%, 55%, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, hsla(260, 80%, 70%, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 40% 70%, hsla(50, 100%, 65%, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+@layer utilities {
+  .gradient-bg {
+    background: radial-gradient(ellipse at center, hsl(280, 30%, 12%) 0%, hsl(240, 20%, 8%) 100%);
+  }
+  
+  .fantasy-border {
+    border-image: linear-gradient(135deg, hsl(50, 100%, 65%), hsl(40, 95%, 55%)) 1;
+  }
+  
+  .mystical-glow {
+    box-shadow: 0 0 15px hsla(280, 70%, 55%, 0.4), 0 0 30px hsla(260, 80%, 70%, 0.2);
+  }
+  
+  .arcane-shimmer {
+    background: linear-gradient(45deg, transparent 30%, hsla(300, 75%, 60%, 0.1) 50%, transparent 70%);
+    background-size: 200% 200%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+  }
+  
+  .ethereal-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 25px hsl(50, 100%, 65%, 0.4), 0 0 40px hsl(280, 70%, 55%, 0.2);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .scroll-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .scroll-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .bg-fantasy-primary {
+    background-color: var(--fantasy-primary);
+  }
+  
+  .bg-fantasy-secondary {
+    background-color: var(--fantasy-secondary);
+  }
+  
+  .bg-fantasy-accent {
+    background-color: var(--fantasy-accent);
+  }
+  
+  .bg-fantasy-dark {
+    background-color: var(--fantasy-dark);
+  }
+  
+  .bg-fantasy-slate {
+    background-color: var(--fantasy-slate);
+  }
+  
+  .bg-fantasy-charcoal {
+    background-color: var(--fantasy-charcoal);
+  }
+  
+  .bg-fantasy-amber {
+    background-color: var(--fantasy-amber);
+  }
+  
+  .bg-fantasy-success {
+    background-color: var(--fantasy-success);
+  }
+  
+  .bg-fantasy-error {
+    background-color: var(--fantasy-error);
+  }
+  
+  .bg-fantasy-mystical {
+    background-color: var(--fantasy-mystical);
+  }
+  
+  .bg-fantasy-ethereal {
+    background-color: var(--fantasy-ethereal);
+  }
+  
+  .bg-fantasy-arcane {
+    background-color: var(--fantasy-arcane);
+  }
+  
+  .text-fantasy-primary {
+    color: var(--fantasy-primary);
+  }
+  
+  .text-fantasy-accent {
+    color: var(--fantasy-accent);
+  }
+  
+  .text-fantasy-amber {
+    color: var(--fantasy-amber);
+  }
+  
+  .text-fantasy-success {
+    color: var(--fantasy-success);
+  }
+  
+  .text-fantasy-error {
+    color: var(--fantasy-error);
+  }
+  
+  .text-fantasy-dark {
+    color: var(--fantasy-dark);
+  }
+  
+  .text-fantasy-mystical {
+    color: var(--fantasy-mystical);
+  }
+  
+  .text-fantasy-ethereal {
+    color: var(--fantasy-ethereal);
+  }
+  
+  .text-fantasy-arcane {
+    color: var(--fantasy-arcane);
+  }
+  
+  .border-fantasy-accent {
+    border-color: var(--fantasy-accent);
+  }
+  
+  .border-fantasy-charcoal {
+    border-color: var(--fantasy-charcoal);
+  }
+  
+  .font-fantasy {
+    font-family: 'Cinzel', serif;
+  }
+  
+  .font-manuscript {
+    font-family: 'Cormorant Garamond', serif;
+  }
+  
+  .shadow-card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .shadow-glow {
+    box-shadow: 0 0 20px hsl(45, 100%, 60%, 0.3);
+  }
+  
+  .shadow-glow-lg {
+    box-shadow: 0 0 30px hsl(45, 100%, 60%, 0.4);
+  }
+}

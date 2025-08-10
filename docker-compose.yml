@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173" # Vite (frontend) default port
+      - "3000:3000" # Express (backend) port
+    volumes:
+      - .:/app # Mount the current directory into the container for live updates
+      - /app/node_modules # Exclude node_modules from the bind mount to prevent issues
+    environment:
+      # These variables are examples. You should replace them with your actual database credentials.
+      # In a real application, you would manage these securely (e.g., Docker secrets, .env files outside compose).
+      DATABASE_URL: postgres://user:password@db:5432/aetherquill
+      NODE_ENV: development
+    depends_on:
+      - db
+    # Overwrite the CMD in Dockerfile to keep the container running
+    # in development, and allow hot-reloading.
+    # We still use "npm run dev" to ensure both client and server start.
+    command: npm run dev
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: aetherquill
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persistent data volume
+
+volumes:
+  db_data: # Define the named volume for database persistence
