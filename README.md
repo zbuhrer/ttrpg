@@ -4,6 +4,10 @@
 
 Aetherquill is a comprehensive Dungeons & Dragons campaign management application built with a modern full-stack architecture. The application provides dungeon masters with tools to manage campaigns, characters, quests, NPCs, locations, story branches, and session notes through an intuitive web interface with an enhanced fantasy-themed design featuring mystical elements and ethereal styling. This project is now set up for local development and can be easily run using Docker.
 
+![menu1](./menu_01.png)
+![menu2](./menu_02.png)
+![menu3](./menu_03.png)
+
 ## How To
 
 To set up and run the Aetherquill development environment, you have two primary options: using Docker for a consistent, isolated setup, or running it directly on your local machine.
