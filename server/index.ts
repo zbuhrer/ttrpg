@@ -1,71 +1,105 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { setupVite, serveStatic } from "./vite";
+import logger from "./logger";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
+// Use the logger's request middleware
+app.use(logger.requestLogger());
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    logger.info("server", "Starting Aetherquill server...", {
+      nodeEnv: process.env.NODE_ENV,
+      port: process.env.PORT || "5000",
+    });
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    const server = await registerRoutes(app);
 
-    res.status(status).json({ message });
-    throw err;
-  });
+    // Use the logger's error handler middleware
+    app.use(logger.errorHandler());
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
+    // Setup Vite in development or serve static files in production
+    if (app.get("env") === "development") {
+      logger.info("server", "Setting up Vite development server...");
+      await setupVite(app, server);
+    } else {
+      logger.info("server", "Serving static files for production...");
+      serveStatic(app);
+    }
+
+    // Start the server
+    const port = parseInt(process.env.PORT || "5000", 10);
+    server.listen(
+      {
+        port,
+        host: "0.0.0.0",
+        reusePort: true,
+      },
+      () => {
+        logger.info("server", `Server started successfully`, {
+          port,
+          host: "0.0.0.0",
+          logFile: logger.getLogFilePath(),
+          environment: app.get("env"),
+        });
+
+        logger.info("server", `Log file location: ${logger.getLogFilePath()}`);
+        logger.info(
+          "server",
+          `To tail logs, run: tail -f ${logger.getLogFilePath()}`,
+        );
+      },
+    );
+
+    // Graceful shutdown handling
+    process.on("SIGTERM", () => {
+      logger.info("server", "Received SIGTERM, shutting down gracefully...");
+      server.close(() => {
+        logger.info("server", "Server closed");
+        process.exit(0);
+      });
+    });
+
+    process.on("SIGINT", () => {
+      logger.info("server", "Received SIGINT, shutting down gracefully...");
+      server.close(() => {
+        logger.info("server", "Server closed");
+        process.exit(0);
+      });
+    });
+
+    // Handle uncaught exceptions
+    process.on("uncaughtException", (error) => {
+      logger.fatal("server", "Uncaught exception", error);
+    });
+
+    process.on("unhandledRejection", (reason, promise) => {
+      logger.error(
+        "server",
+        "Unhandled rejection",
+        reason instanceof Error ? reason : new Error(String(reason)),
+        {
+          promise: promise.toString(),
+        },
+      );
+    });
+
+    // Rotate logs periodically (every hour)
+    setInterval(
+      () => {
+        logger.rotateLogs();
+      },
+      60 * 60 * 1000,
+    );
+  } catch (error) {
+    logger.fatal(
+      "server",
+      "Failed to start server",
+      error instanceof Error ? error : new Error(String(error)),
+    );
   }
-
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
 })();
