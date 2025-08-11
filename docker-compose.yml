@@ -17,7 +17,7 @@ services:
       # In a real application, you would manage these securely (e.g., Docker secrets, .env files outside compose).
       DATABASE_URL: postgres://user:password@db:5432/aetherquill
       NODE_ENV: development
-      PORT: 5000
+      PORT: 3000
     depends_on:
       - db
     # Use startup script that waits for DB and handles migrations

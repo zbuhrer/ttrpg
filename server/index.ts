@@ -7,8 +7,27 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Simple CORS headers without middleware
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  next();
+});
+
 // Use the logger's request middleware
 app.use(logger.requestLogger());
+
+// Add a simple health check endpoint that doesn't get handled by Vite
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
 
 (async () => {
   try {
@@ -21,6 +40,15 @@ app.use(logger.requestLogger());
 
     // Use the logger's error handler middleware
     app.use(logger.errorHandler());
+
+    // Special handling for API routes to prevent Vite from handling them
+    app.use("/api", (req, res) => {
+      // If we get here, it means no API route matched
+      res.status(404).json({
+        message: "API endpoint not found",
+        path: req.originalUrl,
+      });
+    });
 
     // Setup Vite in development or serve static files in production
     if (app.get("env") === "development") {
@@ -36,7 +64,7 @@ app.use(logger.requestLogger());
     server.listen(
       {
         port,
-        host: "localhost",
+        host: "0.0.0.0", // Allow connections from all network interfaces
       },
       () => {
         logger.info("server", `Server started successfully`, {

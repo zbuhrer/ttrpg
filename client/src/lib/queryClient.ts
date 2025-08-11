@@ -12,7 +12,18 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  // Use window.location to determine the API URL
+  // Use the same origin for API requests when possible to avoid CORS issues
+  const baseUrl = window.location.origin;
+
+  // Add /api prefix if not already present and not a full URL
+  const fullUrl = url.startsWith("http")
+    ? url
+    : url.startsWith("/api")
+      ? `${baseUrl}${url}`
+      : `${baseUrl}/api${url}`;
+
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
@@ -29,7 +40,20 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
+    // Use window.location to determine the API URL
+    const baseUrl = window.location.origin;
+
+    // Create endpoint from query key parts
+    const endpoint = queryKey.join("/") as string;
+
+    // Add /api prefix if not already present and not a full URL
+    const fullUrl = endpoint.startsWith("http")
+      ? endpoint
+      : endpoint.startsWith("/api")
+        ? `${baseUrl}${endpoint}`
+        : `${baseUrl}/api/${endpoint}`;
+
+    const res = await fetch(fullUrl, {
       credentials: "include",
     });
 

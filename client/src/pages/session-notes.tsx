@@ -21,7 +21,11 @@ import {
 } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { insertSessionNoteSchema } from "@shared/schema";
+import {
+  insertSessionNoteSchema,
+  SessionNote,
+  InsertSessionNote,
+} from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StickyNote, Plus, Search, Calendar, Edit } from "lucide-react";
@@ -34,7 +38,7 @@ export default function SessionNotes() {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
-  const { data: sessionNotes = [], isLoading } = useQuery({
+  const { data: sessionNotes = [], isLoading } = useQuery<SessionNote[]>({
     queryKey: ["/api/campaigns", CAMPAIGN_ID, "session-notes"],
   });
 
@@ -53,7 +57,7 @@ export default function SessionNotes() {
   });
 
   const createSessionNoteMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: InsertSessionNote) => {
       const response = await apiRequest(
         "POST",
         `/api/campaigns/${CAMPAIGN_ID}/session-notes`,
@@ -114,7 +118,7 @@ export default function SessionNotes() {
   };
 
   const filteredNotes = sessionNotes.filter(
-    (note) =>
+    (note: SessionNote) =>
       note.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       note.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       note.sessionNumber.toString().includes(searchTerm),
@@ -351,7 +355,7 @@ export default function SessionNotes() {
             </div>
           ) : filteredNotes.length > 0 ? (
             <div className="space-y-6">
-              {filteredNotes.map((note) => (
+              {filteredNotes.map((note: SessionNote) => (
                 <div
                   key={note.id}
                   className="bg-fantasy-dark/30 rounded-lg border border-fantasy-charcoal/50 p-6 hover-glow"
@@ -384,15 +388,17 @@ export default function SessionNotes() {
                           Key Events:
                         </p>
                         <div className="space-y-1">
-                          {note.keyEvents.map((event, index) => (
-                            <Badge
-                              key={index}
-                              variant="secondary"
-                              className="mr-1 mb-1"
-                            >
-                              {event}
-                            </Badge>
-                          ))}
+                          {note.keyEvents.map(
+                            (event: string, index: number) => (
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className="mr-1 mb-1"
+                              >
+                                {event}
+                              </Badge>
+                            ),
+                          )}
                         </div>
                       </div>
                     )}
@@ -404,15 +410,17 @@ export default function SessionNotes() {
                             Player Decisions:
                           </p>
                           <div className="space-y-1">
-                            {note.playerDecisions.map((decision, index) => (
-                              <Badge
-                                key={index}
-                                variant="outline"
-                                className="mr-1 mb-1"
-                              >
-                                {decision}
-                              </Badge>
-                            ))}
+                            {note.playerDecisions.map(
+                              (decision: string, index: number) => (
+                                <Badge
+                                  key={index}
+                                  variant="outline"
+                                  className="mr-1 mb-1"
+                                >
+                                  {decision}
+                                </Badge>
+                              ),
+                            )}
                           </div>
                         </div>
                       )}
@@ -423,14 +431,16 @@ export default function SessionNotes() {
                           NPCs Introduced:
                         </p>
                         <div className="space-y-1">
-                          {note.npcsIntroduced.map((npc, index) => (
-                            <Badge
-                              key={index}
-                              className="bg-fantasy-success/20 text-fantasy-success mr-1 mb-1"
-                            >
-                              {npc}
-                            </Badge>
-                          ))}
+                          {note.npcsIntroduced.map(
+                            (npc: string, index: number) => (
+                              <Badge
+                                key={index}
+                                className="bg-fantasy-success/20 text-fantasy-success mr-1 mb-1"
+                              >
+                                {npc}
+                              </Badge>
+                            ),
+                          )}
                         </div>
                       </div>
                     )}
@@ -441,14 +451,16 @@ export default function SessionNotes() {
                           Quests Updated:
                         </p>
                         <div className="space-y-1">
-                          {note.questsUpdated.map((quest, index) => (
-                            <Badge
-                              key={index}
-                              className="bg-fantasy-amber/20 text-fantasy-amber mr-1 mb-1"
-                            >
-                              {quest}
-                            </Badge>
-                          ))}
+                          {note.questsUpdated.map(
+                            (quest: string, index: number) => (
+                              <Badge
+                                key={index}
+                                className="bg-fantasy-amber/20 text-fantasy-amber mr-1 mb-1"
+                              >
+                                {quest}
+                              </Badge>
+                            ),
+                          )}
                         </div>
                       </div>
                     )}

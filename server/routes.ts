@@ -735,9 +735,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const results = await storage.searchAll(campaignId, query);
+      const totalResults =
+        results.characters.length +
+        results.quests.length +
+        results.npcs.length +
+        results.locations.length +
+        results.sessionNotes.length;
+
       logger.debug("routes", `Search completed for campaign ${campaignId}`, {
         query,
-        resultsCount: results.length,
+        resultsCount: totalResults,
       });
       res.json(results);
     } catch (error) {

@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { insertLocationSchema } from "@shared/schema";
+import { insertLocationSchema, Location, InsertLocation } from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -50,7 +50,7 @@ export default function WorldBuilding() {
   const [filterType, setFilterType] = useState("all");
   const { toast } = useToast();
 
-  const { data: locations = [], isLoading } = useQuery({
+  const { data: locations = [], isLoading } = useQuery<Location[]>({
     queryKey: ["/api/campaigns", CAMPAIGN_ID, "locations"],
   });
 
@@ -69,7 +69,7 @@ export default function WorldBuilding() {
   });
 
   const createLocationMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: InsertLocation) => {
       const response = await apiRequest(
         "POST",
         `/api/campaigns/${CAMPAIGN_ID}/locations`,
@@ -130,7 +130,7 @@ export default function WorldBuilding() {
     }
   };
 
-  const filteredLocations = locations.filter((location) => {
+  const filteredLocations = locations.filter((location: Location) => {
     const matchesSearch =
       location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       location.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -138,9 +138,9 @@ export default function WorldBuilding() {
     return matchesSearch && matchesType;
   });
 
-  const locationTypes = [
-    ...new Set(locations.map((l) => l.type).filter(Boolean)),
-  ];
+  const locationTypes = Array.from(
+    new Set(locations.map((l: Location) => l.type || "").filter(Boolean)),
+  );
 
   return (
     <div className="p-6 space-y-6">
@@ -329,7 +329,7 @@ export default function WorldBuilding() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Types</SelectItem>
-            {locationTypes.map((type) => (
+            {locationTypes.map((type: string) => (
               <SelectItem key={type} value={type}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </SelectItem>
@@ -363,7 +363,7 @@ export default function WorldBuilding() {
             </div>
           ) : filteredLocations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredLocations.map((location) => (
+              {filteredLocations.map((location: Location) => (
                 <div
                   key={location.id}
                   className="bg-fantasy-dark/30 rounded-lg border border-fantasy-charcoal/50 p-6 hover-glow"
@@ -392,7 +392,7 @@ export default function WorldBuilding() {
                       <div className="flex flex-wrap gap-1">
                         {location.inhabitants
                           .slice(0, 3)
-                          .map((inhabitant, index) => (
+                          .map((inhabitant: string, index: number) => (
                             <Badge
                               key={index}
                               variant="secondary"
@@ -417,7 +417,7 @@ export default function WorldBuilding() {
                       <div className="flex flex-wrap gap-1">
                         {location.keyFeatures
                           .slice(0, 2)
-                          .map((feature, index) => (
+                          .map((feature: string, index: number) => (
                             <Badge
                               key={index}
                               variant="outline"

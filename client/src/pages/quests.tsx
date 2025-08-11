@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/form";
 import { QuestCard } from "@/components/quest-card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { insertQuestSchema } from "@shared/schema";
+import { insertQuestSchema, Quest, InsertQuest } from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckSquare, Plus, Search } from "lucide-react";
@@ -43,7 +43,7 @@ export default function Quests() {
   const [filterPriority, setFilterPriority] = useState("all");
   const { toast } = useToast();
 
-  const { data: quests = [], isLoading } = useQuery({
+  const { data: quests = [], isLoading } = useQuery<Quest[]>({
     queryKey: ["/api/campaigns", CAMPAIGN_ID, "quests"],
   });
 
@@ -58,7 +58,7 @@ export default function Quests() {
       progress: 0,
       maxProgress: 100,
       objectives: "",
-      completedObjectives: [],
+      completedObjectives: "",
       reward: "",
       timeLimit: "",
       notes: "",
@@ -66,7 +66,7 @@ export default function Quests() {
   });
 
   const createQuestMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: InsertQuest) => {
       const response = await apiRequest(
         "POST",
         `/api/campaigns/${CAMPAIGN_ID}/quests`,
@@ -99,16 +99,16 @@ export default function Quests() {
     const processedData = {
       ...data,
       objectives: data.objectives
-        ? data.objectives
-            .split(",")
-            .map((s: string) => s.trim())
-            .filter(Boolean)
+        ? data.objectives.split(",").map((o: string) => o.trim())
+        : [],
+      completedObjectives: data.completedObjectives
+        ? data.completedObjectives.split(",").map((o: string) => o.trim())
         : [],
     };
     createQuestMutation.mutate(processedData);
   };
 
-  const filteredQuests = quests.filter((quest) => {
+  const filteredQuests = quests.filter((quest: Quest) => {
     const matchesSearch =
       quest.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       quest.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -120,13 +120,17 @@ export default function Quests() {
   });
 
   const inProgressQuests = filteredQuests.filter(
-    (q) => q.status === "in_progress",
+    (q: Quest) => q.status === "in_progress",
   );
   const completedQuests = filteredQuests.filter(
-    (q) => q.status === "completed",
+    (q: Quest) => q.status === "completed",
   );
-  const failedQuests = filteredQuests.filter((q) => q.status === "failed");
-  const optionalQuests = filteredQuests.filter((q) => q.status === "optional");
+  const failedQuests = filteredQuests.filter(
+    (q: Quest) => q.status === "failed",
+  );
+  const optionalQuests = filteredQuests.filter(
+    (q: Quest) => q.status === "optional",
+  );
 
   return (
     <div className="p-6 space-y-6">
@@ -139,244 +143,225 @@ export default function Quests() {
             Manage campaign objectives and progress
           </p>
         </div>
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-fantasy-primary hover:bg-fantasy-secondary text-white hover-glow">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Quest
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-fantasy-slate border-fantasy-charcoal shadow-card max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-fantasy font-semibold text-fantasy-accent">
-                Create New Quest
-              </DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          className="bg-fantasy-dark border-fantasy-charcoal"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          className="bg-fantasy-dark border-fantasy-charcoal"
-                          placeholder="Describe this quest and its context..."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger className="bg-fantasy-dark border-fantasy-charcoal">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="in_progress">
-                                In Progress
-                              </SelectItem>
-                              <SelectItem value="completed">
-                                Completed
-                              </SelectItem>
-                              <SelectItem value="failed">Failed</SelectItem>
-                              <SelectItem value="optional">Optional</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="priority"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Priority</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger className="bg-fantasy-dark border-fantasy-charcoal">
-                              <SelectValue placeholder="Select priority" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="low">Low</SelectItem>
-                              <SelectItem value="normal">Normal</SelectItem>
-                              <SelectItem value="high">High</SelectItem>
-                              <SelectItem value="urgent">Urgent</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="objectives"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Objectives (comma-separated)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          className="bg-fantasy-dark border-fantasy-charcoal"
-                          placeholder="e.g. Find the ancient artifact, Defeat the dragon, Return to the village"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="reward"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Reward</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="bg-fantasy-dark border-fantasy-charcoal"
-                            placeholder="e.g. 500 gold, Magic sword"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="timeLimit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Time Limit</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="bg-fantasy-dark border-fantasy-charcoal"
-                            placeholder="e.g. 3 days, 1 week"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Notes</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          className="bg-fantasy-dark border-fantasy-charcoal"
-                          placeholder="Additional notes about this quest..."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex justify-end space-x-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsCreateOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={createQuestMutation.isPending}
-                    className="bg-fantasy-primary hover:bg-fantasy-secondary"
-                  >
-                    {createQuestMutation.isPending
-                      ? "Creating..."
-                      : "Create Quest"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+        <DialogTrigger asChild onClick={() => setIsCreateOpen(true)}>
+          <Button className="bg-fantasy-primary hover:bg-fantasy-primary/80">
+            <Plus className="mr-2 h-4 w-4" />
+            New Quest
+          </Button>
+        </DialogTrigger>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+      {/* Filters */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative w-full md:w-1/3">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Search quests..."
+            className="pl-10 bg-fantasy-dark/30 border-fantasy-charcoal"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-fantasy-dark border-fantasy-charcoal"
           />
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-40 bg-fantasy-dark border-fantasy-charcoal">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-            <SelectItem value="optional">Optional</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterPriority} onValueChange={setFilterPriority}>
-          <SelectTrigger className="w-40 bg-fantasy-dark border-fantasy-charcoal">
-            <SelectValue placeholder="Filter by priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Priority</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-            <SelectItem value="normal">Normal</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-            <SelectItem value="urgent">Urgent</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-4">
+          <Select
+            value={filterStatus}
+            onValueChange={(value) => setFilterStatus(value)}
+          >
+            <SelectTrigger className="w-[160px] bg-fantasy-dark/30 border-fantasy-charcoal">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="optional">Optional</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={filterPriority}
+            onValueChange={(value) => setFilterPriority(value)}
+          >
+            <SelectTrigger className="w-[160px] bg-fantasy-dark/30 border-fantasy-charcoal">
+              <SelectValue placeholder="Priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Priorities</SelectItem>
+              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="normal">Normal</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+              <SelectItem value="urgent">Urgent</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
+      {/* Create Quest Dialog */}
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-fantasy-slate border-fantasy-charcoal">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-fantasy font-semibold text-fantasy-accent">
+              Create New Quest
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4 mt-4"
+            >
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quest Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter quest title"
+                        className="bg-fantasy-dark/30 border-fantasy-charcoal"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe the quest..."
+                        className="min-h-32 bg-fantasy-dark/30 border-fantasy-charcoal"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-fantasy-dark/30 border-fantasy-charcoal">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="in_progress">
+                            In Progress
+                          </SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="failed">Failed</SelectItem>
+                          <SelectItem value="optional">Optional</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="priority"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Priority</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-fantasy-dark/30 border-fantasy-charcoal">
+                            <SelectValue placeholder="Select priority" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="low">Low</SelectItem>
+                          <SelectItem value="normal">Normal</SelectItem>
+                          <SelectItem value="high">High</SelectItem>
+                          <SelectItem value="urgent">Urgent</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="objectives"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Objectives (comma-separated)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Find the artifact, Defeat the guardian, Return to the village"
+                        className="min-h-20 bg-fantasy-dark/30 border-fantasy-charcoal"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="reward"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reward</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="500 gold, magic item, etc."
+                        className="bg-fantasy-dark/30 border-fantasy-charcoal"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Additional quest notes..."
+                        className="min-h-20 bg-fantasy-dark/30 border-fantasy-charcoal"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  className="bg-fantasy-primary hover:bg-fantasy-primary/80"
+                >
+                  Create Quest
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       <div className="space-y-6">
         {/* In Progress Quests */}
@@ -390,7 +375,7 @@ export default function Quests() {
           <CardContent>
             {inProgressQuests.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {inProgressQuests.map((quest) => (
+                {inProgressQuests.map((quest: Quest) => (
                   <QuestCard key={quest.id} quest={quest} />
                 ))}
               </div>
@@ -416,7 +401,7 @@ export default function Quests() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {optionalQuests.map((quest) => (
+                {optionalQuests.map((quest: Quest) => (
                   <QuestCard key={quest.id} quest={quest} />
                 ))}
               </div>
@@ -435,7 +420,7 @@ export default function Quests() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {completedQuests.map((quest) => (
+                {completedQuests.map((quest: Quest) => (
                   <QuestCard key={quest.id} quest={quest} />
                 ))}
               </div>
@@ -454,7 +439,7 @@ export default function Quests() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {failedQuests.map((quest) => (
+                {failedQuests.map((quest: Quest) => (
                   <QuestCard key={quest.id} quest={quest} />
                 ))}
               </div>
