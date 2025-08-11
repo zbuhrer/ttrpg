@@ -4,8 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { insertSessionNoteSchema } from "@shared/schema";
@@ -32,20 +45,26 @@ export default function SessionNotes() {
       sessionNumber: 1,
       title: "",
       content: "",
-      keyEvents: [],
-      playerDecisions: [],
-      npcsIntroduced: [],
-      questsUpdated: [],
+      keyEvents: "",
+      playerDecisions: "",
+      npcsIntroduced: "",
+      questsUpdated: "",
     },
   });
 
   const createSessionNoteMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", `/api/campaigns/${CAMPAIGN_ID}/session-notes`, data);
+      const response = await apiRequest(
+        "POST",
+        `/api/campaigns/${CAMPAIGN_ID}/session-notes`,
+        data,
+      );
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/campaigns", CAMPAIGN_ID, "session-notes"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/campaigns", CAMPAIGN_ID, "session-notes"],
+      });
       setIsCreateOpen(false);
       form.reset();
       toast({
@@ -66,37 +85,63 @@ export default function SessionNotes() {
     // Convert comma-separated strings to arrays
     const processedData = {
       ...data,
-      keyEvents: data.keyEvents ? data.keyEvents.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
-      playerDecisions: data.playerDecisions ? data.playerDecisions.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
-      npcsIntroduced: data.npcsIntroduced ? data.npcsIntroduced.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
-      questsUpdated: data.questsUpdated ? data.questsUpdated.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
+      keyEvents: data.keyEvents
+        ? data.keyEvents
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
+      playerDecisions: data.playerDecisions
+        ? data.playerDecisions
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
+      npcsIntroduced: data.npcsIntroduced
+        ? data.npcsIntroduced
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
+      questsUpdated: data.questsUpdated
+        ? data.questsUpdated
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
     };
     createSessionNoteMutation.mutate(processedData);
   };
 
-  const filteredNotes = sessionNotes.filter((note) =>
-    note.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    note.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    note.sessionNumber.toString().includes(searchTerm)
+  const filteredNotes = sessionNotes.filter(
+    (note) =>
+      note.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      note.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      note.sessionNumber.toString().includes(searchTerm),
   );
 
   // Get the next session number
-  const nextSessionNumber = sessionNotes.length > 0 
-    ? Math.max(...sessionNotes.map(n => n.sessionNumber)) + 1 
-    : 1;
+  const nextSessionNumber =
+    sessionNotes.length > 0
+      ? Math.max(...sessionNotes.map((n) => n.sessionNumber)) + 1
+      : 1;
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-fantasy font-bold text-fantasy-accent">Session Notes</h1>
-          <p className="text-gray-400 mt-1">Record and track campaign sessions</p>
+          <h1 className="text-3xl font-fantasy font-bold text-fantasy-accent">
+            Session Notes
+          </h1>
+          <p className="text-gray-400 mt-1">
+            Record and track campaign sessions
+          </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button 
+            <Button
               className="bg-fantasy-primary hover:bg-fantasy-secondary text-white hover-glow"
-              onClick={() => form.setValue('sessionNumber', nextSessionNumber)}
+              onClick={() => form.setValue("sessionNumber", nextSessionNumber)}
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Session Note
@@ -109,7 +154,10 @@ export default function SessionNotes() {
               </DialogTitle>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -118,12 +166,14 @@ export default function SessionNotes() {
                       <FormItem>
                         <FormLabel>Session Number</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
-                            type="number" 
-                            min="1" 
+                          <Input
+                            {...field}
+                            type="number"
+                            min="1"
                             className="bg-fantasy-dark border-fantasy-charcoal"
-                            onChange={(e) => field.onChange(parseInt(e.target.value))}
+                            onChange={(e) =>
+                              field.onChange(parseInt(e.target.value))
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -137,8 +187,8 @@ export default function SessionNotes() {
                       <FormItem>
                         <FormLabel>Title</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
+                          <Input
+                            {...field}
                             className="bg-fantasy-dark border-fantasy-charcoal"
                             placeholder="e.g. The Dragon's Lair"
                           />
@@ -155,8 +205,8 @@ export default function SessionNotes() {
                     <FormItem>
                       <FormLabel>Session Summary</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal h-32"
                           placeholder="Describe what happened in this session..."
                         />
@@ -172,8 +222,8 @@ export default function SessionNotes() {
                     <FormItem>
                       <FormLabel>Key Events (comma-separated)</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="e.g. Dragon defeated, Crown fragment found, Alliance formed"
                         />
@@ -189,8 +239,8 @@ export default function SessionNotes() {
                     <FormItem>
                       <FormLabel>Player Decisions (comma-separated)</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           className="bg-fantasy-dark border-fantasy-charcoal"
                           placeholder="e.g. Spared the goblin chief, Chose the dark path, Negotiated peace"
                         />
@@ -207,8 +257,8 @@ export default function SessionNotes() {
                       <FormItem>
                         <FormLabel>NPCs Introduced (comma-separated)</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
+                          <Input
+                            {...field}
                             className="bg-fantasy-dark border-fantasy-charcoal"
                             placeholder="e.g. Captain Aldrich, Sage Miriel"
                           />
@@ -224,8 +274,8 @@ export default function SessionNotes() {
                       <FormItem>
                         <FormLabel>Quests Updated (comma-separated)</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
+                          <Input
+                            {...field}
                             className="bg-fantasy-dark border-fantasy-charcoal"
                             placeholder="e.g. Find the Crown, Rescue the Princess"
                           />
@@ -236,19 +286,21 @@ export default function SessionNotes() {
                   />
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setIsCreateOpen(false)}
                   >
                     Cancel
                   </Button>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={createSessionNoteMutation.isPending}
                     className="bg-fantasy-primary hover:bg-fantasy-secondary"
                   >
-                    {createSessionNoteMutation.isPending ? "Creating..." : "Create Note"}
+                    {createSessionNoteMutation.isPending
+                      ? "Creating..."
+                      : "Create Note"}
                   </Button>
                 </div>
               </form>
@@ -300,7 +352,10 @@ export default function SessionNotes() {
           ) : filteredNotes.length > 0 ? (
             <div className="space-y-6">
               {filteredNotes.map((note) => (
-                <div key={note.id} className="bg-fantasy-dark/30 rounded-lg border border-fantasy-charcoal/50 p-6 hover-glow">
+                <div
+                  key={note.id}
+                  className="bg-fantasy-dark/30 rounded-lg border border-fantasy-charcoal/50 p-6 hover-glow"
+                >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
                       <Calendar className="w-5 h-5 text-fantasy-accent mr-2" />
@@ -310,10 +365,12 @@ export default function SessionNotes() {
                       </h3>
                     </div>
                     <div className="text-sm text-gray-400">
-                      {note.createdAt ? new Date(note.createdAt).toLocaleDateString() : 'Recent'}
+                      {note.createdAt
+                        ? new Date(note.createdAt).toLocaleDateString()
+                        : "Recent"}
                     </div>
                   </div>
-                  
+
                   {note.content && (
                     <div className="mb-4">
                       <p className="text-gray-300">{note.content}</p>
@@ -323,10 +380,16 @@ export default function SessionNotes() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {note.keyEvents && note.keyEvents.length > 0 && (
                       <div>
-                        <p className="text-xs font-medium text-fantasy-accent mb-2">Key Events:</p>
+                        <p className="text-xs font-medium text-fantasy-accent mb-2">
+                          Key Events:
+                        </p>
                         <div className="space-y-1">
                           {note.keyEvents.map((event, index) => (
-                            <Badge key={index} variant="secondary" className="mr-1 mb-1">
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="mr-1 mb-1"
+                            >
                               {event}
                             </Badge>
                           ))}
@@ -334,25 +397,37 @@ export default function SessionNotes() {
                       </div>
                     )}
 
-                    {note.playerDecisions && note.playerDecisions.length > 0 && (
-                      <div>
-                        <p className="text-xs font-medium text-fantasy-accent mb-2">Player Decisions:</p>
-                        <div className="space-y-1">
-                          {note.playerDecisions.map((decision, index) => (
-                            <Badge key={index} variant="outline" className="mr-1 mb-1">
-                              {decision}
-                            </Badge>
-                          ))}
+                    {note.playerDecisions &&
+                      note.playerDecisions.length > 0 && (
+                        <div>
+                          <p className="text-xs font-medium text-fantasy-accent mb-2">
+                            Player Decisions:
+                          </p>
+                          <div className="space-y-1">
+                            {note.playerDecisions.map((decision, index) => (
+                              <Badge
+                                key={index}
+                                variant="outline"
+                                className="mr-1 mb-1"
+                              >
+                                {decision}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {note.npcsIntroduced && note.npcsIntroduced.length > 0 && (
                       <div>
-                        <p className="text-xs font-medium text-fantasy-accent mb-2">NPCs Introduced:</p>
+                        <p className="text-xs font-medium text-fantasy-accent mb-2">
+                          NPCs Introduced:
+                        </p>
                         <div className="space-y-1">
                           {note.npcsIntroduced.map((npc, index) => (
-                            <Badge key={index} className="bg-fantasy-success/20 text-fantasy-success mr-1 mb-1">
+                            <Badge
+                              key={index}
+                              className="bg-fantasy-success/20 text-fantasy-success mr-1 mb-1"
+                            >
                               {npc}
                             </Badge>
                           ))}
@@ -362,10 +437,15 @@ export default function SessionNotes() {
 
                     {note.questsUpdated && note.questsUpdated.length > 0 && (
                       <div>
-                        <p className="text-xs font-medium text-fantasy-accent mb-2">Quests Updated:</p>
+                        <p className="text-xs font-medium text-fantasy-accent mb-2">
+                          Quests Updated:
+                        </p>
                         <div className="space-y-1">
                           {note.questsUpdated.map((quest, index) => (
-                            <Badge key={index} className="bg-fantasy-amber/20 text-fantasy-amber mr-1 mb-1">
+                            <Badge
+                              key={index}
+                              className="bg-fantasy-amber/20 text-fantasy-amber mr-1 mb-1"
+                            >
                               {quest}
                             </Badge>
                           ))}
@@ -381,8 +461,8 @@ export default function SessionNotes() {
               <StickyNote className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-400 text-lg">No session notes found</p>
               <p className="text-sm text-gray-500 mt-1">
-                {searchTerm 
-                  ? "Try a different search term" 
+                {searchTerm
+                  ? "Try a different search term"
                   : "Create your first session note to track campaign progress"}
               </p>
             </div>
