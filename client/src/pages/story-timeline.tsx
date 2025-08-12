@@ -34,6 +34,7 @@ import {
   Character,
   InsertStoryBranch,
 } from "@shared/schema";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GitBranch, Plus, Search } from "lucide-react";
@@ -46,6 +47,14 @@ export default function StoryTimeline() {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
+  // Create a modified schema for the form that accepts strings for conditions and consequences
+  const storyBranchFormSchema = z.object({
+    ...insertStoryBranchSchema.shape,
+    conditions: z.string().optional(),
+    consequences: z.string().optional(),
+    assignedCharacters: z.array(z.string()).default([]),
+  });
+
   const { data: storyBranches = [], isLoading } = useQuery<StoryBranch[]>({
     queryKey: ["/api/campaigns", CAMPAIGN_ID, "story-branches"],
   });
@@ -55,7 +64,7 @@ export default function StoryTimeline() {
   });
 
   const form = useForm({
-    resolver: zodResolver(insertStoryBranchSchema),
+    resolver: zodResolver(storyBranchFormSchema),
     defaultValues: {
       campaignId: CAMPAIGN_ID,
       title: "",
@@ -115,9 +124,8 @@ export default function StoryTimeline() {
             .filter(Boolean)
         : [],
     };
-    createStoryBranchMutation.mutate(
-      processedData as unknown as InsertStoryBranch,
-    );
+    // Pass the properly processed data to the mutation
+    createStoryBranchMutation.mutate(processedData as InsertStoryBranch);
   };
 
   const filteredBranches = storyBranches.filter(
