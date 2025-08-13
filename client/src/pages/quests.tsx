@@ -143,21 +143,22 @@ export default function Quests() {
             Manage campaign objectives and progress
           </p>
         </div>
-        <DialogTrigger asChild onClick={() => setIsCreateOpen(true)}>
-          <Button className="bg-fantasy-primary hover:bg-fantasy-primary/80">
-            <Plus className="mr-2 h-4 w-4" />
-            New Quest
-          </Button>
-        </DialogTrigger>
+        <Button
+          className="bg-fantasy-primary hover:bg-fantasy-primary/80"
+          onClick={() => setIsCreateOpen(true)}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          New Quest
+        </Button>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative w-full md:w-1/3">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder="Search quests..."
-            className="pl-10 bg-fantasy-dark/30 border-fantasy-charcoal"
+            className="pl-10 bg-fantasy-dark border-fantasy-charcoal"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -198,6 +199,9 @@ export default function Quests() {
 
       {/* Create Quest Dialog */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogTrigger asChild className="hidden">
+          <Button>Hidden Trigger</Button>
+        </DialogTrigger>
         <DialogContent className="sm:max-w-[600px] bg-fantasy-slate border-fantasy-charcoal">
           <DialogHeader>
             <DialogTitle className="text-xl font-fantasy font-semibold text-fantasy-accent">

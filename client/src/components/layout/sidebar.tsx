@@ -1,12 +1,21 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { 
-  Home, Users, Scroll, Map, CheckSquare, 
-  UserCircle, StickyNote, Dice6, Search 
+import {
+  Home,
+  Users,
+  Scroll,
+  Map,
+  CheckSquare,
+  UserCircle,
+  StickyNote,
+  Dice6,
+  Search,
 } from "lucide-react";
+import { useCampaignContext } from "@/contexts/campaign-context";
 
 export function Sidebar() {
   const [location] = useLocation();
+  const { isLoading } = useCampaignContext();
 
   const navigation = [
     {
@@ -16,7 +25,7 @@ export function Sidebar() {
         { name: "Characters", href: "/characters", icon: Users },
         { name: "Story & Timeline", href: "/story-timeline", icon: Scroll },
         { name: "World Building", href: "/world-building", icon: Map },
-      ]
+      ],
     },
     {
       title: "Management",
@@ -24,15 +33,15 @@ export function Sidebar() {
         { name: "Quests", href: "/quests", icon: CheckSquare },
         { name: "NPCs", href: "/npcs", icon: UserCircle },
         { name: "Session Notes", href: "/session-notes", icon: StickyNote },
-      ]
+      ],
     },
     {
       title: "Tools",
       items: [
         { name: "Dice Roller", href: "/dice-roller", icon: Dice6 },
         { name: "Search", href: "/search", icon: Search },
-      ]
-    }
+      ],
+    },
   ];
 
   return (
@@ -57,15 +66,15 @@ export function Sidebar() {
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = location === item.href;
-                
+
                 return (
                   <Link key={item.name} href={item.href}>
                     <div
                       className={cn(
                         "flex items-center px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer",
                         isActive
-                          ? "text-fantasy-accent bg-fantasy-primary/20 border border-fantasy-accent/30 hover-glow mystical-glow"
-                          : "text-gray-300 hover:text-fantasy-accent hover:bg-fantasy-primary/10 arcane-shimmer"
+                          ? `text-fantasy-accent bg-fantasy-primary/20 border border-fantasy-accent/30 hover-glow ${isLoading ? "mystical-glow" : ""}`
+                          : "text-gray-300 hover:text-fantasy-accent hover:bg-fantasy-primary/10",
                       )}
                     >
                       <Icon className="w-5 h-5 mr-3" />
