@@ -1,16 +1,39 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useCampaigns, useCreateCampaign, useDeleteCampaign } from "@/hooks/use-campaigns";
+import {
+  useCampaigns,
+  useCreateCampaign,
+  useDeleteCampaign,
+} from "@/hooks/use-campaigns";
 import { Campaign } from "@shared/schema";
-import { Plus, Calendar, Users, Trash2, Play, Save, FileText } from "lucide-react";
+import {
+  Plus,
+  Calendar,
+  Users,
+  Trash2,
+  Play,
+  Save,
+  FileText,
+} from "lucide-react";
 
 interface CampaignManagerModalProps {
   isOpen: boolean;
@@ -29,7 +52,11 @@ export function CampaignManagerModal({
   const [newCampaignName, setNewCampaignName] = useState("");
   const [newCampaignDescription, setNewCampaignDescription] = useState("");
 
-  const { data: campaigns = [], isLoading: campaignsLoading, refetch } = useCampaigns();
+  const {
+    data: campaigns = [],
+    isLoading: campaignsLoading,
+    refetch,
+  } = useCampaigns();
   const createCampaignMutation = useCreateCampaign();
   const deleteCampaignMutation = useDeleteCampaign();
   const { toast } = useToast();
@@ -77,7 +104,10 @@ export function CampaignManagerModal({
 
       onClose();
     } catch (error) {
-      console.error("Failed to create campaign:", error);
+      console.error(
+        "Failed to create campaign:",
+        error instanceof Error ? error.message : error,
+      );
       toast({
         title: "Error",
         description: "Failed to create campaign. Please try again.",
@@ -93,10 +123,17 @@ export function CampaignManagerModal({
     onClose();
   };
 
-  const handleDeleteCampaign = async (campaign: Campaign, event: React.MouseEvent) => {
+  const handleDeleteCampaign = async (
+    campaign: Campaign,
+    event: React.MouseEvent,
+  ) => {
     event.stopPropagation(); // Prevent selecting the campaign when deleting
 
-    if (!confirm(`Are you sure you want to delete "${campaign.name}"? This action cannot be undone.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to delete "${campaign.name}"? This action cannot be undone.`,
+      )
+    ) {
       return;
     }
 
@@ -172,7 +209,8 @@ export function CampaignManagerModal({
                   Select a Campaign
                 </h3>
                 <p className="text-sm text-gray-400 font-manuscript">
-                  {campaigns.length} campaign{campaigns.length !== 1 ? "s" : ""} available
+                  {campaigns.length} campaign{campaigns.length !== 1 ? "s" : ""}{" "}
+                  available
                 </p>
               </div>
 
@@ -202,9 +240,12 @@ export function CampaignManagerModal({
                 <Card className="bg-fantasy-dark/30 border-fantasy-charcoal/50">
                   <CardContent className="p-8 text-center">
                     <div className="text-4xl mb-4">📚</div>
-                    <p className="text-gray-400 font-manuscript mb-2">No campaigns found</p>
+                    <p className="text-gray-400 font-manuscript mb-2">
+                      No campaigns found
+                    </p>
                     <p className="text-sm text-gray-500 font-manuscript mb-4">
-                      Create your first campaign to get started on your adventure!
+                      Create your first campaign to get started on your
+                      adventure!
                     </p>
                     <Button
                       onClick={() => setActiveTab("create")}
@@ -234,7 +275,10 @@ export function CampaignManagerModal({
                               {campaign.name}
                             </h4>
                             {campaign.id === currentCampaignId && (
-                              <Badge variant="secondary" className="bg-fantasy-primary text-white text-xs">
+                              <Badge
+                                variant="secondary"
+                                className="bg-fantasy-primary text-white text-xs"
+                              >
                                 Current
                               </Badge>
                             )}
@@ -255,9 +299,7 @@ export function CampaignManagerModal({
                               <Users className="w-3 h-3" />
                               <span>{campaign.activePlayers} players</span>
                             </div>
-                            <div>
-                              Updated {formatDate(campaign.updatedAt)}
-                            </div>
+                            <div>Updated {formatDate(campaign.updatedAt)}</div>
                           </div>
                         </div>
 
@@ -289,7 +331,10 @@ export function CampaignManagerModal({
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="campaign-name" className="text-fantasy-text font-manuscript">
+                  <Label
+                    htmlFor="campaign-name"
+                    className="text-fantasy-text font-manuscript"
+                  >
                     Campaign Name *
                   </Label>
                   <Input
@@ -303,7 +348,10 @@ export function CampaignManagerModal({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="campaign-description" className="text-fantasy-text font-manuscript">
+                  <Label
+                    htmlFor="campaign-description"
+                    className="text-fantasy-text font-manuscript"
+                  >
                     Description (Optional)
                   </Label>
                   <Textarea
@@ -353,7 +401,10 @@ export function CampaignManagerModal({
                 <div className="flex gap-3 pt-4">
                   <Button
                     onClick={handleCreateCampaign}
-                    disabled={createCampaignMutation.isPending || !newCampaignName.trim()}
+                    disabled={
+                      createCampaignMutation.isPending ||
+                      !newCampaignName.trim()
+                    }
                     className="flex-1 bg-fantasy-primary hover:bg-fantasy-secondary text-white font-manuscript"
                   >
                     {createCampaignMutation.isPending ? (

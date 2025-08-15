@@ -15,6 +15,7 @@ import NPCs from "@/pages/npcs";
 import SessionNotes from "@/pages/session-notes";
 import DiceRoller from "@/pages/dice-roller";
 import Search from "@/pages/search";
+import { Maps, MapEditor, MapCreate } from "@/pages/maps";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -33,6 +34,10 @@ function Router() {
           <Route path="/session-notes" component={SessionNotes} />
           <Route path="/dice-roller" component={DiceRoller} />
           <Route path="/search" component={Search} />
+          <Route path="/maps" component={Maps} />
+          <Route path="/maps/create" component={MapCreate} />
+          <Route path="/maps/create/new" component={MapEditor} />
+          <Route path="/maps/:id/edit" component={MapEditor} />
           <Route component={NotFound} />
         </Switch>
       </main>

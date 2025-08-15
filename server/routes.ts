@@ -11,7 +11,8 @@ import {
   insertStoryBranchSchema,
   insertSessionNoteSchema,
   insertActivitySchema,
-} from "@shared/schema";
+  insertMapSchema,
+} from "../shared/schema";
 
 function handleError(
   res: any,
@@ -45,7 +46,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   logger.info("routes", "Registering API routes...");
 
   // Campaigns
-  app.get("/api/campaigns", async (req, res) => {
+  app.get("/api/campaigns", async (_req, res) => {
     try {
       logger.debug("routes", "Fetching all campaigns");
       const campaigns = await storage.getCampaigns();
@@ -105,7 +106,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: campaign.name,
       });
       res.status(201).json(campaign);
-    } catch (error) {
+    } catch (error: any) {
+      logger.debug("routes", "Request body", { body: req.body });
+      logger.error(
+        "routes",
+        "Error creating campaign",
+        new Error(error instanceof Error ? error.message : String(error)),
+      );
       handleError(
         res,
         error,
@@ -515,6 +522,147 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error,
         `POST /api/campaigns/${req.params.campaignId}/locations`,
         "Failed to create location",
+      );
+    }
+  });
+
+  // Maps
+  app.get("/api/campaigns/:campaignId/maps", async (req, res) => {
+    try {
+      const campaignId = parseInt(req.params.campaignId);
+      logger.debug("routes", `Fetching maps for campaign ${campaignId}`);
+
+      if (isNaN(campaignId)) {
+        return res.status(400).json({ message: "Invalid campaign ID" });
+      }
+
+      const maps = await storage.getMaps(campaignId);
+      logger.debug("routes", `Maps fetched for campaign ${campaignId}`, {
+        count: maps.length,
+      });
+      res.json(maps);
+    } catch (error) {
+      handleError(
+        res,
+        error,
+        `GET /api/campaigns/${req.params.campaignId}/maps`,
+        "Failed to fetch maps",
+      );
+    }
+  });
+
+  app.post("/api/campaigns/:campaignId/maps", async (req, res) => {
+    try {
+      const campaignId = parseInt(req.params.campaignId);
+      logger.debug("routes", `Creating map for campaign ${campaignId}`, {
+        body: req.body,
+      });
+
+      if (isNaN(campaignId)) {
+        return res.status(400).json({ message: "Invalid campaign ID" });
+      }
+
+      const validatedData = insertMapSchema.parse({
+        ...req.body,
+        campaignId,
+      });
+      const map = await storage.createMap(validatedData);
+      logger.info("routes", "Map created successfully", {
+        id: map.id,
+        name: map.name,
+        campaignId,
+      });
+      res.status(201).json(map);
+    } catch (error) {
+      handleError(
+        res,
+        error,
+        `POST /api/campaigns/${req.params.campaignId}/maps`,
+        "Failed to create map",
+      );
+    }
+  });
+
+  app.get("/api/maps/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      logger.debug("routes", `Fetching map ${id}`);
+
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid map ID" });
+      }
+
+      const map = await storage.getMap(id);
+
+      if (!map) {
+        logger.warn("routes", `Map ${id} not found`);
+        return res.status(404).json({ message: "Map not found" });
+      }
+
+      logger.debug("routes", `Map ${id} fetched successfully`);
+      res.json(map);
+    } catch (error) {
+      handleError(
+        res,
+        error,
+        `GET /api/maps/${req.params.id}`,
+        "Failed to fetch map",
+      );
+    }
+  });
+
+  app.put("/api/maps/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      logger.debug("routes", `Updating map ${id}`, { body: req.body });
+
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid map ID" });
+      }
+
+      const validatedData = insertMapSchema.partial().parse(req.body);
+      const map = await storage.updateMap(id, validatedData);
+
+      if (!map) {
+        logger.warn("routes", `Map ${id} not found for update`);
+        return res.status(404).json({ message: "Map not found" });
+      }
+
+      logger.info("routes", `Map ${id} updated successfully`);
+      res.json(map);
+    } catch (error) {
+      handleError(
+        res,
+        error,
+        `PUT /api/maps/${req.params.id}`,
+        "Failed to update map",
+      );
+    }
+  });
+
+  app.delete("/api/maps/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      logger.debug("routes", `Deleting map ${id}`);
+
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid map ID" });
+      }
+
+      const deleted = await storage.deleteMap(id);
+      if (!deleted) {
+        logger.warn("routes", `Map ${id} not found for deletion`);
+        return res.status(404).json({ message: "Map not found" });
+      }
+
+      logger.info("routes", `Map ${id} deleted successfully`);
+      res.status(204).send();
+    } catch (error) {
+      handleError(
+        res,
+        error,
+        `DELETE /api/maps/${req.params.id}`,
+        "Failed to delete map",
       );
     }
   });

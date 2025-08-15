@@ -1,4 +1,12 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  jsonb,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -57,7 +65,9 @@ export const npcs = pgTable("npcs", {
   role: text("role"), // merchant, ally, enemy, neutral, etc.
   location: text("location"),
   description: text("description"),
-  relationships: jsonb("relationships").$type<Record<string, string>>().default({}),
+  relationships: jsonb("relationships")
+    .$type<Record<string, string>>()
+    .default({}),
   notes: text("notes"),
   portraitUrl: text("portrait_url"),
 });
@@ -112,6 +122,19 @@ export const activities = pgTable("activities", {
   relatedEntityType: text("related_entity_type"), // quest, npc, location, etc.
   relatedEntityId: integer("related_entity_id"),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const maps = pgTable("maps", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").notNull(),
+  name: text("name").notNull(),
+  width: integer("width").notNull(),
+  height: integer("height").notNull(),
+  // mapData will store the grid, walls, interactive elements, and character positions
+  // It will be a JSON object with a flexible structure
+  mapData: jsonb("map_data").$type<Record<string, any>>().default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Insert schemas
@@ -176,3 +199,14 @@ export type InsertSessionNote = z.infer<typeof insertSessionNoteSchema>;
 
 export type Activity = typeof activities.$inferSelect;
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
+
+// Insert schemas
+export const insertMapSchema = createInsertSchema(maps).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Types
+export type Map = typeof maps.$inferSelect;
+export type InsertMap = z.infer<typeof insertMapSchema>;

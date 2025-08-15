@@ -10,6 +10,7 @@ import {
   StickyNote,
   Dice6,
   Search,
+  MapPin,
 } from "lucide-react";
 import { useCampaignContext } from "@/contexts/campaign-context";
 
@@ -25,6 +26,7 @@ export function Sidebar() {
         { name: "Characters", href: "/characters", icon: Users },
         { name: "Story & Timeline", href: "/story-timeline", icon: Scroll },
         { name: "World Building", href: "/world-building", icon: Map },
+        { name: "Maps", href: "/maps", icon: MapPin },
       ],
     },
     {
