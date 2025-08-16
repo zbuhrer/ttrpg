@@ -3,12 +3,19 @@ import { useUpdateStoryBranch } from "@/hooks/use-story-branches";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Clock, Scale } from "lucide-react";
+import { marked } from "marked";
 
 interface StoryBranchCardProps {
   storyBranch: StoryBranch;
+  campaignId: number;
 }
 
-export function StoryBranchCard({ storyBranch }: StoryBranchCardProps) {
+export function StoryBranchCard({
+  storyBranch,
+  campaignId,
+}: StoryBranchCardProps) {
+  const { mutate: updateStoryBranch } = useUpdateStoryBranch(campaignId);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -33,6 +40,21 @@ export function StoryBranchCard({ storyBranch }: StoryBranchCardProps) {
     }
   };
 
+  const handleActivate = async () => {
+    console.log("Activate button clicked for branch:", storyBranch.id);
+    if (storyBranch.id) {
+      try {
+        await updateStoryBranch({
+          id: storyBranch.id,
+          data: { status: "active" },
+        });
+        console.log("Story branch activated successfully!");
+      } catch (error) {
+        console.error("Error activating story branch:", error);
+      }
+    }
+  };
+
   return (
     <div className="p-4 bg-fantasy-dark/30 rounded-lg border border-fantasy-charcoal/50">
       <div className="flex items-center justify-between mb-2">
@@ -41,7 +63,12 @@ export function StoryBranchCard({ storyBranch }: StoryBranchCardProps) {
           {storyBranch.status || "pending"}
         </Badge>
       </div>
-      <p className="text-gray-400 text-sm mb-3">{storyBranch.description}</p>
+      <div
+        className="text-gray-400 text-sm mb-3"
+        dangerouslySetInnerHTML={{
+          __html: marked(storyBranch.description || ""),
+        }}
+      />
 
       {storyBranch.parentId && (
         <div className="mb-2">
@@ -112,6 +139,7 @@ export function StoryBranchCard({ storyBranch }: StoryBranchCardProps) {
             variant="ghost"
             size="sm"
             className="text-fantasy-accent hover:text-fantasy-amber text-sm transition-colors duration-300"
+            onClick={handleActivate}
           >
             Activate
           </Button>

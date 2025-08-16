@@ -407,7 +407,11 @@ export default function StoryTimeline() {
             {activeBranches.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {activeBranches.map((branch: any) => (
-                  <StoryBranchCard key={branch.id} storyBranch={branch} />
+                  <StoryBranchCard
+                    key={branch.id}
+                    storyBranch={branch}
+                    campaignId={CAMPAIGN_ID}
+                  />
                 ))}
               </div>
             ) : (
@@ -433,7 +437,11 @@ export default function StoryTimeline() {
             {pendingBranches.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {pendingBranches.map((branch: any) => (
-                  <StoryBranchCard key={branch.id} storyBranch={branch} />
+                  <StoryBranchCard
+                    key={branch.id}
+                    storyBranch={branch}
+                    campaignId={CAMPAIGN_ID}
+                  />
                 ))}
               </div>
             ) : (
@@ -459,7 +467,11 @@ export default function StoryTimeline() {
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {dormantBranches.map((branch: any) => (
-                  <StoryBranchCard key={branch.id} storyBranch={branch} />
+                  <StoryBranchCard
+                    key={branch.id}
+                    storyBranch={branch}
+                    campaignId={CAMPAIGN_ID}
+                  />
                 ))}
               </div>
             </CardContent>
