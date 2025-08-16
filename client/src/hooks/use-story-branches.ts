@@ -19,23 +19,41 @@ export function useStoryBranch(id: number) {
 export function useCreateStoryBranch(campaignId: number) {
   return useMutation({
     mutationFn: async (data: InsertStoryBranch) => {
-      const response = await apiRequest("POST", `/api/campaigns/${campaignId}/story-branches`, data);
+      const response = await apiRequest(
+        "POST",
+        `/api/campaigns/${campaignId}/story-branches`,
+        data,
+      );
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/campaigns", campaignId, "story-branches"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/campaigns", campaignId, "story-branches"],
+      });
     },
   });
 }
 
 export function useUpdateStoryBranch(campaignId: number) {
   return useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertStoryBranch> }) => {
-      const response = await apiRequest("PUT", `/api/story-branches/${id}`, data);
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: Partial<InsertStoryBranch>;
+    }) => {
+      const response = await apiRequest(
+        "PUT",
+        `/api/story-branches/${id}`,
+        data,
+      );
       return response.json();
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/campaigns", campaignId, "story-branches"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/campaigns", campaignId, "story-branches"],
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/story-branches", id] });
     },
   });
@@ -47,7 +65,9 @@ export function useDeleteStoryBranch(campaignId: number) {
       await apiRequest("DELETE", `/api/story-branches/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/campaigns", campaignId, "story-branches"] });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/campaigns", campaignId, "story-branches"],
+      });
     },
   });
 }

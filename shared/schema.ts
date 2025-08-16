@@ -87,11 +87,13 @@ export const locations = pgTable("locations", {
 export const storyBranches = pgTable("story_branches", {
   id: serial("id").primaryKey(),
   campaignId: integer("campaign_id").notNull(),
+  parentId: integer("parent_id"), // Nullable, for parent-child associations
   title: text("title").notNull(),
   description: text("description"),
-  status: text("status").default("pending"), // active, pending, dormant, completed
+  status: text("status").default("pending"), // pending, active, dormant, completed
   conditions: text("conditions").array().default([]),
   consequences: text("consequences").array().default([]),
+  childBranchIds: jsonb("child_branch_ids").$type<number[]>().default([]), // Store IDs of child branches for visualization
   playerAlignment: text("player_alignment"), // all, majority, split
   assignedCharacters: text("assigned_characters").array().default([]), // character names assigned to this branch
   activatedAt: timestamp("activated_at"),
@@ -163,6 +165,7 @@ export const insertLocationSchema = createInsertSchema(locations).omit({
 export const insertStoryBranchSchema = createInsertSchema(storyBranches).omit({
   id: true,
   activatedAt: true,
+  childBranchIds: true, // childBranchIds will be managed by the system and updated separately
 });
 
 export const insertSessionNoteSchema = createInsertSchema(sessionNotes).omit({
