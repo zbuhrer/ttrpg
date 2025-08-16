@@ -18,7 +18,7 @@ export function useStoryBranch(id: number) {
 
 export function useCreateStoryBranch(campaignId: number) {
   return useMutation({
-    mutationFn: async (data: InsertStoryBranch) => {
+    mutationFn: async (data: InsertStoryBranch & { parentId?: number }) => {
       const response = await apiRequest(
         "POST",
         `/api/campaigns/${campaignId}/story-branches`,
@@ -41,7 +41,7 @@ export function useUpdateStoryBranch(campaignId: number) {
       data,
     }: {
       id: number;
-      data: Partial<InsertStoryBranch>;
+      data: { status?: string; parentId?: number };
     }) => {
       const response = await apiRequest(
         "PUT",
