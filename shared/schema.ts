@@ -3,12 +3,62 @@ import {
   text,
   serial,
   integer,
-  boolean,
   jsonb,
   timestamp,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+// Define a type for map items
+const mapItemIcon = z.enum([
+  "treasure_chest",
+  "door",
+  "key",
+  "potion",
+  "scroll",
+  "sword",
+  "shield",
+  "wand",
+  "skull",
+  "book",
+  "map_pin",
+  "heart",
+  "star",
+  "cross",
+  "question_mark",
+  "exclamation_mark",
+]);
+export type MapItemIcon = z.infer<typeof mapItemIcon>;
+
+const mapItem = z.object({
+  id: z.string().uuid(),
+  x: z.number(),
+  y: z.number(),
+  name: z.string(),
+  icon: mapItemIcon,
+});
+export type MapItem = z.infer<typeof mapItem>;
+
+// Define and export CellType
+export const cellType = z.enum([
+  "empty",
+  "wall",
+  "door",
+  "difficult",
+  "water",
+  "pit",
+]);
+export type CellType = z.infer<typeof cellType>;
+
+// Define and export MapDataType
+export const mapDataType = z.object({
+  cells: z.record(z.string(), cellType).default({}),
+  characters: z
+    .record(z.string(), z.object({ name: z.string(), color: z.string() }))
+    .default({}),
+  items: z.record(z.string(), mapItem).default({}),
+});
+export type MapDataType = z.infer<typeof mapDataType>;
 
 export const campaigns = pgTable("campaigns", {
   id: serial("id").primaryKey(),
@@ -116,7 +166,7 @@ export const sessionNotes = pgTable("session_notes", {
 export const activities = pgTable("activities", {
   id: serial("id").primaryKey(),
   campaignId: integer("campaign_id").notNull(),
-  type: text("type").notNull(), // combat, level_up, quest_discovery, story_branch, etc.
+  type: text("type").notNull(), // combat, level-up, quest_discovery, story_branch, etc.
   title: text("title").notNull(),
   description: text("description"),
   sessionNumber: integer("session_number"),
@@ -133,8 +183,16 @@ export const maps = pgTable("maps", {
   width: integer("width").notNull(),
   height: integer("height").notNull(),
   // mapData will store the grid, walls, interactive elements, and character positions
-  // It will be a JSON object with a flexible structure
-  mapData: jsonb("map_data").$type<Record<string, any>>().default({}),
+  // It will be a JSON object with a flexible structure.
+  // The structure will be:
+  // {
+  //   cells: Record<string, CellType>;
+  //   characters: Record<string, { name: string; color: string }>;
+  //   items: Record<string, MapItem>; // custom items placed on the map
+  // }
+  mapData: jsonb("map_data")
+    .$type<MapDataType>()
+    .default({ cells: {}, characters: {}, items: {} }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

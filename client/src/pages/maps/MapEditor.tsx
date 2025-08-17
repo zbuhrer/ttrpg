@@ -2,7 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { useCampaignContext } from "@/contexts/campaign-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Map, InsertMap } from "../../../../shared/schema";
+// Assuming MapItem, CellType, MapData, and MapItemIcon are now exported from shared/schema.ts
+import {
+  Map,
+  InsertMap,
+  MapItem,
+  MapItemIcon,
+  MapDataType,
+  CellType,
+} from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,32 +21,32 @@ import {
   Redo,
   Square,
   Circle,
-  Home,
-  Sword,
-  Shield,
-  Trees,
+  Shield, // For 'shield' item icon
   Mountain,
+  Sword, // For 'sword' item icon
+  Key, // For 'key' item icon
+  FlaskConical, // For 'potion' item icon
+  ScrollText, // For 'scroll' item icon
+  Wand, // For 'wand' item icon
+  Skull, // For 'skull' item icon
+  Box, // For 'treasure_chest' item icon and 'item' tool icon
+  AlertCircle, // For 'exclamation_mark' item icon
+  DoorOpen, // For 'door' tool icon
+  Hand, // For 'select' tool icon
+  Book, // For 'book' item icon
+  MapPin, // For 'map_pin' item icon
+  Heart, // For 'heart' item icon
+  Star, // For 'star' item icon
+  X, // For 'cross' item icon
+  CircleHelp, // For 'question_mark' item icon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type CellType = "empty" | "wall" | "door" | "difficult" | "water" | "pit";
-type Tool =
-  | "select"
-  | "wall"
-  | "door"
-  | "difficult"
-  | "water"
-  | "pit"
-  | "eraser";
-
-interface MapData {
-  cells: Record<string, CellType>;
-  characters: Record<string, { name: string; color: string }>;
-}
+// Removed local definitions for MapItem, CellType, MapData, as they are now imported from shared/schema
 
 const MapEditor: React.FC = () => {
   const [editMatch, editParams] = useRoute("/maps/:id/edit");
-  const [createMatch, createParams] = useRoute("/maps/create/new");
+  const [createMatch] = useRoute("/maps/create/new"); // Removed unused createParams
   const { currentCampaign, isLoading: campaignLoading } = useCampaignContext();
   const queryClient = useQueryClient();
 
@@ -46,17 +54,26 @@ const MapEditor: React.FC = () => {
   const [mapName, setMapName] = useState("New Map");
   const [width, setWidth] = useState(20);
   const [height, setHeight] = useState(20);
-  const [mapData, setMapData] = useState<MapData>({
+  const [mapData, setMapData] = useState<MapDataType>({
     cells: {},
     characters: {},
+    items: {}, // Initialize items
   });
 
   // Editor state
   const [selectedTool, setSelectedTool] = useState<Tool>("wall");
   const [isDrawing, setIsDrawing] = useState(false);
-  const [history, setHistory] = useState<MapData[]>([]);
+  const [history, setHistory] = useState<MapDataType[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [mousePressed, setMousePressed] = useState(false);
+
+  // Item placement state
+  const [isPlacingItem, setIsPlacingItem] = useState(false);
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemIcon, setNewItemIcon] = useState<MapItemIcon>("treasure_chest"); // Default icon, assuming MapItemIcon is imported
+
+  // Drawing mode state
+  const [drawingMode] = useState<"click" | "drag">("drag"); // Removed unused setDrawingMode
 
   const mapId = editParams?.id ? parseInt(editParams.id) : null;
   const isEditing = editMatch && mapId !== null;
@@ -79,8 +96,9 @@ const MapEditor: React.FC = () => {
       setMapName(existingMap.name);
       setWidth(existingMap.width);
       setHeight(existingMap.height);
+      // Assuming existingMap.mapData is now correctly typed as MapData
       setMapData(
-        (existingMap.mapData as MapData) || { cells: {}, characters: {} },
+        existingMap.mapData || { cells: {}, characters: {}, items: {} },
       );
       console.log(
         "Map data initialized from existing map:",
@@ -156,10 +174,20 @@ const MapEditor: React.FC = () => {
     },
   });
 
+  // Updated tool definitions with distinct icons
+  type Tool =
+    | "select"
+    | "wall"
+    | "door"
+    | "difficult"
+    | "water"
+    | "pit"
+    | "eraser"
+    | "item";
   const tools = [
-    { id: "select", icon: Home, label: "Select", color: "bg-blue-500" },
+    { id: "select", icon: Hand, label: "Select", color: "bg-blue-500" },
     { id: "wall", icon: Square, label: "Wall", color: "bg-gray-600" },
-    { id: "door", icon: Shield, label: "Door", color: "bg-amber-600" },
+    { id: "door", icon: DoorOpen, label: "Door", color: "bg-amber-600" },
     {
       id: "difficult",
       icon: Mountain,
@@ -169,6 +197,7 @@ const MapEditor: React.FC = () => {
     { id: "water", icon: Circle, label: "Water", color: "bg-blue-400" },
     { id: "pit", icon: Circle, label: "Pit", color: "bg-gray-800" },
     { id: "eraser", icon: Undo, label: "Eraser", color: "bg-red-500" },
+    { id: "item", icon: Box, label: "Item", color: "bg-green-500" }, // Changed to Box icon
   ] as const;
 
   const getCellKey = (row: number, col: number) => `${row}-${col}`;
@@ -190,8 +219,12 @@ const MapEditor: React.FC = () => {
     }
   };
 
+  // Handlers for drawing cells (only used for non-item tools with drag)
   const handleCellClick = (row: number, col: number) => {
-    if (selectedTool === "select") return;
+    // This function is specifically for drag-drawing or single-click drawing of cell types.
+    // Item placement has its own separate onClick logic.
+    if (selectedTool === "select" || selectedTool === "item" || isPlacingItem)
+      return;
 
     const cellKey = getCellKey(row, col);
     const newMapData = { ...mapData };
@@ -212,7 +245,14 @@ const MapEditor: React.FC = () => {
   };
 
   const handleCellMouseEnter = (row: number, col: number) => {
-    if (!mousePressed || !isDrawing || selectedTool === "select") return;
+    if (
+      !mousePressed ||
+      !isDrawing ||
+      selectedTool === "select" ||
+      selectedTool === "item" ||
+      isPlacingItem
+    )
+      return;
 
     const cellKey = getCellKey(row, col);
     const newMapData = { ...mapData };
@@ -227,11 +267,12 @@ const MapEditor: React.FC = () => {
   };
 
   const handleMouseDown = (row: number, col: number) => {
-    if (selectedTool === "select") return;
+    if (selectedTool === "select" || selectedTool === "item" || isPlacingItem)
+      return;
 
     setMousePressed(true);
     setIsDrawing(true);
-    handleCellClick(row, col);
+    handleCellClick(row, col); // Initial click for drawing
   };
 
   const handleMouseUp = () => {
@@ -244,6 +285,7 @@ const MapEditor: React.FC = () => {
     setMousePressed(false);
   };
 
+  // Handlers for undo/redo
   const handleUndo = () => {
     if (historyIndex > 0) {
       setHistoryIndex(historyIndex - 1);
@@ -258,6 +300,7 @@ const MapEditor: React.FC = () => {
     }
   };
 
+  // Save the map
   const handleSave = () => {
     console.log("🔍 Preparing to save map:", {
       name: mapName,
@@ -267,23 +310,48 @@ const MapEditor: React.FC = () => {
       isEditing,
       mapId,
     });
-    console.log("Preparing to save map:", mapData);
+    // mapData is already typed as MapData locally and assumed to be compatible with InsertMap['mapData']
     saveMapMutation.mutate({
       name: mapName,
       width,
       height,
-      mapData: mapData as Record<string, any>,
+      mapData: {
+        cells: mapData.cells,
+        characters: mapData.characters,
+        items: mapData.items,
+      },
     });
   };
 
+  // Map item icon names to Lucide components
+  const IconMap: Record<MapItemIcon, React.ElementType> = {
+    treasure_chest: Box,
+    door: DoorOpen,
+    key: Key,
+    potion: FlaskConical,
+    scroll: ScrollText,
+    sword: Sword,
+    shield: Shield,
+    wand: Wand,
+    skull: Skull,
+    exclamation_mark: AlertCircle,
+    book: Book,
+    map_pin: MapPin,
+    heart: Heart,
+    star: Star,
+    cross: X,
+    question_mark: CircleHelp,
+  };
+
+  // Render the grid cells and items
   const renderGrid = () => {
-    const cells = [];
+    const cellElements = [];
     for (let row = 0; row < height; row++) {
       for (let col = 0; col < width; col++) {
         const cellKey = getCellKey(row, col);
         const cellType = mapData.cells[cellKey] || "empty";
 
-        cells.push(
+        cellElements.push(
           <div
             key={cellKey}
             className={cn(
@@ -292,14 +360,91 @@ const MapEditor: React.FC = () => {
             )}
             onMouseDown={() => handleMouseDown(row, col)}
             onMouseEnter={() => handleCellMouseEnter(row, col)}
+            onClick={() => {
+              if (selectedTool === "item") {
+                if (!isPlacingItem) {
+                  // If 'item' tool is selected, and we are NOT yet in item placement mode.
+                  // This click initiates the item placement, potentially showing a modal.
+                  setIsPlacingItem(true);
+                  setNewItemName(""); // Reset for new item
+                  setNewItemIcon("treasure_chest"); // Reset to default icon
+                } else {
+                  // If 'item' tool is selected, AND we ARE in item placement mode.
+                  // This click confirms placement of the current item at (row, col).
+                  const newItem: MapItem = {
+                    id: crypto.randomUUID(),
+                    x: col,
+                    y: row,
+                    name:
+                      newItemName ||
+                      `Item ${Object.keys(mapData.items).length + 1}`,
+                    icon: newItemIcon,
+                  };
+
+                  // Add current mapData to history BEFORE updating state for the new item
+                  const newHistory = history.slice(0, historyIndex + 1);
+                  newHistory.push(mapData);
+                  setHistory(newHistory);
+                  setHistoryIndex(newHistory.length - 1);
+
+                  setMapData((prevMapData: MapDataType) => ({
+                    ...prevMapData,
+                    items: { ...prevMapData.items, [newItem.id]: newItem },
+                  }));
+                  setIsPlacingItem(false); // Exit item placement mode
+                  setSelectedTool("select"); // Optionally switch to select tool for better UX
+                }
+              } else if (selectedTool === "select") {
+                // Handle select tool click on a cell
+                console.log(`Cell ${cellKey} selected.`);
+                // Future: logic to select cell, or check if an item is here.
+              }
+              // For drawing tools ('wall', 'door', 'eraser', etc.), onMouseDown handles the initial click.
+              // We do not want `onClick` to re-trigger drawing actions here for drawing tools.
+            }}
           />,
         );
       }
     }
 
+    // Render items as absolute overlays on top of the grid
+    const itemOverlays = Object.values(mapData.items).map((item: MapItem) => {
+      const IconComponent = IconMap[item.icon];
+      // Calculate position relative to the grid container, centering the icon in its cell
+      const cellSize = 100 / width; // Percentage width of one cell
+      const itemLeft = (item.x + 0.5) * cellSize; // Center of the cell
+      const itemTop = (item.y + 0.5) * cellSize; // Center of the cell
+
+      return (
+        <div
+          key={`item-${item.id}`}
+          className="absolute flex items-center justify-center p-1"
+          style={{
+            left: `${itemLeft}%`,
+            top: `${itemTop}%`,
+            transform: "translate(-50%, -50%)", // Center the icon precisely
+            zIndex: 10, // Ensure items are rendered on top of cells
+            pointerEvents: "auto", // Allow interaction with items (for future select/edit)
+          }}
+          title={item.name} // Show item name on hover
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent cell click event when clicking on an item
+            console.log("Clicked item:", item.name, item.id);
+            // Future: Implement item editing/deletion modal
+          }}
+        >
+          {IconComponent ? (
+            <IconComponent className="w-6 h-6 text-yellow-400 drop-shadow-lg" />
+          ) : (
+            <span className="text-xl text-yellow-400">❓</span> // Fallback icon
+          )}
+        </div>
+      );
+    });
+
     return (
       <div
-        className="inline-block border-2 border-fantasy-accent/30 bg-fantasy-slate"
+        className="relative inline-block border-2 border-fantasy-accent/30 bg-fantasy-slate overflow-hidden" // Added overflow-hidden to clip items if they try to render outside
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${width}, 1fr)`,
@@ -311,11 +456,13 @@ const MapEditor: React.FC = () => {
         onMouseLeave={handleMouseUp}
         onContextMenu={(e) => e.preventDefault()}
       >
-        {cells}
+        {cellElements} {/* Render cells first */}
+        {itemOverlays} {/* Render items on top */}
       </div>
     );
   };
 
+  // Loading and error states
   if (campaignLoading || (isEditing && mapLoading)) {
     return (
       <div className="p-6">
@@ -344,8 +491,6 @@ const MapEditor: React.FC = () => {
     );
   }
 
-  const [drawingMode, setDrawingMode] = useState<"click" | "drag">("drag"); // New state for drawing mode
-
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -357,11 +502,10 @@ const MapEditor: React.FC = () => {
           <p className="text-gray-400 mt-1">
             Design battle maps for {currentCampaign.name}
           </p>
-          {drawingMode === "click" && isDrawing && (
+          {selectedTool === "item" && isPlacingItem && (
             <div className="mt-2 px-3 py-1 bg-fantasy-accent/20 border border-fantasy-accent/50 rounded-md">
               <span className="text-fantasy-accent text-sm font-medium">
-                🖊️ Click Mode Active - Click cells to draw, use "Stop Drawing"
-                to finish
+                📌 Item Placement Mode - Click on the map to place the item.
               </span>
             </div>
           )}
@@ -423,6 +567,7 @@ const MapEditor: React.FC = () => {
                       size="sm"
                       onClick={() => {
                         setSelectedTool(tool.id as Tool);
+                        setIsPlacingItem(false); // Exit item placement mode when switching tools
                         if (drawingMode === "click") {
                           stopDrawing(); // Stop current drawing when switching tools
                         }
@@ -439,6 +584,59 @@ const MapEditor: React.FC = () => {
                 })}
               </div>
             </div>
+
+            {/* Item Placement Options (shown when 'Item' tool is selected) */}
+            {selectedTool === "item" && (
+              <div className="space-y-2 pt-4 border-t border-fantasy-charcoal">
+                <h4 className="font-semibold text-gray-300">Item Options</h4>
+                <div>
+                  <Label htmlFor="itemName">Item Name</Label>
+                  <Input
+                    id="itemName"
+                    value={newItemName}
+                    onChange={(e) => setNewItemName(e.target.value)}
+                    placeholder="e.g., Chest of Gold"
+                    className="bg-fantasy-dark border-fantasy-charcoal"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="itemIcon">Item Icon</Label>
+                  <select
+                    id="itemIcon"
+                    value={newItemIcon}
+                    onChange={(e) =>
+                      setNewItemIcon(e.target.value as MapItemIcon)
+                    }
+                    className="w-full p-2 rounded-md bg-fantasy-dark border border-fantasy-charcoal text-white"
+                  >
+                    <option value="treasure_chest">Treasure Chest</option>
+                    <option value="door">Door</option>
+                    <option value="key">Key</option>
+                    <option value="potion">Potion</option>
+                    <option value="scroll">Scroll</option>
+                    <option value="sword">Sword</option>
+                    <option value="shield">Shield</option>
+                    <option value="wand">Wand</option>
+                    <option value="skull">Skull</option>
+                    <option value="exclamation_mark">Exclamation Mark</option>
+                    <option value="book">Book</option>
+                    <option value="map_pin">Map Pin</option>
+                    <option value="heart">Heart</option>
+                    <option value="star">Star</option>
+                    <option value="cross">Cross</option>
+                    <option value="question_mark">Question Mark</option>
+                  </select>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsPlacingItem(false)}
+                  className="w-full border-red-500 text-red-400 hover:bg-red-500/20"
+                >
+                  Cancel Item Placement
+                </Button>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="space-y-2 pt-4 border-t border-fantasy-charcoal">
@@ -501,13 +699,17 @@ const MapEditor: React.FC = () => {
                   </h3>
                   <p className="text-sm text-gray-400">
                     Mode:{" "}
-                    {drawingMode === "click"
-                      ? "Click to draw"
-                      : "Click & drag to draw"}{" "}
+                    {selectedTool === "item"
+                      ? isPlacingItem
+                        ? "Placing Item"
+                        : "Item Placement"
+                      : drawingMode === "click"
+                        ? "Click to draw"
+                        : "Click & drag to draw"}{" "}
                     | Tool: {tools.find((t) => t.id === selectedTool)?.label}
                   </p>
                 </div>
-                {drawingMode === "click" && isDrawing && (
+                {selectedTool === "item" && isPlacingItem && (
                   <div className="animate-pulse">
                     <span className="inline-flex h-3 w-3 rounded-full bg-fantasy-accent"></span>
                   </div>
