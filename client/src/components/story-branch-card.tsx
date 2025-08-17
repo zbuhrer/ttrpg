@@ -14,7 +14,8 @@ export function StoryBranchCard({
   storyBranch,
   campaignId,
 }: StoryBranchCardProps) {
-  const { mutate: updateStoryBranch } = useUpdateStoryBranch(campaignId);
+  const { mutate: updateStoryBranch, isPending: isActivating } =
+    useUpdateStoryBranch(campaignId);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -64,7 +65,7 @@ export function StoryBranchCard({
         </Badge>
       </div>
       <div
-        className="text-gray-400 text-sm mb-3"
+        className="prose prose-invert text-gray-400 mb-3"
         dangerouslySetInnerHTML={{
           __html: marked(storyBranch.description || ""),
         }}
@@ -140,8 +141,9 @@ export function StoryBranchCard({
             size="sm"
             className="text-fantasy-accent hover:text-fantasy-amber text-sm transition-colors duration-300"
             onClick={handleActivate}
+            disabled={isActivating}
           >
-            Activate
+            {isActivating ? "Activating..." : "Activate"}
           </Button>
         )}
       </div>
